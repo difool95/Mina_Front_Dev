@@ -1,0 +1,65 @@
+/* Legal copy: left aligned, one size, hierarchy carried by weight. */
+.mina-md {
+  font-size: var(--mina-fs-body);
+  font-weight: var(--mina-fw-light);
+  line-height: 1.65;
+  text-align: left;
+}
+
+.mina-md p {
+  margin: 0 0 1.1em;
+  /* Keeps soft line breaks inside a paragraph — see Markdown.tsx. */
+  white-space: pre-line;
+}
+
+.mina-md h1 {
+  margin: 0 0 1.2em;
+  font-size: var(--mina-fs-h6);
+  font-weight: var(--mina-fw-title);
+  line-height: 1.3;
+}
+
+.mina-md h2 {
+  margin: 2em 0 0.9em;
+  font-size: var(--mina-fs-body);
+  font-weight: var(--mina-fw-strong);
+}
+
+.mina-md h3 {
+  margin: 1.6em 0 0.7em;
+  font-size: var(--mina-fs-body);
+  font-weight: var(--mina-fw-med);
+}
+
+.mina-md h1 + p,
+.mina-md h2 + p,
+.mina-md h3 + p,
+.mina-md h2 + ul,
+.mina-md h3 + ul {
+  margin-top: 0;
+}
+
+.mina-md ul {
+  margin: 0 0 1.1em;
+  padding: 0;
+  list-style: none;
+}
+
+.mina-md li {
+  margin-bottom: 0.7em;
+  padding-left: 1.5em;
+  text-indent: -0.75em;
+}
+
+.mina-md li::before {
+  margin-right: 0.55em;
+  content: '•';
+}
+
+.mina-md strong {
+  font-weight: var(--mina-fw-strong);
+}
+
+.mina-md > :last-child {
+  margin-bottom: 0;
+}

@@ -1,0 +1,101 @@
+.mina-carousel {
+  /* Local geometry — the design tokens carry no dot sizing. `--dot-cell` is
+     supplied by the component so JS and CSS cannot drift. */
+  --dot-size: 8px;
+  --dot-ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  background: var(--mina-hairline);
+  touch-action: pan-y;
+  user-select: none;
+}
+
+/* The arrow replaces the pointer, so hide the real one. */
+.mina-carousel--paged {
+  cursor: none;
+}
+
+.mina-carousel__media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Follows the cursor — `left`/`top` are set inline from the pointer position,
+   so no transition here or it would lag behind the mouse. */
+.mina-carousel__arrow {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(var(--mina-backdrop-blur));
+  color: #fff;
+  font-size: var(--mina-fs-h3);
+  font-weight: var(--mina-fw-light);
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* Touch devices have no hover, where the arrow would flash mid-drag. */
+@media (hover: none) {
+  .mina-carousel__arrow {
+    display: none;
+  }
+}
+
+/* ── dots ── */
+
+/* Fixed width — exactly `--dot-slots` cells — so the strip is genuinely
+   centred and never shifts as the dot sizes change. */
+/* Taller than a dot so each cell is a usable click target. */
+.mina-carousel__dots {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  width: calc(var(--dot-cell) * var(--dot-slots));
+  height: 20px;
+  overflow: hidden;
+  transform: translateX(-50%);
+}
+
+/* Whole-cell slide, driven by an inline px `transform` from the component.
+   Animating a transform keeps it on the compositor, which is what makes it
+   fluent — width/height animations are not. */
+.mina-carousel__strip {
+  display: flex;
+  width: max-content;
+  height: 100%;
+  transition: transform var(--mina-anim-fade) var(--dot-ease);
+}
+
+.mina-carousel__cell {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--dot-cell);
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  /* Overrides the carousel's `cursor: none` — the dots are real targets. */
+  cursor: pointer;
+}
+
+.mina-carousel__dot {
+  width: var(--dot-size);
+  height: var(--dot-size);
+  border-radius: 50%;
+  background: #fff;
+  transform: scale(var(--dot-scale));
+  opacity: var(--dot-opacity);
+  transition:
+    transform var(--mina-anim-fade) var(--dot-ease),
+    opacity var(--mina-anim-fade) var(--dot-ease);
+}

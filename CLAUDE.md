@@ -2,6 +2,17 @@
 
 Instructions for Claude working in this repo. Follow them on every file you create.
 
+## 0. Write the least code possible
+
+The highest priority rule, above every convention below. Reuse before you write.
+
+- Before adding anything, search for what already exists and use it. A new helper that duplicates an existing one is a bug.
+- Prefer the platform: native CSS, native DOM APIs, native HTML elements. Reach for a library only when the hand-rolled version would be materially worse.
+- No abstraction until there is a second caller. No wrapper that only forwards props. No barrel file for one export. No `try/catch` that only rethrows.
+- No defensive branches for states that cannot happen, no options nobody passes, no premature generalisation.
+- Delete rather than comment out. Comment only what the code cannot say itself — the *why*, never the *what*.
+- The smallest diff that fully solves the problem wins. If a change feels large, question the approach before writing it.
+
 ## 1. Project state
 
 Greenfield. Built from scratch together with the user — assume nothing exists until you have read it.
@@ -18,12 +29,18 @@ Greenfield. Built from scratch together with the user — assume nothing exists 
 | Routing | `react-router-dom` |
 | Server state | `@tanstack/react-query` |
 | DB / auth / storage | `@supabase/supabase-js` |
-| Styling | Tailwind CSS |
-| UI primitives | shadcn/ui |
+| Styling | Plain CSS + the design tokens in `src/index.css` |
 | i18n | `i18next` + `react-i18next` |
 | Validation | `zod` |
 
 **Do not add a dependency outside this table without asking the user first.**
+
+### Styling rules
+
+- All colour, type, spacing and motion values come from the `--mina-*` custom properties on `:root` in `src/index.css`. **Never hard-code a hex, px font-size, or duration** that a token already covers.
+- The Design Cockpit overrides these tokens at runtime, so reading a token is what makes a component themeable. Bypassing it silently breaks theming.
+- One `.css` file next to the component it styles, imported by that component. No CSS-in-JS, no utility framework.
+- Class names are `mina-<block>__<element>`, flat, no nesting deeper than one level.
 
 ## 3. Folder map
 

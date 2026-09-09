@@ -1,32 +1,123 @@
+:root {
+  /* ── Mina Design System tokens ──
+     Live-editable from the Design Cockpit (/admin/design on the backend):
+     values saved there are injected on boot and override these defaults. */
+  --mina-bg: #FCFAF4; /* paper */
+  --mina-ink: #080a00; /* jet ink — every label, action, value */
+  /* R,G,B triplet of --mina-ink — designTokens.ts re-derives it whenever the
+     cockpit overrides the ink, so every rgba(ink, α) tint follows along. */
+  --mina-ink-rgb: 8, 10, 0;
+  --mina-text: var(--mina-ink);
+  --mina-hairline: #e9e7e0; /* row separators */
+  --mina-border-soft: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.16);
+  --mina-border-strong: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.32);
+  --mina-muted: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.6);
+  --mina-muted-o: 0.3;  /* muted label opacity (pcd labels, faint rows) */
+  --mina-quiet-o: 0.55; /* secondary text opacity (subtitles) */
+  --mina-font: "Schibsted Grotesk", system-ui, -apple-system, sans-serif;
+  --mina-fs-micro: 9px;  /* card prompt, pcd rows */
+  --mina-fs-small: 10px; /* pill actions, footers */
+  --mina-fs-label: 11px; /* account row labels */
+  --mina-fs-body: 12px;  /* panel rows */
+  --mina-fw-strong: 700;
+  --mina-fw-med: 600;
+  --mina-fw-light: 400;  /* profile muted text — captions, values, card settings */
+  --mina-fw-title: 700;  /* display titles — editorial headline, modal headers */
+  --mina-fw-pill: 600;   /* studio pill text */
+  /* ── Type scale (display sizes) ── */
+  --mina-fs-h1: 20px; /* the "Archive" title on the profile */
+  --mina-fs-h2: 37px; /* editorial accent line */
+  --mina-fs-h3: 28px; /* onboarding talking text, landing intro */
+  --mina-fs-h4: 21px; /* auth main lines, profile meta values */
+  --mina-fs-h5: 19px; /* matcha panel title */
+  --mina-fs-h6: 16px; /* auth titles, logo wordmark */
+  /* ── Buttons & CTAs ── */
+  --mina-cta-fs: 28px;         /* the big underlined Create / Describe button */
+  --mina-cta-fw: 600;
+  --mina-header-cta-fs: 12px;  /* header actions over media: Animate · Love it · Download */
+  --mina-header-cta-fw: 800;
+  --mina-header-toggle-fs: 12px; /* Create | Animate | Content switch */
+  --mina-header-toggle-fw: 700;
+  --mina-link-fs: 12px;        /* underlined text links — e.g. "Get more Matcha" */
+  --mina-link-fw: 600;
+  --mina-btn-underline-offset: 2px; /* underlined text buttons */
+  /* ── French stack (label · value rows) ── */
+  --mina-stack-col-gap: 16px;
+  --mina-stack-row-gap: 10px;
+  --mina-grid-gap-library: 10px;
+  /* ── Spacing — buttons & pills ── */
+  --mina-pill-pad: 6px 10px 6px 6px; /* studio pills (Creator, Product, 1080p…) */
+  --mina-pill-gap: 6px;              /* gap between a pill's icon and its text */
+  --mina-filter-pill-pad: 6px 10px;  /* profile filter pills (Date, Motion, Liked…) */
+  --mina-btn-pad: 10px 14px;         /* solid panel buttons (Create style / Yes / Cancel) */
+  /* ── Spacing — header & footer ── */
+  --mina-header-top: 24px;           /* desktop header distance from the top */
+  --mina-header-x: 40px;             /* desktop header distance from the sides */
+  --mina-header-pad-mobile: 16px 20px; /* mobile sticky header padding */
+  --mina-footer-pad-y: 12px;         /* mobile footer vertical padding */
+  --mina-footer-pad-x: 20px;         /* mobile footer horizontal padding */
+  /* ── Spacing — panels & cards ── */
+  --mina-panel-pad: 14px 16px;       /* panel/modal body padding */
+  --mina-panel-row-pad-y: 12px;      /* matcha panel row height (padding) */
+  --mina-account-row-pad-y: 14px;    /* profile account header row padding */
+  --mina-card-band-pad-y: 14px;      /* card settings band padding */
+  --mina-card-band-gap: 14px;        /* gap between card settings rows */
+  --mina-shell-pad: 24px 40px 64px;  /* profile page padding (top sides bottom) */
+  /* ── Logo ── */
+  --mina-logo-w: 70px;               /* the mina feutre logo (header + login) */
+  /* ── Motion ── */
+  --mina-talk-speed: 1ms;    /* Mina's typing — ms per letter, lower = faster */
+  --mina-anim-zoom: 220ms;   /* media hover zoom */
+  --mina-anim-layout: 420ms; /* layout toggle worm scroll */
+  --mina-anim-modal: 160ms;  /* panels/modals slide-in */
+  --mina-backdrop-blur: 14px;
+  --mina-accent-green: #5E8C3A; /* Mina talking / generating */
+  --mina-copycat-gold: #D5AA53;
+  --mina-brand-purple: #C583EE;
+  --mina-madani-terracotta: #9D4E0B; /* madani master key — raw-prompt bypass */
+  --mina-like-red: #E90909;
+  --mina-grid-cols: 7;
+  --mina-grid-cols-tablet: 5;
+  --mina-grid-cols-mobile: 1; /* phones, editorial (toggle OFF): one column */
+  --mina-grid-cols-library: 10;
+  --mina-grid-cols-library-tablet: 6;
+  --mina-grid-cols-library-mobile: 3; /* phones, library (toggle ON): 3-col moodboard */
+  --mina-grid-gap: 18px;
+  --mina-anim-fade: 0.3s;
+  --mina-anim-slide: 0.45s;
+}
+
+/* Safari / iOS friendly viewport */
+html,
+body {
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: auto;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* reset */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
-html {
-  -webkit-text-size-adjust: 100%;
-}
-
 body {
-  margin: 0;
-  min-height: 100vh;
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  line-height: 1.5;
-}
-
-img,
-picture,
-video,
-canvas,
-svg {
-  display: block;
-  max-width: 100%;
-}
-
-button,
-input,
-select,
-textarea {
-  font: inherit;
+  background: var(--mina-bg);
+  color: var(--mina-text);
+  /* "Tajawal" is appended as an Arabic fallback: Latin fonts have no Arabic
+     glyphs, so the browser renders Arabic characters in Tajawal per-glyph
+     while keeping Latin text in the system font (--mina-font). */
+  font-family: var(--mina-font, "Schibsted Grotesk", system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif), "Tajawal", sans-serif;
+  letter-spacing: -0.02em;
 }

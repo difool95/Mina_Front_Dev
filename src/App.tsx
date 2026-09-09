@@ -1,9 +1,8 @@
+import { HomePage } from '@/pages/HomePage'
+
+// Single route for now — react-router goes in when there is a second page.
 function App() {
-  return (
-    <main>
-      <h1>Mina</h1>
-    </main>
-  )
+  return <HomePage />
 }
 
 export default App

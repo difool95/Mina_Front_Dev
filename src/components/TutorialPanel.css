@@ -1,0 +1,77 @@
+/* Covers the viewport; the page underneath keeps its own scroll lock. */
+.mina-tutorial {
+  position: fixed;
+  z-index: 10;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  background: var(--mina-bg);
+}
+
+.mina-tutorial__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: var(--mina-footer-pad-y) var(--mina-footer-pad-x);
+}
+
+.mina-tutorial__title {
+  margin: 0;
+  font-size: var(--mina-fs-body);
+  font-weight: var(--mina-fw-strong);
+}
+
+.mina-tutorial__actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.mina-tutorial__signup,
+.mina-tutorial__skip {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font-family: inherit;
+  font-size: var(--mina-fs-body);
+  font-weight: var(--mina-fw-strong);
+  letter-spacing: inherit;
+  cursor: pointer;
+}
+
+.mina-tutorial__signup {
+  text-decoration: underline;
+  text-underline-offset: var(--mina-btn-underline-offset);
+}
+
+/* Faint tint so the square video reads as a framed stage against the paper. */
+.mina-tutorial__stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* min-height:0 lets the 1fr row shrink instead of pushing the video out. */
+  min-height: 0;
+  background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.04);
+  padding: 20px;
+  overflow: hidden;
+}
+
+.mina-tutorial__stage .mina-video {
+  aspect-ratio: 1;
+  height: 100%;
+  max-width: 100%;
+}
+
+@media (width < 768px) {
+  .mina-tutorial__stage {
+    padding: 0;
+  }
+
+  .mina-tutorial__stage .mina-video {
+    width: 100%;
+    height: auto;
+    max-height: 100%;
+  }
+}

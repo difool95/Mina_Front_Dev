@@ -1,0 +1,78 @@
+/* The dialog *is* the card — `showModal()` centres it for us. */
+.mina-panel {
+  display: flex;
+  flex-direction: column;
+  width: 640px;
+  max-width: calc(100% - 40px);
+  max-height: 80dvh;
+  padding: 0;
+  border: 0;
+  background: var(--mina-bg);
+  color: var(--mina-text);
+  overflow: hidden;
+}
+
+/* Derived from the token rather than a fixed px, so the Design Cockpit still
+   drives it — just softer than a full-strength blur. */
+.mina-panel::backdrop {
+  backdrop-filter: blur(calc(var(--mina-backdrop-blur) * 0.6));
+  background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.18);
+}
+
+@keyframes mina-panel-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.mina-panel[open],
+.mina-panel[open]::backdrop {
+  animation: mina-panel-fade-in var(--mina-anim-modal) ease-out;
+}
+
+.mina-panel__bar {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--mina-hairline);
+  padding: var(--mina-panel-pad);
+}
+
+.mina-panel__title {
+  margin: 0;
+  font-size: var(--mina-fs-body);
+  font-weight: var(--mina-fw-strong);
+}
+
+.mina-panel__close {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font-family: inherit;
+  font-size: var(--mina-fs-body);
+  font-weight: var(--mina-fw-strong);
+  line-height: 1;
+  cursor: pointer;
+}
+
+.mina-panel__body {
+  flex: 1;
+  padding: var(--mina-panel-pad);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  /* Scrolls, but the bar itself is hidden. */
+  scrollbar-width: none;
+}
+
+.mina-panel__body::-webkit-scrollbar {
+  display: none;
+}
+
+@media (width < 768px) {
+  .mina-panel {
+    max-height: 78dvh;
+  }
+}

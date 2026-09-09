@@ -1,0 +1,93 @@
+.mina-video {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+}
+
+.mina-video__media {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Sits over the foot of the video on a scrim, so white controls stay legible
+   whatever the frame underneath is doing. */
+.mina-video__controls {
+  position: absolute;
+  inset: auto 0 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: linear-gradient(to top, rgba(var(--mina-ink-rgb, 8, 10, 0), 0.38), transparent);
+  padding: 40px 20px 20px;
+  transition: opacity var(--mina-anim-fade) ease-out;
+}
+
+.mina-video--idle .mina-video__controls {
+  opacity: 0;
+  /* Not just invisible — unreachable, so it cannot swallow clicks. */
+  pointer-events: none;
+}
+
+.mina-video__button {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(var(--mina-backdrop-blur));
+  color: #fff;
+  cursor: pointer;
+}
+
+.mina-video__button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.mina-video__time {
+  flex: none;
+  color: #fff;
+  font-size: var(--mina-fs-small);
+  font-weight: var(--mina-fw-med);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── timeline ── */
+
+.mina-video__seek {
+  flex: 1;
+  height: 3px;
+  margin: 0;
+  border-radius: 2px;
+  /* `--played` is set inline from the current time. */
+  background: linear-gradient(
+    to right,
+    #fff var(--played),
+    rgba(255, 255, 255, 0.35) var(--played)
+  );
+  appearance: none;
+  cursor: pointer;
+}
+
+.mina-video__seek::-webkit-slider-thumb {
+  width: 10px;
+  height: 10px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  appearance: none;
+}
+
+.mina-video__seek::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+}
