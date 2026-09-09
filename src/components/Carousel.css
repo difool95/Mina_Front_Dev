@@ -29,10 +29,10 @@
   position: absolute;
   display: grid;
   place-items: center;
-  width: 56px;
-  height: 56px;
+  width: 48px;
+  height: 48px;
   transform: translate(-50%, -50%);
-  border: 1px solid rgba(255, 255, 255, 0.9);
+  border: 0.1px solid rgba(255, 255, 255, 0.288);
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(var(--mina-backdrop-blur));

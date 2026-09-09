@@ -20,6 +20,25 @@ export async function sendMagicLink(email: string) {
 }
 
 /**
+ * Redirects to Google's OAuth consent screen. `redirectTo` must be listed
+ * under Auth → URL Configuration → Redirect URLs in the Supabase dashboard,
+ * same as the magic link above.
+ */
+export async function signInWithGoogle() {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: window.location.origin,
+      // Always show Google's account chooser — without it Google silently
+      // reuses the last identity, which breaks "Add another account".
+      queryParams: { prompt: 'select_account' },
+    },
+  })
+
+  if (error) throw new Error(error.message)
+}
+
+/**
  * Ends the session and clears the stored token. The auth listener in
  * AuthProvider picks this up, so callers do not need to reset anything.
  */

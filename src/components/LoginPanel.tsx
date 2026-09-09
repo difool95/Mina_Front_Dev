@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 import { isValidEmail, webmailFor } from '@/lib/email'
-import { sendMagicLink } from '@/services/auth.service'
+import { sendMagicLink, signInWithGoogle } from '@/services/auth.service'
 
 import './LoginPanel.css'
 
@@ -19,6 +19,19 @@ export function LoginPanel() {
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<Status>('idle')
   const [error, setError] = useState<string | null>(null)
+  const [googleLoading, setGoogleLoading] = useState(false)
+
+  const loginWithGoogle = async () => {
+    setError(null)
+    setGoogleLoading(true)
+
+    try {
+      await signInWithGoogle()
+    } catch (cause) {
+      setGoogleLoading(false)
+      setError(cause instanceof Error ? cause.message : 'Could not sign in with Google. Try again.')
+    }
+  }
 
   const submit = async () => {
     if (!isValidEmail(email)) {
@@ -44,12 +57,18 @@ export function LoginPanel() {
   return (
     <div className="mina-login">
       <div className="mina-login__choice" data-hidden={emailStep || undefined} inert={emailStep}>
-        <button className="mina-login__cta" type="button">
-          Login with Google
+        <button
+          className="mina-login__cta"
+          type="button"
+          disabled={googleLoading}
+          onClick={() => void loginWithGoogle()}
+        >
+          {googleLoading ? 'Opening Google…' : 'Login with Google'}
         </button>
         <button className="mina-login__alt" type="button" onClick={() => setEmailStep(true)}>
           Use email instead
         </button>
+        {error && !emailStep && <p className="mina-login__error">{error}</p>}
       </div>
 
       <div className="mina-login__email" data-hidden={!emailStep || undefined} inert={!emailStep}>
