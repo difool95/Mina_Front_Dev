@@ -1,0 +1,189 @@
+/* Both login steps share one cell, so switching never reflows the block. */
+.mina-login {
+  display: grid;
+}
+
+.mina-login > * {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  align-items: flex-start;
+}
+
+.mina-login__choice {
+  gap: 6px;
+}
+
+.mina-login__email {
+  gap: 24px;
+}
+
+/* ── step transition ──
+   Each rule styles the state being animated *to*, which is what lets the two
+   directions differ: leaving is declared on [data-hidden], entering on the
+   base rule. */
+
+/* Leaves upward; returns from above, once the field has gone. */
+.mina-login__choice {
+  transition:
+    opacity var(--mina-anim-slide) ease var(--mina-anim-modal),
+    transform var(--mina-anim-slide) ease var(--mina-anim-modal);
+}
+
+.mina-login__choice[data-hidden] {
+  opacity: 0;
+  transform: translateY(-8px);
+  transition:
+    opacity var(--mina-anim-slide) ease,
+    transform var(--mina-anim-slide) ease;
+}
+
+/* Rises into place only after the choice has finished fading out. */
+.mina-login__email > :not(.mina-login__back) {
+  transition:
+    opacity var(--mina-anim-fade) ease var(--mina-anim-slide),
+    transform var(--mina-anim-fade) ease var(--mina-anim-slide);
+}
+
+.mina-login__email[data-hidden] > :not(.mina-login__back) {
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity var(--mina-anim-modal) ease,
+    transform var(--mina-anim-modal) ease;
+}
+
+/* No fade in — a zero duration held back until the choice has left. It still
+   fades out on the way back. */
+.mina-login__back {
+  transition: opacity 0s var(--mina-anim-slide);
+}
+
+.mina-login__email[data-hidden] .mina-login__back {
+  opacity: 0;
+  transition: opacity var(--mina-anim-modal) ease;
+}
+
+/* ── controls ── */
+
+.mina-login__back {
+  color: var(--mina-muted);
+  font-size: var(--mina-fs-h3);
+  font-weight: var(--mina-fw-light);
+  line-height: 1;
+}
+
+.mina-login__cta {
+  color: inherit;
+  font-size: var(--mina-fs-h4);
+  font-weight: var(--mina-fw-med);
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: var(--mina-btn-underline-offset);
+}
+
+.mina-login__cta:disabled {
+  cursor: default;
+}
+
+.mina-login__cta--static {
+  margin: 0;
+  text-decoration: none;
+}
+
+.mina-login__alt {
+  color: var(--mina-muted);
+  font-size: var(--mina-fs-body);
+  font-weight: var(--mina-fw-light);
+}
+
+.mina-login__input {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--mina-text);
+  font-family: inherit;
+  font-size: var(--mina-fs-h4);
+  font-weight: var(--mina-fw-med);
+  letter-spacing: inherit;
+}
+
+.mina-login__input::placeholder {
+  /* Firefox dims placeholders by default — pin it so the token decides. */
+  color: var(--mina-muted);
+  opacity: 1;
+}
+
+.mina-login__input:focus {
+  outline: none;
+}
+
+/* ── below the field ── */
+
+.mina-login__form {
+  position: relative;
+  width: 100%;
+}
+
+.mina-login__below {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  padding-top: 14px;
+}
+
+.mina-login__reveal {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  transition: opacity var(--mina-anim-fade) ease;
+}
+
+.mina-login__reveal[data-hidden] {
+  opacity: 0;
+}
+
+.mina-login__note {
+  margin: 0;
+  max-width: 42ch;
+  color: var(--mina-muted);
+  font-size: var(--mina-fs-body);
+  font-weight: var(--mina-fw-light);
+  line-height: 1.5;
+}
+
+.mina-login__note strong {
+  font-weight: var(--mina-fw-strong);
+}
+
+.mina-login__note-fine {
+  color: rgba(var(--mina-ink-rgb, 8, 10, 0), var(--mina-muted-o));
+  font-size: var(--mina-fs-micro);
+}
+
+/* "Sign in" and its note are one step down from the primary actions and share
+   a single declaration, so the two can never drift apart. Must stay after
+   __cta and __note — equal specificity, so source order decides. */
+.mina-login__reveal-text {
+  font-size: var(--mina-fs-label);
+}
+
+.mina-login__error {
+  margin: 0 0 10px;
+  color: var(--mina-like-red);
+  font-size: var(--mina-fs-body);
+  font-weight: var(--mina-fw-light);
+}
+
+/* ── sent ── */
+
+.mina-login__sent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}

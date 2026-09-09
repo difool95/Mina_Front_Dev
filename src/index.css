@@ -11,7 +11,7 @@
   --mina-hairline: #e9e7e0; /* row separators */
   --mina-border-soft: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.16);
   --mina-border-strong: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.32);
-  --mina-muted: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.6);
+  --mina-muted: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.4);
   --mina-muted-o: 0.3;  /* muted label opacity (pcd labels, faint rows) */
   --mina-quiet-o: 0.55; /* secondary text opacity (subtitles) */
   --mina-font: "Schibsted Grotesk", system-ui, -apple-system, sans-serif;

@@ -2,44 +2,77 @@ import { useState } from 'react'
 
 import { Carousel } from '@/components/Carousel'
 import { LegalPanel } from '@/components/LegalPanel'
+import { LoginPanel } from '@/components/LoginPanel'
 import { TutorialPanel } from '@/components/TutorialPanel'
 import { useOnboardContent } from '@/hooks/useOnboardContent'
 import { CURATOR_COUNT_LABEL, FOOTER_LINKS, MINA_LOGO_URL } from '@/lib/constants'
 import { pickRow, pickRows } from '@/lib/onboardContent'
+import { useAuth } from '@/providers/AuthProvider'
+import { signOut } from '@/services/auth.service'
 
 import './HomePage.css'
 
 /**
- * `/` — login, tutorial and the legal documents all live on this one route;
- * nothing here navigates.
+ * `/` — signed-out login, the tutorial, the legal documents and the signed-in
+ * screen all live on this one route; the logo reloads it rather than
+ * navigating anywhere else.
  *
- * The four regions are siblings rather than nested panels so one grid can place
- * them side by side on desktop and stack them bar/media/centre/footer on mobile,
- * where the carousel sits between the header and the login block.
+ * When signed out the four regions are siblings rather than nested panels, so
+ * one grid can place them side by side on desktop and stack them
+ * bar/media/centre/footer on mobile, where the carousel sits between the header
+ * and the login block.
  */
 export function HomePage() {
   const [tutorialOpen, setTutorialOpen] = useState(false)
   // The `content_type` of the open legal panel, or null when closed.
   const [legal, setLegal] = useState<string | null>(null)
   const { data } = useOnboardContent()
+  const { session, loading } = useAuth()
 
   // `cta_label` holds two rows; `title` is the key that picks the right one.
   const tutorial = pickRow(data, 'cta_label', 'tutorial_button')
   const signUp = pickRow(data, 'cta_label', 'login_button')
   const legalRow = legal === null ? undefined : pickRow(data, legal)
 
+  // Blank rather than the login screen: the stored session is still being read,
+  // and on a magic-link return showing login first would flash and swap.
+  if (loading) return <div className="mina-home mina-home--plain" />
+
+  if (session) {
+    return (
+      <div className="mina-home mina-home--plain">
+        <header className="mina-home__bar">
+          <button
+            className="mina-home__logo"
+            type="button"
+            aria-label="Mina home"
+            onClick={() => window.location.assign('/')}
+          >
+            <img src={MINA_LOGO_URL} alt="Mina" />
+          </button>
+          <button className="mina-home__logout" type="button" onClick={() => void signOut()}>
+            Log out
+          </button>
+        </header>
+
+        <main className="mina-home__center">
+          <p className="mina-home__signed-in">You&rsquo;re logged in</p>
+          <p className="mina-home__signed-in-note">{session.user.email}</p>
+        </main>
+      </div>
+    )
+  }
+
   return (
     <div className="mina-home">
       <header className="mina-home__bar">
-        {/* The logo returns to the login view — same route, panels dismissed. */}
+        {/* Reloads `/` outright rather than just resetting local state, so the
+            logo always lands on a fresh home page. */}
         <button
           className="mina-home__logo"
           type="button"
           aria-label="Mina home"
-          onClick={() => {
-            setTutorialOpen(false)
-            setLegal(null)
-          }}
+          onClick={() => window.location.assign('/')}
         >
           <img src={MINA_LOGO_URL} alt="Mina" />
         </button>
@@ -57,12 +90,7 @@ export function HomePage() {
       </section>
 
       <main className="mina-home__center">
-        <button className="mina-home__cta" type="button">
-          Login with Google
-        </button>
-        <button className="mina-home__alt" type="button">
-          Use email instead
-        </button>
+        <LoginPanel />
       </main>
 
       <footer className="mina-home__footer">
