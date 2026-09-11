@@ -7,7 +7,7 @@ export const env = z
   .object({
     VITE_SUPABASE_URL: z.string().url(),
     VITE_SUPABASE_ANON_KEY: z.string().min(1),
-    VITE_API_BASE_URL: z.string().url().optional(),
+    VITE_API_BASE_URL: z.string().url(),
     VITE_APP_ENV: z.enum(['development', 'staging', 'production']).default('development'),
   })
   .parse(import.meta.env)

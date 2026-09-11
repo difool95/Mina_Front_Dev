@@ -1,8 +1,15 @@
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+
+import { AuthCallbackPage } from '@/pages/AuthCallbackPage'
 import { HomePage } from '@/pages/HomePage'
 
-// Single route for now — react-router goes in when there is a second page.
+const router = createBrowserRouter([
+  { path: '/', element: <HomePage /> },
+  { path: '/auth/callback', element: <AuthCallbackPage /> },
+])
+
 function App() {
-  return <HomePage />
+  return <RouterProvider router={router} />
 }
 
 export default App

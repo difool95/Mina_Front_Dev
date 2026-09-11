@@ -2,7 +2,6 @@ import type { Session } from '@supabase/supabase-js'
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 
 import { getSession, onAuthChange } from '@/services/auth.service'
-import { ensureCustomer } from '@/services/customers.service'
 
 interface AuthState {
   session: Session | null
@@ -13,11 +12,12 @@ interface AuthState {
 const AuthContext = createContext<AuthState>({ session: null, loading: true })
 
 /**
- * Holds the Supabase session.
+ * Holds the Supabase session, and nothing else.
  *
  * The session itself is persisted by supabase-js in localStorage and recovered
  * from the magic-link URL on load, so there is no token handling here — we only
- * mirror it into React and make sure a `mega_customers` row exists.
+ * mirror it into React. Account setup lives in `useAccountSetup`, because this
+ * provider wraps the magic-link landing page too and would run it twice.
  */
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AuthState>({ session: null, loading: true })
@@ -42,18 +42,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       unsubscribe()
     }
   }, [])
-
-  const user = state.session?.user
-
-  useEffect(() => {
-    if (!user) return
-
-    // A failure here must not block the signed-in UI — the row is bookkeeping,
-    // not a precondition for using the app.
-    void ensureCustomer(user).catch((error: unknown) => {
-      console.error('Could not sync mega_customers row', error)
-    })
-  }, [user?.id])
 
   return <AuthContext.Provider value={state}>{children}</AuthContext.Provider>
 }

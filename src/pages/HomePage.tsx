@@ -4,6 +4,7 @@ import { Carousel } from '@/components/Carousel'
 import { LegalPanel } from '@/components/LegalPanel'
 import { LoginPanel } from '@/components/LoginPanel'
 import { TutorialPanel } from '@/components/TutorialPanel'
+import { useAccountSetup } from '@/hooks/useAccountSetup'
 import { useOnboardContent } from '@/hooks/useOnboardContent'
 import { CURATOR_COUNT_LABEL, FOOTER_LINKS, MINA_LOGO_URL } from '@/lib/constants'
 import { pickRow, pickRows } from '@/lib/onboardContent'
@@ -28,6 +29,9 @@ export function HomePage() {
   const [legal, setLegal] = useState<string | null>(null)
   const { data } = useOnboardContent()
   const { session, loading } = useAuth()
+
+//THIS IS CALLED TO ADD THE FREE MATCHA CREDITS TO THE USER ACCOUNT WHEN THEY SIGN IN FOR THE FIRST TIME
+  useAccountSetup(session)
 
   // `cta_label` holds two rows; `title` is the key that picks the right one.
   const tutorial = pickRow(data, 'cta_label', 'tutorial_button')

@@ -6,6 +6,10 @@ import { supabase } from './supabase.client'
  * Emails a magic link. Supabase creates the account if the address is new,
  * which is why the form promises the same mail will confirm it.
  *
+ * The link lands on `/auth/callback` rather than the app itself: it opens in a
+ * new tab, and that page deliberately sets nothing up, leaving the tab the user
+ * started in to do it once.
+ *
  * `emailRedirectTo` must be listed under Auth → URL Configuration → Redirect
  * URLs in the Supabase dashboard, or the link lands on the site root without a
  * session.
@@ -13,7 +17,7 @@ import { supabase } from './supabase.client'
 export async function sendMagicLink(email: string) {
   const { error } = await supabase.auth.signInWithOtp({
     email: email.trim(),
-    options: { emailRedirectTo: window.location.origin },
+    options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
   })
 
   if (error) throw new Error(error.message)
