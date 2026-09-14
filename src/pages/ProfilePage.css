@@ -4,12 +4,15 @@
 
 /* ── top bar ── */
 
+/* Bled out past the page's side padding so its rule reaches both screen edges,
+   then padded back so the logo and the CTA keep their place. */
 .mina-profile__top {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin: 0 calc(-1 * var(--mina-header-x));
   border-bottom: 1px solid var(--mina-hairline);
-  padding-bottom: 18px;
+  padding: 0 var(--mina-header-x) 18px;
 }
 
 .mina-profile__logo {
@@ -23,7 +26,7 @@
 }
 
 .mina-profile__matcha {
-  font-size: var(--mina-fs-h6);
+  font-size: var(--mina-fs-h5);
   font-weight: var(--mina-link-fw);
   text-decoration: underline;
   text-underline-offset: var(--mina-btn-underline-offset);
@@ -40,6 +43,19 @@
   padding: var(--mina-account-row-pad-y) 0;
 }
 
+/* The wrappers exist for the mobile menu only — dissolving them here keeps
+   every field a direct child of the flex row on desktop. */
+.mina-profile__account-head,
+.mina-profile__fields {
+  display: contents;
+}
+
+.mina-profile__menu {
+  display: none;
+  font-size: var(--mina-fs-label);
+  font-weight: var(--mina-fw-med);
+}
+
 /* A label and its value, kept together and sharing one baseline. */
 .mina-profile__field {
   display: inline-flex;
@@ -52,6 +68,10 @@
   font-weight: var(--mina-fw-med);
   text-decoration: underline;
   text-underline-offset: var(--mina-btn-underline-offset);
+}
+
+.mina-profile__back--short {
+  display: none;
 }
 
 .mina-profile__label {
@@ -265,11 +285,100 @@
 
 @media (width < 768px) {
   .mina-profile {
-    padding: var(--mina-header-pad-mobile);
+    /* Bottom clears the fixed footer. */
+    padding: 16px var(--mina-footer-pad-x) 72px;
   }
 
+  /* Same bleed as desktop, against the narrower phone padding. */
+  .mina-profile__top {
+    margin: 0 calc(-1 * var(--mina-footer-pad-x));
+    padding: 0 var(--mina-footer-pad-x) 18px;
+  }
+
+  .mina-profile__matcha {
+    font-size: var(--mina-fs-h6);
+  }
+
+  .mina-profile__back {
+    text-decoration: none;
+  }
+
+  .mina-profile__back--long {
+    display: none;
+  }
+
+  .mina-profile__back--short {
+    display: inline;
+  }
+
+  /* ── account becomes a collapsible menu ── */
+
+  /* The head and the last open field each draw their own rule, so the row's
+     own border would double up against them. */
+  .mina-profile__account {
+    display: block;
+    border-bottom: 0;
+    padding: 0;
+  }
+
+  .mina-profile__account-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--mina-hairline);
+    padding: var(--mina-account-row-pad-y) 0;
+  }
+
+  .mina-profile__menu {
+    display: inline;
+  }
+
+  .mina-profile__fields {
+    display: none;
+  }
+
+  /* Two columns, so each row reads label-left / value-right like the design.
+     No column gap: the cell borders meet and draw one continuous hairline. */
+  .mina-profile__fields[data-open] {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 0;
+  }
+
+  /* Every cell fills its half of the grid rather than shrinking to its text,
+     so the two borders in a row meet and draw one unbroken rule. */
+  .mina-profile__field,
+  .mina-profile__fields .mina-profile__logout {
+    display: flex;
+    border-bottom: 1px solid var(--mina-hairline);
+    padding: var(--mina-account-row-pad-y) 0;
+  }
+
+  /* No room for it on a phone, and it is the least used of the five. */
+  .mina-profile__field--brand {
+    display: none;
+  }
+
+  /* Pushed to the right inside a full-width cell — not shrunk with
+     `justify-self`, which would pull the border in with it. */
+  .mina-profile__field--auto,
+  .mina-profile__field--expiry,
+  .mina-profile__fields .mina-profile__logout {
+    justify-content: flex-end;
+  }
+
+  .mina-profile__fields .mina-profile__logout {
+    grid-column: 1 / -1;
+  }
+
+  /* ── archive ── */
+
   .mina-profile__archive-head {
-    flex-direction: column;
+    align-items: center;
+  }
+
+  .mina-profile__filter--date {
+    display: none;
   }
 
   .mina-archive {

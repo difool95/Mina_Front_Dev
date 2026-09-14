@@ -1,0 +1,120 @@
+.mina-appfooter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 var(--mina-header-x) var(--mina-header-top);
+}
+
+/* Profile only shows this bar on phones. */
+.mina-appfooter--mobile-only {
+  display: none;
+}
+
+.mina-appfooter__link,
+.mina-appfooter__curators {
+  color: inherit;
+  font-size: var(--mina-fs-label);
+  font-weight: var(--mina-fw-med);
+}
+
+/* Held back from the full ink, so the footer sits behind the workspace.
+   The phone bar sets its own, stronger fade in the media query below. */
+.mina-appfooter__link {
+  color: rgba(var(--mina-ink-rgb, 8, 10, 0), var(--mina-quiet-o));
+}
+
+.mina-appfooter__curators {
+  color: var(--mina-muted);
+  font-weight: var(--mina-fw-light);
+}
+
+/* The "|" between entries, matching the signed-out footer. */
+.mina-appfooter__link::after {
+  margin-left: 10px;
+  color: var(--mina-border-strong);
+  content: '|';
+}
+
+.mina-appfooter__link--mobile {
+  display: none;
+}
+
+/* :where() carries no specificity, so the rules above always win. */
+:where(.mina-appfooter button, .mina-appfooter a) {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font-family: inherit;
+  letter-spacing: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+@media (width < 768px) {
+  .mina-appfooter,
+  .mina-appfooter--mobile-only {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    display: flex;
+    gap: 0;
+    border-top: 1px solid var(--mina-hairline);
+    background: var(--mina-bg);
+    padding: calc(var(--mina-footer-pad-y) * 1.5) calc(var(--mina-footer-pad-x) * 0.7);
+  }
+
+  /* Each link takes an equal share and centres its text, with the rule pinned
+     to the share's right edge — so every label sits midway between its bars. */
+  .mina-appfooter__link {
+    position: relative;
+    flex: 1;
+    /* Faded until it is the page you are on. */
+    color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.45);
+    text-align: center;
+  }
+
+  .mina-appfooter__link[aria-current='page'] {
+    color: var(--mina-text);
+    font-weight: var(--mina-fw-strong);
+  }
+
+  .mina-appfooter__link::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin-left: 0;
+  }
+
+  /* Sized to its own text rather than an equal share, which would wrap it. */
+  .mina-appfooter__curators {
+    flex: 0 0 auto;
+    padding-left: 12px;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  /* The two ends anchor to the edges; Profile and Need help? stay centred in
+     their shares. The separators are pinned to the shares, so they do not move.
+     Studio takes a 1.5× narrower share, since left-aligned text left too much
+     room between it and its rule. */
+  .mina-appfooter__link--mobile {
+    flex: 0.7 ;
+    text-align: center;
+  }
+
+  .mina-appfooter__link,
+  .mina-appfooter__curators {
+    font-size: var(--mina-fs-small);
+  }
+
+  .mina-appfooter__link--mobile {
+    display: inline;
+  }
+
+  .mina-appfooter__link--desktop {
+    display: none;
+  }
+}

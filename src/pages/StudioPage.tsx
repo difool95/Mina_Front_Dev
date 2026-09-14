@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import { AppFooter } from '@/components/AppFooter'
 import { useAccountSetup } from '@/hooks/useAccountSetup'
-import { CURATOR_COUNT_LABEL, MINA_LOGO_URL, WHATSAPP_HELP_URL } from '@/lib/constants'
+import { MINA_LOGO_URL } from '@/lib/constants'
 import { useAuth } from '@/providers/AuthProvider'
 
 import './StudioPage.css'
@@ -59,29 +60,7 @@ export function StudioPage() {
           </p>
         </main>
 
-        <footer className="mina-studio__footer">
-          <span className="mina-studio__link mina-studio__link--current mina-studio__link--mobile">
-            Studio
-          </span>
-          <Link className="mina-studio__link" to="/profile">
-            Profile
-          </Link>
-          <button className="mina-studio__link mina-studio__link--desktop" type="button">
-            Tutorials
-          </button>
-          <button className="mina-studio__link mina-studio__link--desktop" type="button">
-            Matcha
-          </button>
-          <a
-            className="mina-studio__link"
-            href={WHATSAPP_HELP_URL}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Need help?
-          </a>
-          <span className="mina-studio__curators">{CURATOR_COUNT_LABEL}</span>
-        </footer>
+        <AppFooter current="studio" />
       </section>
 
       <section className="mina-studio__panel">

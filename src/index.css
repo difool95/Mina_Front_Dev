@@ -3,7 +3,7 @@
      Live-editable from the Design Cockpit (/admin/design on the backend):
      values saved there are injected on boot and override these defaults. */
   --mina-bg: #FCFAF4; /* paper */
-  --mina-ink: #080a00; /* jet ink — every label, action, value */
+  --mina-ink: #080a00d3; /* jet ink — every label, action, value */
   /* R,G,B triplet of --mina-ink — designTokens.ts re-derives it whenever the
      cockpit overrides the ink, so every rgba(ink, α) tint follows along. */
   --mina-ink-rgb: 8, 10, 0;
@@ -16,8 +16,8 @@
   --mina-quiet-o: 0.55; /* secondary text opacity (subtitles) */
   --mina-font: "Schibsted Grotesk", system-ui, -apple-system, sans-serif;
   --mina-fs-micro: 9px;  /* card prompt, pcd rows */
-  --mina-fs-small: 10px; /* pill actions, footers */
-  --mina-fs-label: 11px; /* account row labels */
+  --mina-fs-small: 10.5px; /* pill actions, footers */
+  --mina-fs-label: 10.5px; /* account row labels */
   --mina-fs-body: 12px;  /* panel rows */
   --mina-fw-strong: 700;
   --mina-fw-med: 600;

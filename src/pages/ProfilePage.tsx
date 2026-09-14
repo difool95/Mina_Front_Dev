@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { AccountMenu } from '@/components/AccountMenu'
+import { AppFooter } from '@/components/AppFooter'
 import { CreationCard } from '@/components/CreationCard'
 import { useCustomerCredits } from '@/hooks/useCustomerCredits'
 import { useDeleteGeneration, useDownloadMedia, useGenerations } from '@/hooks/useGenerations'
@@ -37,6 +38,9 @@ export function ProfilePage() {
   const [mode, setMode] = useState<ModeFilter>('all')
   const [ratio, setRatio] = useState<RatioFilter>('all')
   const [layout, setLayout] = useState<ArchiveLayout>('editorial')
+  // Mobile only: the account fields collapse behind this, since the row cannot
+  // fit across a phone. Desktop ignores it and shows them all.
+  const [menuOpen, setMenuOpen] = useState(false)
 
   const { session } = useAuth()
   const userId = session?.user.id
@@ -59,45 +63,61 @@ export function ProfilePage() {
         </button>
       </header>
 
+      {/* The two wrappers below are `display: contents` on desktop, so every
+          field still lays out as one wrapping row there. */}
       <div className="mina-profile__account">
-        <Link className="mina-profile__back" to="/" data-tooltip="Back to the studio">
-          Go Back
-        </Link>
+        <div className="mina-profile__account-head">
+          {/* Spelled out on desktop, clipped to fit the phone header. */}
+          <Link className="mina-profile__back" to="/" data-tooltip="Back to the studio">
+            <span className="mina-profile__back--long">Go Back</span>
+            <span className="mina-profile__back--short">Back</span>
+          </Link>
+          <button
+            className="mina-profile__menu"
+            type="button"
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((wasOpen) => !wasOpen)}
+          >
+            {menuOpen ? 'Close Menu' : 'Menu'}
+          </button>
+        </div>
 
         {/* Each label sits with its own value, so the two share a baseline
             however wide the value turns out to be. */}
-        <span className="mina-profile__field">
-          <span className="mina-profile__label">Email</span>
-          <AccountMenu email={session?.user.email ?? ''} />
-        </span>
+        <div className="mina-profile__fields" data-open={menuOpen || undefined}>
+          <span className="mina-profile__field mina-profile__field--email">
+            <span className="mina-profile__label">Email</span>
+            <AccountMenu email={session?.user.email ?? ''} />
+          </span>
 
-        <span className="mina-profile__field">
-          <span className="mina-profile__label">Brand Memory</span>
-          <button className="mina-profile__toggle" type="button">
-            ON
+          <span className="mina-profile__field mina-profile__field--brand">
+            <span className="mina-profile__label">Brand Memory</span>
+            <button className="mina-profile__toggle" type="button">
+              ON
+            </button>
+          </span>
+
+          <span className="mina-profile__field mina-profile__field--auto">
+            <span className="mina-profile__label">Auto-Matcha</span>
+            <button className="mina-profile__toggle" type="button">
+              OFF
+            </button>
+          </span>
+
+          <span className="mina-profile__field mina-profile__field--matcha">
+            <span className="mina-profile__label">Matcha</span>
+            <span className="mina-profile__value">{credits?.mg_credits ?? 0}</span>
+          </span>
+
+          <span className="mina-profile__field mina-profile__field--expiry">
+            <span className="mina-profile__label">Best before</span>
+            <span className="mina-profile__value">{formatDate(credits?.mg_expires_at)}</span>
+          </span>
+
+          <button className="mina-profile__logout" type="button" onClick={() => void signOut()}>
+            Logout
           </button>
-        </span>
-
-        <span className="mina-profile__field">
-          <span className="mina-profile__label">Auto-Matcha</span>
-          <button className="mina-profile__toggle" type="button">
-            OFF
-          </button>
-        </span>
-
-        <span className="mina-profile__field">
-          <span className="mina-profile__label">Matcha</span>
-          <span className="mina-profile__value">{credits?.mg_credits ?? 0}</span>
-        </span>
-
-        <span className="mina-profile__field">
-          <span className="mina-profile__label">Best before</span>
-          <span className="mina-profile__value">{formatDate(credits?.mg_expires_at)}</span>
-        </span>
-
-        <button className="mina-profile__logout" type="button" onClick={() => void signOut()}>
-          Logout
-        </button>
+        </div>
       </div>
 
       <div className="mina-profile__archive-head">
@@ -111,8 +131,9 @@ export function ProfilePage() {
         </div>
 
         <div className="mina-profile__filters">
+          {/* Dropped on phones, where four pills are all that fit beside the title. */}
           <button
-            className="mina-profile__filter"
+            className="mina-profile__filter mina-profile__filter--date"
             type="button"
             data-tooltip="Filter by date"
             onClick={() => setTime(nextFilter(TIME_FILTERS, time))}
@@ -184,6 +205,8 @@ export function ProfilePage() {
           />
         ))}
       </div>
+
+      <AppFooter current="profile" mobileOnly />
     </div>
   )
 }

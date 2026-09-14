@@ -9,6 +9,5 @@ import { apiPost } from './api.client'
  * `free_signup` entry for this user yet.
  */
 export function grantSignupBonus(token: string) {
-  console.log('grantSignupBonus');
   return apiPost<SignupBonusResult>('/api/credits/signup-bonus', token)
 }

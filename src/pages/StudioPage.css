@@ -14,11 +14,13 @@
   min-width: 0;
 }
 
+/* The bottom padding matches the profile header's, so both pages open with a
+   header of exactly the same height. */
 .mina-studio__bar {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  padding: var(--mina-header-top) var(--mina-header-x) 0;
+  padding: var(--mina-header-top) var(--mina-header-x) 18px;
 }
 
 .mina-studio__logo {
@@ -55,40 +57,10 @@
 .mina-studio__brief {
   margin: 0;
   max-width: 22ch;
-  color: var(--mina-muted);
+  color: rgba(var(--mina-ink-rgb, 8, 10, 0), var(--mina-muted-o));
   font-size: var(--mina-cta-fs);
   font-weight: var(--mina-cta-fw);
   line-height: 1.15;
-}
-
-.mina-studio__footer {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 0 var(--mina-header-x) var(--mina-header-top);
-}
-
-.mina-studio__link,
-.mina-studio__curators {
-  color: inherit;
-  font-size: var(--mina-fs-small);
-  font-weight: var(--mina-fw-med);
-}
-
-.mina-studio__curators {
-  color: var(--mina-muted);
-  font-weight: var(--mina-fw-light);
-}
-
-/* The "|" separators, matching the signed-out footer. */
-.mina-studio__link::after {
-  margin-left: 10px;
-  color: var(--mina-border-strong);
-  content: '|';
-}
-
-.mina-studio__link--mobile {
-  display: none;
 }
 
 /* ── upload side ── */
@@ -102,7 +74,7 @@
 
 .mina-studio__upload {
   color: var(--mina-muted);
-  font-size: var(--mina-fs-body);
+  font-size: var(--mina-fs-small);
   font-weight: var(--mina-fw-light);
 }
 
@@ -127,20 +99,24 @@
     display: block;
     height: auto;
     overflow: visible;
-    padding-bottom: 56px;
+    /* Clears the fixed footer so the panel can scroll out from under it. */
+    padding-bottom: 64px;
   }
 
   .mina-studio__main {
     display: block;
   }
 
+  /* Same vertical padding as the profile's header, so the two bars stand at
+     exactly the same height. */
   .mina-studio__bar {
     align-items: center;
-    padding: var(--mina-header-pad-mobile);
+    border-bottom: 1px solid var(--mina-hairline);
+    padding: 16px var(--mina-footer-pad-x) 18px;
   }
 
   .mina-studio__prompt {
-    padding: 24px var(--mina-footer-pad-x) 40px;
+    padding: 28px var(--mina-footer-pad-x) 32px;
   }
 
   .mina-studio__brief {
@@ -149,34 +125,7 @@
 
   .mina-studio__panel {
     min-height: 70dvh;
+    padding: var(--mina-header-pad-mobile);
   }
 
-  .mina-studio__footer {
-    position: fixed;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    justify-content: space-between;
-    gap: 0;
-    border-top: 1px solid var(--mina-hairline);
-    background: var(--mina-bg);
-    padding: var(--mina-footer-pad-y) var(--mina-footer-pad-x);
-  }
-
-  .mina-studio__link,
-  .mina-studio__curators {
-    font-size: var(--mina-fs-label);
-  }
-
-  .mina-studio__link--mobile {
-    display: inline;
-  }
-
-  .mina-studio__link--desktop {
-    display: none;
-  }
-
-  .mina-studio__link--current {
-    font-weight: var(--mina-fw-strong);
-  }
 }
