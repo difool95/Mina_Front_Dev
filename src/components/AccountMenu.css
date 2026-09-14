@@ -1,0 +1,56 @@
+.mina-account {
+  position: relative;
+  display: inline-block;
+}
+
+/* Left as an inline button rather than a flex box, so its text baseline is the
+   element's baseline and the address lines up with the "Email" label. */
+.mina-account__trigger {
+  transition: color var(--mina-anim-fade) ease;
+  color: var(--mina-muted);
+  font-size: var(--mina-fs-label);
+  font-weight: var(--mina-fw-light);
+}
+
+.mina-account__trigger:hover {
+  color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.6);
+}
+
+.mina-account__caret {
+  margin-left: 6px;
+  font-size: var(--mina-fs-micro);
+}
+
+.mina-account__menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  z-index: 2;
+  min-width: 240px;
+  border: 1px solid var(--mina-hairline);
+  background: var(--mina-bg);
+  box-shadow: 0 8px 24px rgba(var(--mina-ink-rgb, 8, 10, 0), 0.08);
+}
+
+.mina-account__current,
+.mina-account__add {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  margin: 0;
+  padding: var(--mina-panel-row-pad-y) 14px;
+  font-size: var(--mina-fs-label);
+  text-align: left;
+}
+
+.mina-account__current {
+  font-weight: var(--mina-fw-med);
+}
+
+.mina-account__add {
+  border-top: 1px solid var(--mina-hairline);
+  color: var(--mina-muted);
+  font-weight: var(--mina-fw-light);
+}

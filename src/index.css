@@ -65,6 +65,8 @@
   --mina-shell-pad: 24px 40px 64px;  /* profile page padding (top sides bottom) */
   /* ── Logo ── */
   --mina-logo-w: 70px;               /* the mina feutre logo (header + login) */
+  /* ── Studio ── */
+  --mina-studio-panel-bg: #F2F2E9;   /* the upload panel beside the prompt */
   /* ── Motion ── */
   --mina-talk-speed: 1ms;    /* Mina's typing — ms per letter, lower = faster */
   --mina-anim-zoom: 220ms;   /* media hover zoom */

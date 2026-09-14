@@ -4,7 +4,7 @@ export const MINA_LOGO_URL =
 export const TUTORIAL_VIDEO_URL =
   'https://assets.faltastudio.com/Website%20Assets/Content%20Creator%20Library/Tutorial%20Mina%20Square.mp4'
 
-const WHATSAPP_HELP_URL =
+export const WHATSAPP_HELP_URL =
   'https://api.whatsapp.com/send/?phone=971522177594&text&type=phone_number&app_absent=0'
 
 /**

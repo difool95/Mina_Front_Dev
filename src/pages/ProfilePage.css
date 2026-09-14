@@ -1,0 +1,295 @@
+.mina-profile {
+  padding: var(--mina-shell-pad);
+}
+
+/* ── top bar ── */
+
+.mina-profile__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--mina-hairline);
+  padding-bottom: 18px;
+}
+
+.mina-profile__logo {
+  width: var(--mina-logo-w);
+}
+
+.mina-profile__logo img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.mina-profile__matcha {
+  font-size: var(--mina-fs-h6);
+  font-weight: var(--mina-link-fw);
+  text-decoration: underline;
+  text-underline-offset: var(--mina-btn-underline-offset);
+}
+
+/* ── account row ── */
+
+.mina-profile__account {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--mina-stack-row-gap) calc(var(--mina-stack-col-gap) * 1.75);
+  border-bottom: 1px solid var(--mina-hairline);
+  padding: var(--mina-account-row-pad-y) 0;
+}
+
+/* A label and its value, kept together and sharing one baseline. */
+.mina-profile__field {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 7px;
+}
+
+.mina-profile__back {
+  font-size: var(--mina-fs-label);
+  font-weight: var(--mina-fw-med);
+  text-decoration: underline;
+  text-underline-offset: var(--mina-btn-underline-offset);
+}
+
+.mina-profile__label {
+  font-size: var(--mina-fs-label);
+  font-weight: var(--mina-fw-strong);
+}
+
+.mina-profile__toggle,
+.mina-profile__value {
+  font-size: var(--mina-fs-label);
+}
+
+.mina-profile__toggle {
+  font-weight: var(--mina-fw-med);
+  text-decoration: underline;
+  text-underline-offset: var(--mina-btn-underline-offset);
+}
+
+.mina-profile__value {
+  color: var(--mina-muted);
+  font-weight: var(--mina-fw-light);
+}
+
+.mina-profile__logout {
+  color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.5);
+  font-size: var(--mina-fs-label);
+  font-weight: var(--mina-fw-med);
+}
+
+/* ── hover ──
+   Every text action fades a little; the pills also darken their ground. */
+.mina-profile__back,
+.mina-profile__matcha,
+.mina-profile__toggle,
+.mina-profile__logout,
+.mina-profile__filter {
+  transition:
+    color var(--mina-anim-fade) ease,
+    background-color var(--mina-anim-fade) ease;
+}
+
+.mina-profile__back:hover,
+.mina-profile__matcha:hover,
+.mina-profile__toggle:hover,
+.mina-profile__filter:hover {
+  color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.6);
+}
+
+.mina-profile__logout:hover {
+  color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.3);
+}
+
+/* ── archive header ── */
+
+.mina-profile__archive-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 0 18px;
+}
+
+.mina-profile__title {
+  margin: 0;
+  font-size: var(--mina-fs-h1);
+  font-weight: var(--mina-fw-title);
+}
+
+.mina-profile__count {
+  margin: 4px 0 0;
+  color: var(--mina-muted);
+  font-size: var(--mina-fs-small);
+  font-weight: var(--mina-fw-light);
+}
+
+.mina-profile__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mina-profile__filter {
+  border-radius: 2px;
+  background: var(--mina-hairline);
+  padding: var(--mina-filter-pill-pad);
+  font-size: var(--mina-fs-small);
+  font-weight: var(--mina-fw-pill);
+}
+
+.mina-profile__filter:hover {
+  background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.12);
+}
+
+.mina-profile__filter--layout {
+  display: inline-flex;
+  align-items: center;
+}
+
+.mina-profile__layout-icon {
+  fill: currentColor;
+}
+
+/* Editorial: four tiles of uneven height, the way the archive actually falls. */
+.mina-profile__layout-icon rect {
+  transition:
+    x var(--mina-anim-layout) ease,
+    y var(--mina-anim-layout) ease,
+    width var(--mina-anim-layout) ease,
+    height var(--mina-anim-layout) ease;
+}
+
+/* Staggered so the four read as one movement rather than a single jump. */
+.mina-profile__layout-icon rect:nth-child(2) {
+  transition-delay: 50ms;
+}
+
+.mina-profile__layout-icon rect:nth-child(3) {
+  transition-delay: 100ms;
+}
+
+.mina-profile__layout-icon rect:nth-child(4) {
+  transition-delay: 150ms;
+}
+
+/* Library: the same four tiles settle into an even grid. */
+.mina-profile__filter[aria-pressed='true'] .mina-profile__layout-icon rect {
+  width: 7px;
+  height: 7px;
+}
+
+.mina-profile__filter[aria-pressed='true'] .mina-profile__layout-icon rect:nth-child(1) {
+  x: 0;
+  y: 0;
+}
+
+.mina-profile__filter[aria-pressed='true'] .mina-profile__layout-icon rect:nth-child(2) {
+  x: 9px;
+  y: 0;
+}
+
+.mina-profile__filter[aria-pressed='true'] .mina-profile__layout-icon rect:nth-child(3) {
+  x: 0;
+  y: 9px;
+}
+
+.mina-profile__filter[aria-pressed='true'] .mina-profile__layout-icon rect:nth-child(4) {
+  x: 9px;
+  y: 9px;
+}
+
+/* ── tooltips ──
+   Scoped to the page so it covers AccountMenu too, which renders inside it. */
+.mina-profile [data-tooltip] {
+  position: relative;
+}
+
+.mina-profile [data-tooltip]::after {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  z-index: 3;
+  transform: translateX(-50%);
+  transition: opacity var(--mina-anim-fade) ease;
+  opacity: 0;
+  border-radius: 3px;
+  background: var(--mina-ink);
+  padding: 5px 8px;
+  content: attr(data-tooltip);
+  color: var(--mina-bg);
+  font-size: var(--mina-fs-micro);
+  font-weight: var(--mina-fw-light);
+  letter-spacing: 0;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.mina-profile [data-tooltip]:hover::after,
+.mina-profile [data-tooltip]:focus-visible::after {
+  opacity: 1;
+}
+
+/* Once the account dropdown is open the tooltip would sit on top of it. */
+.mina-profile [aria-expanded='true'][data-tooltip]:hover::after {
+  opacity: 0;
+}
+
+/* ── archive grid ── */
+
+.mina-archive {
+  display: grid;
+  gap: var(--mina-grid-gap);
+  /* Each creation keeps its own height, so rows hang from the top. */
+  align-items: start;
+  grid-template-columns: repeat(var(--mina-grid-cols), 1fr);
+}
+
+.mina-archive--library {
+  gap: var(--mina-grid-gap-library);
+  grid-template-columns: repeat(var(--mina-grid-cols-library), 1fr);
+}
+
+@media (width < 1200px) {
+  .mina-archive {
+    grid-template-columns: repeat(var(--mina-grid-cols-tablet), 1fr);
+  }
+
+  .mina-archive--library {
+    grid-template-columns: repeat(var(--mina-grid-cols-library-tablet), 1fr);
+  }
+}
+
+@media (width < 768px) {
+  .mina-profile {
+    padding: var(--mina-header-pad-mobile);
+  }
+
+  .mina-profile__archive-head {
+    flex-direction: column;
+  }
+
+  .mina-archive {
+    grid-template-columns: repeat(var(--mina-grid-cols-mobile), 1fr);
+  }
+
+  .mina-archive--library {
+    grid-template-columns: repeat(var(--mina-grid-cols-library-mobile), 1fr);
+  }
+}
+
+/* ── shared button reset ──
+   :where() carries no specificity, so the rules above always win. */
+:where(.mina-profile button, .mina-profile a) {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font-family: inherit;
+  letter-spacing: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}

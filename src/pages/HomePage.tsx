@@ -4,68 +4,30 @@ import { Carousel } from '@/components/Carousel'
 import { LegalPanel } from '@/components/LegalPanel'
 import { LoginPanel } from '@/components/LoginPanel'
 import { TutorialPanel } from '@/components/TutorialPanel'
-import { useAccountSetup } from '@/hooks/useAccountSetup'
 import { useOnboardContent } from '@/hooks/useOnboardContent'
 import { CURATOR_COUNT_LABEL, FOOTER_LINKS, MINA_LOGO_URL } from '@/lib/constants'
 import { pickRow, pickRows } from '@/lib/onboardContent'
-import { useAuth } from '@/providers/AuthProvider'
-import { signOut } from '@/services/auth.service'
 
 import './HomePage.css'
 
 /**
- * `/` — signed-out login, the tutorial, the legal documents and the signed-in
- * screen all live on this one route; the logo reloads it rather than
- * navigating anywhere else.
+ * `/` while signed out — the login block, the tutorial and the legal documents.
+ * Signing in swaps this whole page for the studio; the route does not change.
  *
- * When signed out the four regions are siblings rather than nested panels, so
- * one grid can place them side by side on desktop and stack them
- * bar/media/centre/footer on mobile, where the carousel sits between the header
- * and the login block.
+ * The four regions are siblings rather than nested panels, so one grid can
+ * place them side by side on desktop and stack them bar/media/centre/footer on
+ * mobile, where the carousel sits between the header and the login block.
  */
 export function HomePage() {
   const [tutorialOpen, setTutorialOpen] = useState(false)
   // The `content_type` of the open legal panel, or null when closed.
   const [legal, setLegal] = useState<string | null>(null)
   const { data } = useOnboardContent()
-  const { session, loading } = useAuth()
-
-//THIS IS CALLED TO ADD THE FREE MATCHA CREDITS TO THE USER ACCOUNT WHEN THEY SIGN IN FOR THE FIRST TIME
-  useAccountSetup(session)
 
   // `cta_label` holds two rows; `title` is the key that picks the right one.
   const tutorial = pickRow(data, 'cta_label', 'tutorial_button')
   const signUp = pickRow(data, 'cta_label', 'login_button')
   const legalRow = legal === null ? undefined : pickRow(data, legal)
-
-  // Blank rather than the login screen: the stored session is still being read,
-  // and on a magic-link return showing login first would flash and swap.
-  if (loading) return <div className="mina-home mina-home--plain" />
-
-  if (session) {
-    return (
-      <div className="mina-home mina-home--plain">
-        <header className="mina-home__bar">
-          <button
-            className="mina-home__logo"
-            type="button"
-            aria-label="Mina home"
-            onClick={() => window.location.assign('/')}
-          >
-            <img src={MINA_LOGO_URL} alt="Mina" />
-          </button>
-          <button className="mina-home__logout" type="button" onClick={() => void signOut()}>
-            Log out
-          </button>
-        </header>
-
-        <main className="mina-home__center">
-          <p className="mina-home__signed-in">You&rsquo;re logged in</p>
-          <p className="mina-home__signed-in-note">{session.user.email}</p>
-        </main>
-      </div>
-    )
-  }
 
   return (
     <div className="mina-home">

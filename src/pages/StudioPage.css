@@ -1,0 +1,182 @@
+.mina-studio {
+  display: grid;
+  grid-template-columns: 60% 40%;
+  /* Locked to the viewport on desktop — only the mobile layout scrolls. */
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/* ── prompt side ── */
+
+.mina-studio__main {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-width: 0;
+}
+
+.mina-studio__bar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: var(--mina-header-top) var(--mina-header-x) 0;
+}
+
+.mina-studio__logo {
+  width: var(--mina-logo-w);
+}
+
+.mina-studio__logo img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.mina-studio__modes {
+  display: flex;
+  gap: 16px;
+}
+
+.mina-studio__mode {
+  color: var(--mina-muted);
+  font-size: var(--mina-header-toggle-fs);
+  font-weight: var(--mina-header-toggle-fw);
+}
+
+.mina-studio__mode[aria-current='true'] {
+  color: var(--mina-text);
+}
+
+.mina-studio__prompt {
+  display: flex;
+  align-items: center;
+  padding: 0 var(--mina-header-x);
+}
+
+.mina-studio__brief {
+  margin: 0;
+  max-width: 22ch;
+  color: var(--mina-muted);
+  font-size: var(--mina-cta-fs);
+  font-weight: var(--mina-cta-fw);
+  line-height: 1.15;
+}
+
+.mina-studio__footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 var(--mina-header-x) var(--mina-header-top);
+}
+
+.mina-studio__link,
+.mina-studio__curators {
+  color: inherit;
+  font-size: var(--mina-fs-small);
+  font-weight: var(--mina-fw-med);
+}
+
+.mina-studio__curators {
+  color: var(--mina-muted);
+  font-weight: var(--mina-fw-light);
+}
+
+/* The "|" separators, matching the signed-out footer. */
+.mina-studio__link::after {
+  margin-left: 10px;
+  color: var(--mina-border-strong);
+  content: '|';
+}
+
+.mina-studio__link--mobile {
+  display: none;
+}
+
+/* ── upload side ── */
+
+.mina-studio__panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--mina-studio-panel-bg);
+}
+
+.mina-studio__upload {
+  color: var(--mina-muted);
+  font-size: var(--mina-fs-body);
+  font-weight: var(--mina-fw-light);
+}
+
+/* ── shared button reset ──
+   :where() carries no specificity, so it never overrides the rules above. */
+:where(.mina-studio button, .mina-studio a) {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font-family: inherit;
+  letter-spacing: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* ── mobile ──
+   The page scrolls here: the upload panel sits below the fold and the footer
+   stays pinned to the bottom of the viewport. */
+@media (width < 768px) {
+  .mina-studio {
+    display: block;
+    height: auto;
+    overflow: visible;
+    padding-bottom: 56px;
+  }
+
+  .mina-studio__main {
+    display: block;
+  }
+
+  .mina-studio__bar {
+    align-items: center;
+    padding: var(--mina-header-pad-mobile);
+  }
+
+  .mina-studio__prompt {
+    padding: 24px var(--mina-footer-pad-x) 40px;
+  }
+
+  .mina-studio__brief {
+    max-width: none;
+  }
+
+  .mina-studio__panel {
+    min-height: 70dvh;
+  }
+
+  .mina-studio__footer {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    justify-content: space-between;
+    gap: 0;
+    border-top: 1px solid var(--mina-hairline);
+    background: var(--mina-bg);
+    padding: var(--mina-footer-pad-y) var(--mina-footer-pad-x);
+  }
+
+  .mina-studio__link,
+  .mina-studio__curators {
+    font-size: var(--mina-fs-label);
+  }
+
+  .mina-studio__link--mobile {
+    display: inline;
+  }
+
+  .mina-studio__link--desktop {
+    display: none;
+  }
+
+  .mina-studio__link--current {
+    font-weight: var(--mina-fw-strong);
+  }
+}

@@ -2,6 +2,19 @@ import type { User } from '@supabase/supabase-js'
 
 import { supabase } from './supabase.client'
 
+/** The balance and expiry the profile header shows. */
+export async function getCustomerCredits(userId: string) {
+  const { data, error } = await supabase
+    .from('mega_customers')
+    .select('mg_credits, mg_expires_at')
+    .eq('mg_user_id', userId)
+    .maybeSingle()
+
+  if (error) throw new Error(error.message)
+
+  return data as { mg_credits: number | null; mg_expires_at: string | null } | null
+}
+
 /**
  * Makes sure the signed-in user has a `mega_customers` row, then stamps them
  * as active.

@@ -1,0 +1,95 @@
+.mina-creation {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.mina-creation__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.mina-creation__action {
+  transition: color var(--mina-anim-fade) ease;
+  color: inherit;
+  font-size: var(--mina-fs-small);
+  font-weight: var(--mina-fw-med);
+}
+
+.mina-creation__action:hover {
+  color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.6);
+}
+
+.mina-creation__action--danger {
+  color: var(--mina-like-red);
+}
+
+/* Must follow the generic :hover above, which would otherwise grey out delete. */
+.mina-creation__action--danger:hover {
+  opacity: 0.6;
+  color: var(--mina-like-red);
+}
+
+.mina-creation__confirm {
+  display: flex;
+  gap: 10px;
+}
+
+.mina-creation__menu {
+  color: inherit;
+  font-size: var(--mina-fs-body);
+  line-height: 1;
+}
+
+.mina-creation__media {
+  overflow: hidden;
+  width: 100%;
+  background: var(--mina-hairline);
+}
+
+/* Library mode: one shape for every tile, so the grid reads as a moodboard. */
+.mina-archive--library .mina-creation__media {
+  aspect-ratio: 16 / 9;
+}
+
+.mina-creation__media img,
+.mina-creation__media video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--mina-anim-zoom) ease;
+}
+
+.mina-creation:hover .mina-creation__media img,
+.mina-creation:hover .mina-creation__media video {
+  transform: scale(1.03);
+}
+
+.mina-creation__foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.mina-creation__prompt {
+  overflow: hidden;
+  margin: 0;
+  color: var(--mina-muted);
+  font-size: var(--mina-fs-micro);
+  font-weight: var(--mina-fw-light);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mina-creation__more {
+  flex-shrink: 0;
+  color: var(--mina-muted);
+  font-size: var(--mina-fs-micro);
+  text-decoration: underline;
+  text-underline-offset: var(--mina-btn-underline-offset);
+}
