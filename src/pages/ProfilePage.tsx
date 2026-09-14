@@ -4,6 +4,7 @@ import { Link, Navigate } from 'react-router-dom'
 import { AccountMenu } from '@/components/AccountMenu'
 import { AppFooter } from '@/components/AppFooter'
 import { CreationCard } from '@/components/CreationCard'
+import { CreationFullScreen } from '@/components/CreationFullScreen'
 import { useCustomerCredits } from '@/hooks/useCustomerCredits'
 import { useDeleteGeneration, useDownloadMedia, useGenerations } from '@/hooks/useGenerations'
 import { MINA_LOGO_URL } from '@/lib/constants'
@@ -18,7 +19,13 @@ import {
 } from '@/lib/generations'
 import { useAuth } from '@/providers/AuthProvider'
 import { signOut } from '@/services/auth.service'
-import type { ArchiveLayout, ModeFilter, RatioFilter, TimeFilter } from '@/types/generation.types'
+import type {
+  ArchiveLayout,
+  MegaGeneration,
+  ModeFilter,
+  RatioFilter,
+  TimeFilter,
+} from '@/types/generation.types'
 
 import './ProfilePage.css'
 
@@ -41,6 +48,8 @@ export function ProfilePage() {
   // Mobile only: the account fields collapse behind this, since the row cannot
   // fit across a phone. Desktop ignores it and shows them all.
   const [menuOpen, setMenuOpen] = useState(false)
+  // The creation shown full screen, or null when the archive is on show.
+  const [opened, setOpened] = useState<MegaGeneration | null>(null)
 
   const { session, loading } = useAuth()
   const userId = session?.user.id
@@ -51,6 +60,12 @@ export function ProfilePage() {
   const download = useDownloadMedia()
 
   const visible = filterGenerations(generations ?? [], { time, mode, ratio })
+
+  const saveMedia = (generation: MegaGeneration) =>
+    download.mutate({
+      url: generation.mg_output_url ?? '',
+      filename: filenameOf(generation),
+    })
 
   // Covers both signing out from here and opening `/profile` with no session:
   // the moment the session goes, there is nothing on this page to show.
@@ -199,16 +214,20 @@ export function ProfilePage() {
             key={generation.mg_id}
             generation={generation}
             uniform={layout === 'library'}
-            onDownload={() =>
-              download.mutate({
-                url: generation.mg_output_url ?? '',
-                filename: filenameOf(generation),
-              })
-            }
+            onOpen={() => setOpened(generation)}
+            onDownload={() => saveMedia(generation)}
             onDelete={() => remove.mutate(generation.mg_id)}
           />
         ))}
       </div>
+
+      {opened && (
+        <CreationFullScreen
+          generation={opened}
+          onClose={() => setOpened(null)}
+          onDownload={() => saveMedia(opened)}
+        />
+      )}
 
       <AppFooter current="profile" mobileOnly />
     </div>

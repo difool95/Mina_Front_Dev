@@ -23,31 +23,10 @@
   object-fit: cover;
 }
 
-/* Follows the cursor — `left`/`top` are set inline from the pointer position,
-   so no transition here or it would lag behind the mouse. */
-.mina-carousel__arrow {
-  position: absolute;
-  display: grid;
-  place-items: center;
-  width: 48px;
-  height: 48px;
-  transform: translate(-50%, -50%);
-  border: 0.1px solid rgba(255, 255, 255, 0.288);
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(var(--mina-backdrop-blur));
-  color: #fff;
+/* The disc it sits in comes from GlassDisc; this is only the glyph. */
+.mina-carousel__chevron {
   font-size: var(--mina-fs-h3);
   font-weight: var(--mina-fw-light);
-  line-height: 1;
-  pointer-events: none;
-}
-
-/* Touch devices have no hover, where the arrow would flash mid-drag. */
-@media (hover: none) {
-  .mina-carousel__arrow {
-    display: none;
-  }
 }
 
 /* ── dots ── */

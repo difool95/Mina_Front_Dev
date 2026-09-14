@@ -9,11 +9,18 @@ interface CreationCardProps {
   generation: MegaGeneration
   /** Editorial keeps each creation's own shape; library squares them all off. */
   uniform: boolean
+  onOpen: () => void
   onDownload: () => void
   onDelete: () => void
 }
 
-export function CreationCard({ generation, uniform, onDownload, onDelete }: CreationCardProps) {
+export function CreationCard({
+  generation,
+  uniform,
+  onOpen,
+  onDownload,
+  onDelete,
+}: CreationCardProps) {
   const [confirming, setConfirming] = useState(false)
 
   const url = generation.mg_output_url ?? ''
@@ -56,18 +63,21 @@ export function CreationCard({ generation, uniform, onDownload, onDelete }: Crea
         )}
       </header>
 
-      <div
+      <button
         className="mina-creation__media"
+        type="button"
+        aria-label="Open creation"
         // Editorial reads the ratio off the platform the creation was made for;
         // library ignores it so every tile matches.
         style={uniform ? undefined : { aspectRatio: aspectRatioOf(generation) }}
+        onClick={onOpen}
       >
         {isMotion(generation) ? (
           <video src={url} muted loop playsInline preload="metadata" />
         ) : (
           <img src={url} alt={prompt} loading="lazy" />
         )}
-      </div>
+      </button>
 
       <footer className="mina-creation__foot">
         <p className="mina-creation__prompt">{prompt}</p>

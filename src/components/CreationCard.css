@@ -58,6 +58,7 @@
 
 .mina-creation__media {
   position: relative;
+  display: block;
   overflow: hidden;
   width: 100%;
   transition: background var(--mina-anim-fade) ease;

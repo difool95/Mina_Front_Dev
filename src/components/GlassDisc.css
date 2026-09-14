@@ -1,0 +1,38 @@
+/* Centred on the pointer, and never a target itself — the element underneath
+   has to keep receiving the clicks. No transition on the position, or it would
+   lag behind the mouse. */
+.mina-glass {
+  display: grid;
+  place-items: center;
+  width: var(--glass-size);
+  height: var(--glass-size);
+  transform: translate(-50%, -50%);
+  transition: background var(--mina-anim-fade) ease, border-color var(--mina-anim-fade) ease;
+  border: 0.1px solid rgba(255, 255, 255, 0.288);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(var(--mina-backdrop-blur));
+  color: #fff;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.mina-glass--fixed {
+  position: fixed;
+}
+
+.mina-glass--absolute {
+  position: absolute;
+}
+
+.mina-glass--accent {
+  border-color: var(--mina-accent-green);
+  background: var(--mina-accent-green);
+}
+
+/* Touch devices have no hover, so the disc would only flash mid-drag. */
+@media (hover: none) {
+  .mina-glass {
+    display: none;
+  }
+}

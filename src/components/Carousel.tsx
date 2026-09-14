@@ -2,6 +2,8 @@ import { useRef, useState, type CSSProperties } from 'react'
 
 import type { OnboardContent } from '@/types'
 
+import { GlassDisc } from './GlassDisc'
+
 import './Carousel.css'
 
 const DRAG_THRESHOLD = 50
@@ -105,13 +107,9 @@ export function Carousel({ media }: { media: OnboardContent[] }) {
       )}
 
       {cursor && paged && (
-        <span
-          className="mina-carousel__arrow"
-          style={{ left: cursor.x, top: cursor.y }}
-          aria-hidden
-        >
-          {cursor.side === 'prev' ? '‹' : '›'}
-        </span>
+        <GlassDisc x={cursor.x} y={cursor.y} anchor="absolute" size={48}>
+          <span className="mina-carousel__chevron">{cursor.side === 'prev' ? '‹' : '›'}</span>
+        </GlassDisc>
       )}
 
       {paged && (

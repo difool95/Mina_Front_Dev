@@ -1,0 +1,85 @@
+/* The dialog is the whole screen, and the paper around the creation is the
+   "background" a click closes on. Centred rather than scrollable: a zoomed
+   creation taller than the viewport is cropped top and bottom, never scrolled. */
+.mina-fullscreen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0;
+  border: 0;
+  background: var(--mina-bg);
+  padding: 0;
+  overflow: hidden;
+}
+
+.mina-fullscreen::backdrop {
+  background: var(--mina-bg);
+}
+
+@keyframes mina-fullscreen-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.mina-fullscreen[open] {
+  animation: mina-fullscreen-fade-in var(--mina-anim-modal) ease-out;
+}
+
+.mina-fullscreen__close {
+  position: fixed;
+  top: var(--mina-header-top);
+  right: var(--mina-header-x);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  /* Padding makes the target comfortable; the negative margins take that space
+     back so the bar still sits on the corner. */
+  margin: -10px -10px 0 0;
+  border: 0;
+  background: none;
+  padding: 10px;
+  color: var(--mina-text);
+  cursor: pointer;
+}
+
+.mina-fullscreen__close-bar {
+  display: block;
+  width: 16px;
+  height: 2px;
+  background: currentColor;
+}
+
+/* The disc below stands in for the pointer, so the real one goes away. */
+.mina-fullscreen__media {
+  position: relative;
+  line-height: 0;
+  cursor: none;
+}
+
+.mina-fullscreen__media img,
+.mina-fullscreen__media video {
+  display: block;
+  max-width: 100vw;
+  max-height: 100dvh;
+  object-fit: contain;
+}
+
+/* Zoomed: the creation spans the viewport, whatever that costs it in height. */
+.mina-fullscreen__media--zoomed img,
+.mina-fullscreen__media--zoomed video {
+  width: 100vw;
+  max-width: none;
+  height: auto;
+  max-height: none;
+}
+
+/* The drawn pointer itself is GlassDisc; it only needs lifting above the
+   creation here. */
+.mina-fullscreen .mina-glass {
+  z-index: 4;
+}
