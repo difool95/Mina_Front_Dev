@@ -19,7 +19,7 @@
   --mina-fs-small: 10.5px; /* pill actions, footers */
   --mina-fs-label: 10.5px; /* account row labels */
   --mina-fs-body: 12px;  /* panel rows */
-  --mina-fw-strong: 700;
+  --mina-fw-strong: 800;
   --mina-fw-med: 600;
   --mina-fw-light: 400;  /* profile muted text — captions, values, card settings */
   --mina-fw-title: 700;  /* display titles — editorial headline, modal headers */
@@ -77,7 +77,8 @@
   --mina-copycat-gold: #D5AA53;
   --mina-brand-purple: #C583EE;
   --mina-madani-terracotta: #9D4E0B; /* madani master key — raw-prompt bypass */
-  --mina-like-red: #E90909;
+  --mina-like-red: #e909093b;
+  --mina-delete-red: #e90909c7;
   --mina-grid-cols: 7;
   --mina-grid-cols-tablet: 5;
   --mina-grid-cols-mobile: 1; /* phones, editorial (toggle OFF): one column */

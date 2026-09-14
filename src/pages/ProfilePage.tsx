@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 
 import { AccountMenu } from '@/components/AccountMenu'
 import { AppFooter } from '@/components/AppFooter'
@@ -42,7 +42,7 @@ export function ProfilePage() {
   // fit across a phone. Desktop ignores it and shows them all.
   const [menuOpen, setMenuOpen] = useState(false)
 
-  const { session } = useAuth()
+  const { session, loading } = useAuth()
   const userId = session?.user.id
 
   const { data: generations, isPending } = useGenerations(userId)
@@ -51,6 +51,10 @@ export function ProfilePage() {
   const download = useDownloadMedia()
 
   const visible = filterGenerations(generations ?? [], { time, mode, ratio })
+
+  // Covers both signing out from here and opening `/profile` with no session:
+  // the moment the session goes, there is nothing on this page to show.
+  if (!loading && !session) return <Navigate to="/" replace />
 
   return (
     <div className="mina-profile">

@@ -65,7 +65,7 @@
 
 .mina-profile__back {
   font-size: var(--mina-fs-label);
-  font-weight: var(--mina-fw-med);
+  font-weight: var(--mina-fw-strong);
   text-decoration: underline;
   text-underline-offset: var(--mina-btn-underline-offset);
 }
@@ -85,7 +85,7 @@
 }
 
 .mina-profile__toggle {
-  font-weight: var(--mina-fw-med);
+  font-weight: var(--mina-fw-strong);
   text-decoration: underline;
   text-underline-offset: var(--mina-btn-underline-offset);
 }
@@ -98,7 +98,7 @@
 .mina-profile__logout {
   color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.5);
   font-size: var(--mina-fs-label);
-  font-weight: var(--mina-fw-med);
+  font-weight: var(--mina-fw-strong);
 }
 
 /* ── hover ──
@@ -155,7 +155,7 @@
 
 .mina-profile__filter {
   border-radius: 2px;
-  background: var(--mina-hairline);
+  background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.02);
   padding: var(--mina-filter-pill-pad);
   font-size: var(--mina-fs-small);
   font-weight: var(--mina-fw-pill);
@@ -165,9 +165,11 @@
   background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.12);
 }
 
+/* Keeps the heavier ground, so it reads as a control rather than a text filter. */
 .mina-profile__filter--layout {
   display: inline-flex;
   align-items: center;
+  background: var(--mina-hairline);
 }
 
 .mina-profile__layout-icon {

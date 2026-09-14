@@ -16,7 +16,7 @@
   transition: color var(--mina-anim-fade) ease;
   color: inherit;
   font-size: var(--mina-fs-small);
-  font-weight: var(--mina-fw-med);
+  font-weight: var(--mina-fw-strong);
 }
 
 .mina-creation__action:hover {
@@ -24,13 +24,13 @@
 }
 
 .mina-creation__action--danger {
-  color: var(--mina-like-red);
+  color: var(--mina-delete-red);
 }
 
 /* Must follow the generic :hover above, which would otherwise grey out delete. */
 .mina-creation__action--danger:hover {
-  opacity: 0.6;
-  color: var(--mina-like-red);
+  opacity: 0.7;
+  color: var(--mina-delete-red);
 }
 
 .mina-creation__confirm {
@@ -38,21 +38,59 @@
   gap: 10px;
 }
 
+/* A 10×2px bar is far too small to aim at, so the button carries a comfortable
+   target around it. The negative margins cancel that padding back out, keeping
+   the bar flush right and the row its original height. */
 .mina-creation__menu {
+  display: flex;
+  align-items: center;
+  margin: -10px -10px -10px 0;
+  padding: 10px;
   color: inherit;
-  font-size: var(--mina-fs-body);
-  line-height: 1;
+}
+
+.mina-creation__menu-bar {
+  display: block;
+  width: 10px;
+  height: 2px;
+  background: currentColor;
 }
 
 .mina-creation__media {
+  position: relative;
   overflow: hidden;
   width: 100%;
+  transition: background var(--mina-anim-fade) ease;
   background: var(--mina-hairline);
 }
 
-/* Library mode: one shape for every tile, so the grid reads as a moodboard. */
+/* Library mode: every tile is a portrait frame, whatever the creation's own
+   shape. A 9:16 fills it edge to edge; anything wider sits inside it, whole
+   and smaller, rather than being cropped. */
 .mina-archive--library .mina-creation__media {
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 9 / 16;
+  background: none;
+}
+
+.mina-archive--library .mina-creation__media img,
+.mina-archive--library .mina-creation__media video {
+  object-fit: contain;
+}
+
+/* Washed red while the delete is waiting to be confirmed, so it is obvious
+   which creation is about to go. The ground turns red too, which is what shows
+   through in library mode where the media is fitted rather than cropped.
+   Must stay after the library rule above, which clears that ground. */
+.mina-creation--confirming .mina-creation__media {
+  background: var(--mina-like-red);
+}
+
+.mina-creation--confirming .mina-creation__media::after {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--mina-like-red) 30%, transparent);
+  content: '';
+  pointer-events: none;
 }
 
 .mina-creation__media img,

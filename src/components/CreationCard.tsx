@@ -20,7 +20,7 @@ export function CreationCard({ generation, uniform, onDownload, onDelete }: Crea
   const prompt = promptOf(generation)
 
   return (
-    <article className="mina-creation">
+    <article className={`mina-creation${confirming ? ' mina-creation--confirming' : ''}`}>
       <header className="mina-creation__bar">
         <button className="mina-creation__action" type="button" onClick={onDownload}>
           Download
@@ -50,7 +50,8 @@ export function CreationCard({ generation, uniform, onDownload, onDelete }: Crea
             aria-label="Creation options"
             onClick={() => setConfirming(true)}
           >
-            &minus;
+            {/* Drawn rather than a glyph, so its size is ours to set. */}
+            <span className="mina-creation__menu-bar" aria-hidden="true" />
           </button>
         )}
       </header>

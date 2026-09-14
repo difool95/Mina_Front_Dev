@@ -49,7 +49,13 @@ export async function downloadMedia(url: string, filename: string) {
 
   link.href = objectUrl
   link.download = filename
-  link.click()
 
-  URL.revokeObjectURL(objectUrl)
+  // Firefox ignores a click on an anchor that is not in the document.
+  document.body.append(link)
+  link.click()
+  link.remove()
+
+  // Released a tick later: revoking it in the same frame as the click can pull
+  // the blob out from under a download that has not started reading it yet.
+  setTimeout(() => URL.revokeObjectURL(objectUrl), 1000)
 }

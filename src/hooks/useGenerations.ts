@@ -30,5 +30,9 @@ export function useDownloadMedia() {
   return useMutation({
     mutationFn: ({ url, filename }: { url: string; filename: string }) =>
       downloadMedia(url, filename),
+    // Otherwise a blocked fetch fails with nothing on screen and nothing logged.
+    onError: (error: unknown) => {
+      console.error('Could not download the creation', error)
+    },
   })
 }
