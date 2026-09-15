@@ -1,14 +1,18 @@
+import type { CSSProperties } from 'react'
 import { useState } from 'react'
 
-import { aspectRatioOf, isMotion, promptOf } from '@/lib/generations'
+import { isMotion, promptOf } from '@/lib/generations'
 import type { MegaGeneration } from '@/types/generation.types'
 
 import './CreationCard.css'
 
 interface CreationCardProps {
   generation: MegaGeneration
-  /** Editorial keeps each creation's own shape; library squares them all off. */
-  uniform: boolean
+  /**
+   * Editorial only — the frame this one fills, how wide it runs and how far it
+   * hangs. Library passes nothing and takes its one shape from CSS instead.
+   */
+  placement?: { ratio: string; span: number; offset: string }
   onOpen: () => void
   onDownload: () => void
   onDelete: () => void
@@ -16,7 +20,7 @@ interface CreationCardProps {
 
 export function CreationCard({
   generation,
-  uniform,
+  placement,
   onOpen,
   onDownload,
   onDelete,
@@ -27,7 +31,19 @@ export function CreationCard({
   const prompt = promptOf(generation)
 
   return (
-    <article className={`mina-creation${confirming ? ' mina-creation--confirming' : ''}`}>
+    <article
+      className={`mina-creation${confirming ? ' mina-creation--confirming' : ''}`}
+      // Handed to CSS as custom properties rather than set directly, so the
+      // one-column phone layout can ignore them without fighting inline styles.
+      style={
+        placement
+          ? ({
+              '--card-span': placement.span,
+              '--card-offset': placement.offset,
+            } as CSSProperties)
+          : undefined
+      }
+    >
       <header className="mina-creation__bar">
         <button className="mina-creation__action" type="button" onClick={onDownload}>
           Download
@@ -67,9 +83,7 @@ export function CreationCard({
         className="mina-creation__media"
         type="button"
         aria-label="Open creation"
-        // Editorial reads the ratio off the platform the creation was made for;
-        // library ignores it so every tile matches.
-        style={uniform ? undefined : { aspectRatio: aspectRatioOf(generation) }}
+        style={placement ? { aspectRatio: placement.ratio } : undefined}
         onClick={onOpen}
       >
         {isMotion(generation) ? (

@@ -15,6 +15,7 @@ import {
 } from '@/hooks/useGenerations'
 import { MINA_LOGO_URL } from '@/lib/constants'
 import {
+  editorialPlacement,
   filenameOf,
   filterGenerations,
   labelFor,
@@ -218,11 +219,11 @@ export function ProfilePage() {
       </div>
 
       <div className={`mina-archive mina-archive--${layout}`}>
-        {visible.map((generation) => (
+        {visible.map((generation, index) => (
           <CreationCard
             key={generation.mg_id}
             generation={generation}
-            uniform={layout === 'library'}
+            placement={layout === 'editorial' ? editorialPlacement(index) : undefined}
             onOpen={() => setOpened(generation)}
             onDownload={() => saveMedia(generation)}
             onDelete={() => remove.mutate(generation.mg_id)}

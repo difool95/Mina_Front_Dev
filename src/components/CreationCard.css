@@ -5,6 +5,14 @@
   min-width: 0;
 }
 
+/* Editorial is deliberately ragged: a few creations run double-width and a few
+   hang below the top of their row, so the grid reads as a spread rather than
+   as rows. Both values are seeded per creation, so they never move about. */
+.mina-archive--editorial .mina-creation {
+  grid-column: span var(--card-span, 1);
+  margin-top: var(--card-offset, 0);
+}
+
 .mina-creation__bar {
   display: flex;
   align-items: center;
@@ -134,11 +142,17 @@
   text-underline-offset: var(--mina-btn-underline-offset);
 }
 
-/* The library grid on a phone is a moodboard: tiles only, no controls and no
-   captions between them. */
 @media (width < 768px) {
+  /* The library grid on a phone is a moodboard: tiles only, no controls and no
+     captions between them. */
   .mina-archive--library .mina-creation__bar,
   .mina-archive--library .mina-creation__foot {
     display: none;
+  }
+
+  /* One column, so there is nothing to run wide into and nothing to hang from. */
+  .mina-archive--editorial .mina-creation {
+    grid-column: span 1;
+    margin-top: 0;
   }
 }

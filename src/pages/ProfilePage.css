@@ -273,11 +273,10 @@
   grid-template-columns: repeat(var(--mina-grid-cols-library), 1fr);
 }
 
+/* Editorial keeps its seven columns at every width above the phone breakpoint:
+   its rows are built as five singles plus one double, and thinning the grid
+   would wrap them mid-row. Only the library moodboard narrows. */
 @media (width < 1200px) {
-  .mina-archive {
-    grid-template-columns: repeat(var(--mina-grid-cols-tablet), 1fr);
-  }
-
   .mina-archive--library {
     grid-template-columns: repeat(var(--mina-grid-cols-library-tablet), 1fr);
   }
