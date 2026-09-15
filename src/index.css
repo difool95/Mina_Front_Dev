@@ -77,7 +77,9 @@
   --mina-copycat-gold: #D5AA53;
   --mina-brand-purple: #C583EE;
   --mina-madani-terracotta: #9D4E0B; /* madani master key — raw-prompt bypass */
-  --mina-like-red: #e909093b;
+  --mina-like-red: #e90909b2;
+  --mina-liked-red-transparent: #8104041f;
+  --mina-liked-red-transparent-border: #8d0d0dc2;
   --mina-delete-red: #e90909c7;
   --mina-grid-cols: 7;
   --mina-grid-cols-tablet: 5;

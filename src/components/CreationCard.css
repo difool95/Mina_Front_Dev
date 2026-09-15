@@ -83,13 +83,14 @@
    through in library mode where the media is fitted rather than cropped.
    Must stay after the library rule above, which clears that ground. */
 .mina-creation--confirming .mina-creation__media {
-  background: var(--mina-like-red);
+  background: var(--mina-liked-red-transparent);
 }
 
 .mina-creation--confirming .mina-creation__media::after {
   position: absolute;
   inset: 0;
-  background: color-mix(in srgb, var(--mina-like-red) 30%, transparent);
+  border: 1px solid var(--mina-liked-red-transparent-border);
+  background: color-mix(in srgb, var(--mina-liked-red-transparent) 30%, transparent);
   content: '';
   pointer-events: none;
 }
