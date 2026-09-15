@@ -4,15 +4,13 @@
 
 /* ── top bar ── */
 
-/* Bled out past the page's side padding so its rule reaches both screen edges,
-   then padded back so the logo and the CTA keep their place. */
+/* Its rule stops at the page padding, matching the account row beneath it. */
 .mina-profile__top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 0 calc(-1 * var(--mina-header-x));
   border-bottom: 1px solid var(--mina-hairline);
-  padding: 0 var(--mina-header-x) 18px;
+  padding-bottom: 18px;
 }
 
 .mina-profile__logo {
@@ -53,7 +51,7 @@
 .mina-profile__menu {
   display: none;
   font-size: var(--mina-fs-label);
-  font-weight: var(--mina-fw-med);
+  font-weight: var(--mina-fw-strong);
 }
 
 /* A label and its value, kept together and sharing one baseline. */
@@ -323,12 +321,15 @@
     padding: 0;
   }
 
+  /* Bled out past the page's side padding so its rule reaches both screen
+     edges, then padded back so Back and Menu keep their place. */
   .mina-profile__account-head {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
+    margin: 0 calc(-1 * var(--mina-footer-pad-x));
     border-bottom: 1px solid var(--mina-hairline);
-    padding: var(--mina-account-row-pad-y) 0;
+    padding: var(--mina-account-row-pad-y) var(--mina-footer-pad-x);
   }
 
   .mina-profile__menu {
