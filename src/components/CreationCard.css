@@ -65,11 +65,11 @@
   background: var(--mina-hairline);
 }
 
-/* Library mode: every tile is a portrait frame, whatever the creation's own
-   shape. A 9:16 fills it edge to edge; anything wider sits inside it, whole
-   and smaller, rather than being cropped. */
+/* Library mode: every tile is the same 2:3 frame, whatever the creation's own
+   shape, on phones and desktop alike. A 2:3 fills it edge to edge; every other
+   ratio sits inside it whole and smaller, never cropped. */
 .mina-archive--library .mina-creation__media {
-  aspect-ratio: 9 / 16;
+  aspect-ratio: 2 / 3;
   background: none;
 }
 
