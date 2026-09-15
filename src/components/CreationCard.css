@@ -132,3 +132,12 @@
   text-decoration: underline;
   text-underline-offset: var(--mina-btn-underline-offset);
 }
+
+/* The library grid on a phone is a moodboard: tiles only, no controls and no
+   captions between them. */
+@media (width < 768px) {
+  .mina-archive--library .mina-creation__bar,
+  .mina-archive--library .mina-creation__foot {
+    display: none;
+  }
+}

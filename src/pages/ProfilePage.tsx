@@ -6,13 +6,20 @@ import { AppFooter } from '@/components/AppFooter'
 import { CreationCard } from '@/components/CreationCard'
 import { CreationFullScreen } from '@/components/CreationFullScreen'
 import { useCustomerCredits } from '@/hooks/useCustomerCredits'
-import { useDeleteGeneration, useDownloadMedia, useGenerations } from '@/hooks/useGenerations'
+import {
+  useCopyLink,
+  useCopyMedia,
+  useDeleteGeneration,
+  useDownloadMedia,
+  useGenerations,
+} from '@/hooks/useGenerations'
 import { MINA_LOGO_URL } from '@/lib/constants'
 import {
   filenameOf,
   filterGenerations,
   labelFor,
   nextFilter,
+  viewerLinkFor,
   MODE_FILTERS,
   RATIO_FILTERS,
   TIME_FILTERS,
@@ -58,6 +65,8 @@ export function ProfilePage() {
   const { data: credits } = useCustomerCredits(userId)
   const remove = useDeleteGeneration(userId)
   const download = useDownloadMedia()
+  const copyLink = useCopyLink()
+  const copyMedia = useCopyMedia()
 
   const visible = filterGenerations(generations ?? [], { time, mode, ratio })
 
@@ -226,6 +235,8 @@ export function ProfilePage() {
           generation={opened}
           onClose={() => setOpened(null)}
           onDownload={() => saveMedia(opened)}
+          onCopyLink={() => copyLink.mutate(viewerLinkFor(opened))}
+          onCopyMedia={() => copyMedia.mutate(opened.mg_output_url ?? '')}
         />
       )}
 

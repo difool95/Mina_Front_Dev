@@ -73,6 +73,17 @@ export function promptOf(generation: MegaGeneration) {
   return generation.mg_mma_vars?.inputs?.brief ?? generation.mg_prompt ?? ''
 }
 
+/**
+ * The shareable link to a creation — the app's own viewer route carrying the
+ * media URL, rather than the raw asset URL.
+ *
+ * The URL is percent-encoded, so an asset URL that itself contains `&` or `?`
+ * survives being read back out of the query string.
+ */
+export function viewerLinkFor(generation: MegaGeneration) {
+  return `${window.location.origin}/v?u=${encodeURIComponent(generation.mg_output_url ?? '')}`
+}
+
 /** What a downloaded creation is called on disk. */
 export function filenameOf(generation: MegaGeneration) {
   const fromUrl = generation.mg_output_url?.split('?')[0]?.split('/').pop()

@@ -32,6 +32,48 @@ export async function deleteGeneration(mgId: string) {
   if (error) throw new Error(error.message)
 }
 
+export async function copyLink(link: string) {
+  await navigator.clipboard.writeText(link)
+}
+
+/** Repaints a blob as a PNG, the one image type clipboards reliably accept. */
+async function toPng(blob: Blob) {
+  const bitmap = await createImageBitmap(blob)
+  const canvas = document.createElement('canvas')
+
+  canvas.width = bitmap.width
+  canvas.height = bitmap.height
+  canvas.getContext('2d')?.drawImage(bitmap, 0, 0)
+
+  return new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob(
+      (png) => (png ? resolve(png) : reject(new Error('Could not encode the image'))),
+      'image/png',
+    )
+  })
+}
+
+/**
+ * Puts the creation itself on the clipboard, ready to paste into anything that
+ * takes an image.
+ *
+ * Images only: no browser will hold a video on the clipboard, so a motion
+ * creation throws here and the link is the thing to share instead.
+ */
+export async function copyMediaToClipboard(url: string) {
+  const response = await fetch(url)
+
+  if (!response.ok) throw new Error(`Could not read the file (${response.status})`)
+
+  const blob = await response.blob()
+
+  if (!blob.type.startsWith('image/')) throw new Error(`Cannot copy ${blob.type} to the clipboard`)
+
+  const png = blob.type === 'image/png' ? blob : await toPng(blob)
+
+  await navigator.clipboard.write([new ClipboardItem({ 'image/png': png })])
+}
+
 /**
  * Saves a creation to disk.
  *

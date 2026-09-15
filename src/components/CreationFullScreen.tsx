@@ -13,10 +13,18 @@ interface CreationFullScreenProps {
   generation: MegaGeneration
   onClose: () => void
   onDownload: () => void
+  onCopyLink: () => void
+  onCopyMedia: () => void
 }
 
 /** The middle 30% across and 87.5% down saves the file; the rest zooms. */
 const SAVE_ZONE = { x: 0.15, y: 0.4375 }
+
+/** How long the right button has to be held before it offers the link instead. */
+const HOLD_MS = 1000
+
+/** How long the disc stays green after a copy. */
+const FLASH_MS = 900
 
 /**
  * One creation, filling the screen.
@@ -28,19 +36,38 @@ const SAVE_ZONE = { x: 0.15, y: 0.4375 }
  * The pointer is drawn rather than set through `cursor`, because the disc has
  * to blur what it passes over and a cursor image cannot: it is a flat picture
  * the compositor knows nothing about.
+ *
+ * The right button carries the two copy gestures: a quick press puts the image
+ * itself on the clipboard, holding it past a second offers the share link
+ * instead, and the disc shows which one it is about to do.
  */
-export function CreationFullScreen({ generation, onClose, onDownload }: CreationFullScreenProps) {
+export function CreationFullScreen({
+  generation,
+  onClose,
+  onDownload,
+  onCopyLink,
+  onCopyMedia,
+}: CreationFullScreenProps) {
   const ref = useRef<HTMLDialogElement>(null)
+  const hold = useRef<number | null>(null)
   const [zoomed, setZoomed] = useState(false)
   const [pointer, setPointer] = useState<{ x: number; y: number; save: boolean } | null>(null)
   const [pressing, setPressing] = useState(false)
+  /** Set once the right button has been held long enough to mean "link". */
+  const [armed, setArmed] = useState<IconName | null>(null)
+  /** The copy that just happened, held briefly so the disc can confirm it. */
+  const [copied, setCopied] = useState<IconName | null>(null)
 
   useEffect(() => {
     ref.current?.showModal()
   }, [])
 
-  // The middle always saves, zoomed in or out; the surround toggles the zoom.
-  const mode: IconName = pointer?.save ? 'download' : zoomed ? 'reduce' : 'expand'
+  useEffect(() => () => window.clearTimeout(hold.current ?? undefined), [])
+
+  // What just happened wins, then what a release would do, then the plain
+  // left-button reading of where the pointer is.
+  const mode: IconName =
+    copied ?? armed ?? (pointer?.save ? 'download' : zoomed ? 'reduce' : 'expand')
 
   const track = (event: React.MouseEvent<HTMLDivElement>) => {
     const rect = event.currentTarget.getBoundingClientRect()
@@ -61,6 +88,46 @@ export function CreationFullScreen({ generation, onClose, onDownload }: Creation
     }
 
     setZoomed(!zoomed)
+  }
+
+  const press = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (event.button === 0) {
+      setPressing(true)
+      return
+    }
+
+    if (event.button !== 2) return
+
+    hold.current = window.setTimeout(() => setArmed('link'), HOLD_MS)
+  }
+
+  const release = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (event.button === 0) {
+      setPressing(false)
+      return
+    }
+
+    if (event.button !== 2) return
+
+    window.clearTimeout(hold.current ?? undefined)
+
+    // Held long enough to have armed the link; otherwise it was a quick press,
+    // which copies the creation itself.
+    const action: IconName = armed ?? 'copy'
+
+    setArmed(null)
+    setCopied(action)
+    window.setTimeout(() => setCopied(null), FLASH_MS)
+
+    if (action === 'link') onCopyLink()
+    else onCopyMedia()
+  }
+
+  const leave = () => {
+    window.clearTimeout(hold.current ?? undefined)
+    setPointer(null)
+    setPressing(false)
+    setArmed(null)
   }
 
   const url = generation.mg_output_url ?? ''
@@ -94,13 +161,13 @@ export function CreationFullScreen({ generation, onClose, onDownload }: Creation
       <div
         className={`mina-fullscreen__media${zoomed ? ' mina-fullscreen__media--zoomed' : ''}`}
         onMouseMove={track}
-        onMouseLeave={() => {
-          setPointer(null)
-          setPressing(false)
-        }}
-        onMouseDown={() => setPressing(true)}
-        onMouseUp={() => setPressing(false)}
+        onMouseLeave={leave}
+        onMouseDown={press}
+        onMouseUp={release}
         onClick={act}
+        // The right button is the copy gesture here, so the browser's own menu
+        // would land on top of it.
+        onContextMenu={(event) => event.preventDefault()}
       >
         {isMotion(generation) ? (
           <video src={url} autoPlay muted loop playsInline />
@@ -113,7 +180,7 @@ export function CreationFullScreen({ generation, onClose, onDownload }: Creation
         <GlassDisc
           x={pointer.x}
           y={pointer.y}
-          tone={pressing && pointer.save ? 'accent' : 'glass'}
+          tone={copied || (pressing && pointer.save) ? 'accent' : 'glass'}
         >
           <Icon name={mode} />
         </GlassDisc>

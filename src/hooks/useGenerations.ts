@@ -2,6 +2,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { queryKeys } from '@/lib/queryKeys'
 import {
+  copyLink,
+  copyMediaToClipboard,
   deleteGeneration,
   downloadMedia,
   getGenerations,
@@ -33,6 +35,24 @@ export function useDownloadMedia() {
     // Otherwise a blocked fetch fails with nothing on screen and nothing logged.
     onError: (error: unknown) => {
       console.error('Could not download the creation', error)
+    },
+  })
+}
+
+export function useCopyLink() {
+  return useMutation({
+    mutationFn: copyLink,
+    onError: (error: unknown) => {
+      console.error('Could not copy the link', error)
+    },
+  })
+}
+
+export function useCopyMedia() {
+  return useMutation({
+    mutationFn: copyMediaToClipboard,
+    onError: (error: unknown) => {
+      console.error('Could not copy the creation', error)
     },
   })
 }

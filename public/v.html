@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Made with Mina AI</title>
+    <meta name="robots" content="noindex" />
+    <meta property="og:site_name" content="Mina" />
+    <meta property="og:title" content="Made with Mina AI" />
+    <meta property="og:description" content="A creation made with Mina — higher intelligence for brands." />
+    <meta property="og:image" content="https://mina.faltastudio.com/og-image.png" />
+    <link rel="icon" type="image/x-icon" href="https://assets.faltastudio.com/Website%20Assets/Favicons/favicon-2026.ico" />
+    <style>
+      html, body { margin: 0; min-height: 100vh; }
+      body {
+        background: #F2F2E9;
+        color: #0a0a00;
+        font-family: system-ui, -apple-system, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        padding: 18px;
+        box-sizing: border-box;
+      }
+      video, img {
+        max-width: min(94vw, 900px);
+        max-height: 78vh;
+        display: block;
+        background: #000;
+        border-radius: 2px;
+      }
+      a.cta {
+        color: #0a0a00;
+        font-weight: 700;
+        font-size: 13px;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+      p.msg { margin: 0; font-size: 15px; text-align: center; max-width: 360px; }
+      p.foot { margin: 0; font-size: 11px; opacity: 0.55; }
+    </style>
+  </head>
+  <body>
+    <div id="media"></div>
+    <a class="cta" id="cta" href="/">Made with Mina — create yours</a>
+    <p class="foot">mina.faltastudio.com · Falta Studio</p>
+    <a class="cta" id="dl" href="#" hidden>Download</a>
+    <script>
+      (function () {
+        var PREFIX = "https://assets.faltastudio.com/";
+        var media = document.getElementById("media");
+        var cta = document.getElementById("cta");
+        var dl = document.getElementById("dl");
+
+        function fail(message) {
+          media.innerHTML = "";
+          var p = document.createElement("p");
+          p.className = "msg";
+          p.textContent = message;
+          media.appendChild(p);
+          cta.textContent = "Go to Mina";
+          dl.hidden = true;
+        }
+
+        /**
+         * Saves the file, reading it into a blob so the browser stores it under
+         * its own name instead of navigating to it.
+         *
+         * That read needs the asset host to allow this origin; where it does
+         * not, the fallback simply opens the file so it can still be saved by
+         * hand.
+         */
+        function save(url) {
+          fetch(url)
+            .then(function (response) {
+              if (!response.ok) throw new Error(response.status);
+              return response.blob();
+            })
+            .then(function (blob) {
+              var objectUrl = URL.createObjectURL(blob);
+              var link = document.createElement("a");
+              link.href = objectUrl;
+              link.download = url.split("?")[0].split("/").pop() || "mina";
+              document.body.appendChild(link);
+              link.click();
+              link.remove();
+              setTimeout(function () { URL.revokeObjectURL(objectUrl); }, 1000);
+            })
+            .catch(function () {
+              window.open(url, "_blank", "noopener");
+            });
+        }
+
+        var u = "";
+        try { u = new URLSearchParams(window.location.search).get("u") || ""; } catch (e) {}
+        for (var i = 0; i < 2 && /^https%3A/i.test(u); i++) {
+          try { u = decodeURIComponent(u); } catch (e) { break; }
+        }
+        if (!u || u.indexOf(PREFIX) !== 0) {
+          fail("This link doesn't point to a Mina creation.");
+          return;
+        }
+
+        var isVideo = /\.(mp4|webm|mov|m4v)$/i.test(u.split("?")[0]);
+        var el;
+        if (isVideo) {
+          el = document.createElement("video");
+          el.src = u;
+          el.controls = true;
+          el.autoplay = true;
+          el.muted = true;
+          el.loop = true;
+          el.setAttribute("playsinline", "");
+        } else {
+          el = document.createElement("img");
+          el.src = u;
+          el.alt = "Creation made with Mina AI";
+        }
+        el.onerror = function () { fail("This creation couldn't be loaded."); };
+        media.appendChild(el);
+
+        dl.textContent = isVideo ? "Download video" : "Download image";
+        dl.hidden = false;
+        dl.addEventListener("click", function (event) {
+          event.preventDefault();
+          save(u);
+        });
+      })();
+    </script>
+  </body>
+</html>
