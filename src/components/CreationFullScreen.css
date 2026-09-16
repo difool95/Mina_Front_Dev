@@ -60,11 +60,19 @@
   background: currentColor;
 }
 
-/* The disc below stands in for the pointer, so the real one goes away. */
+/* The disc below stands in for the pointer, so the real one goes away.
+   Opacity is transitioned so paging to another creation can fade this one
+   out, then fade the next one in once it swaps in behind the same class. */
 .mina-fullscreen__media {
   position: relative;
   line-height: 0;
   cursor: none;
+  opacity: 1;
+  transition: opacity var(--mina-anim-modal) ease;
+}
+
+.mina-fullscreen__media--fading {
+  opacity: 0;
 }
 
 .mina-fullscreen__media img,
@@ -103,6 +111,13 @@
   /* The drawn disc stands in for the pointer over a clip too — except on the
      player's own controls, which are real targets and keep the real one. */
   cursor: none;
+  /* Same paging crossfade as a still. */
+  opacity: 1;
+  transition: opacity var(--mina-anim-modal) ease;
+}
+
+.mina-fullscreen__player--fading {
+  opacity: 0;
 }
 
 .mina-fullscreen__player .mina-video__controls {

@@ -30,6 +30,9 @@ const HOLD_MS = 1000
 /** How long the disc stays green after a copy. */
 const FLASH_MS = 900
 
+/** Each half of the crossfade when paging to another creation. */
+const PAGE_FADE_MS = 160
+
 /**
  * One creation, filling the screen.
  *
@@ -47,7 +50,9 @@ const FLASH_MS = 900
  *
  * With an archive to page through, the ground outside the save zone turns into
  * the carousel's paging gesture — previous on the left half, next on the right
- * — and zooming gives up its place to it.
+ * — and zooming gives up its place to it. Paging crossfades: the creation on
+ * screen fades out, then the next one swaps in and fades in behind the same
+ * transition.
  */
 export function CreationFullScreen({
   generation,
@@ -59,6 +64,11 @@ export function CreationFullScreen({
 }: CreationFullScreenProps) {
   const ref = useRef<HTMLDialogElement>(null)
   const hold = useRef<number | null>(null)
+  // The creation actually on screen, one step behind `generation` while
+  // paging: it fades out, then swaps and fades in as the new one.
+  const [displayed, setDisplayed] = useState(generation)
+  // True for exactly the frame where the two have fallen out of step.
+  const fading = generation.mg_id !== displayed.mg_id
   const [zoomed, setZoomed] = useState(false)
   const [pointer, setPointer] = useState<{
     x: number
@@ -78,8 +88,22 @@ export function CreationFullScreen({
 
   useEffect(() => () => window.clearTimeout(hold.current ?? undefined), [])
 
-  const url = generation.mg_output_url ?? ''
-  const motion = isMotion(generation)
+  // Paging to a different creation: `fading` goes true the instant `generation`
+  // changes, which starts the CSS fade-out. Once it has had time to play, swap
+  // in the new creation — the same transition then fades it back in.
+  useEffect(() => {
+    if (!fading) return
+
+    const timer = window.setTimeout(() => {
+      setDisplayed(generation)
+      setZoomed(false)
+    }, PAGE_FADE_MS)
+
+    return () => window.clearTimeout(timer)
+  }, [generation, fading])
+
+  const url = displayed.mg_output_url ?? ''
+  const motion = isMotion(displayed)
 
   // What just happened wins, then what a release would do, then the plain
   // left-button reading of where the pointer is. Null means the disc has
@@ -181,7 +205,7 @@ export function CreationFullScreen({
   // `.mina-video` takes its size from whatever contains it, so the box has to
   // be cut to the creation's own shape or the controls would span the viewport
   // rather than the clip. Vertical is the safe default for an unknown platform.
-  const [ratioWidth, ratioHeight] = (ratioOf(generation) ?? '9:16').split(':').map(Number)
+  const [ratioWidth, ratioHeight] = (ratioOf(displayed) ?? '9:16').split(':').map(Number)
 
   return (
     <dialog
@@ -214,7 +238,7 @@ export function CreationFullScreen({
           player's own controls, which stay real buttons. */}
       {motion ? (
         <div
-          className="mina-fullscreen__player"
+          className={`mina-fullscreen__player${fading ? ' mina-fullscreen__player--fading' : ''}`}
           style={{ '--player-ratio': ratioWidth! / ratioHeight! } as CSSProperties}
           onMouseMove={track}
           onMouseLeave={leave}
@@ -229,7 +253,7 @@ export function CreationFullScreen({
         </div>
       ) : (
         <div
-          className={`mina-fullscreen__media${zoomed ? ' mina-fullscreen__media--zoomed' : ''}`}
+          className={`mina-fullscreen__media${zoomed ? ' mina-fullscreen__media--zoomed' : ''}${fading ? ' mina-fullscreen__media--fading' : ''}`}
           onMouseMove={track}
           onMouseLeave={leave}
           onMouseDown={press}
@@ -239,7 +263,7 @@ export function CreationFullScreen({
           // menu would land on top of it.
           onContextMenu={(event) => event.preventDefault()}
         >
-          <img src={cfImage(url, FULLSCREEN_WIDTH, 90)} alt={promptOf(generation)} />
+          <img src={cfImage(url, FULLSCREEN_WIDTH, 90)} alt={promptOf(displayed)} />
         </div>
       )}
 
