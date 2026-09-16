@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 
 import { AccountMenu } from '@/components/AccountMenu'
@@ -62,6 +62,13 @@ export function ProfilePage() {
   const [menuOpen, setMenuOpen] = useState(false)
   // The creation shown full screen, or null when the archive is on show.
   const [opened, setOpened] = useState<MegaGeneration | null>(null)
+
+  // The archive can run taller than the viewport; the page scrolls, but
+  // without the browser's own scrollbar drawn over it.
+  useEffect(() => {
+    document.documentElement.classList.add('mina-no-scrollbar')
+    return () => document.documentElement.classList.remove('mina-no-scrollbar')
+  }, [])
 
   const { session, loading } = useAuth()
   const userId = session?.user.id

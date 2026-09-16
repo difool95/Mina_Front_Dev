@@ -1,10 +1,16 @@
 /* The dialog is the whole screen, and the paper around the creation is the
    "background" a click closes on. Centred rather than scrollable: a zoomed
-   creation taller than the viewport is cropped top and bottom, never scrolled. */
+   creation taller than the viewport is cropped top and bottom, never scrolled.
+   `--fs-inset` is the gap kept on every side; the media/player sizing below
+   subtracts it from the viewport instead of the dialog's own padding, since a
+   flex child sizing itself in `vw`/`vh` ignores its parent's padding entirely. */
 .mina-fullscreen {
+  --fs-inset: 20px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
   width: 100vw;
   max-width: 100vw;
   height: 100dvh;
@@ -12,7 +18,7 @@
   margin: 0;
   border: 0;
   background: var(--mina-bg);
-  padding: 0;
+  padding: var(--fs-inset);
   overflow: hidden;
 }
 
@@ -64,15 +70,15 @@
 .mina-fullscreen__media img,
 .mina-fullscreen__media video {
   display: block;
-  max-width: 100vw;
-  max-height: 100dvh;
+  max-width: calc(100vw - var(--fs-inset) * 2);
+  max-height: calc(100dvh - var(--fs-inset) * 2);
   object-fit: contain;
 }
 
-/* Zoomed: the creation spans the viewport, whatever that costs it in height. */
+/* Zoomed: the creation spans the inset width, whatever that costs it in height. */
 .mina-fullscreen__media--zoomed img,
 .mina-fullscreen__media--zoomed video {
-  width: 100vw;
+  width: calc(100vw - var(--fs-inset) * 2);
   max-width: none;
   height: auto;
   max-height: none;
@@ -85,12 +91,15 @@
 }
 
 /* ── clips ──
-   Cut to the creation's own shape and fitted to whichever side of the viewport
-   runs out first, so the player's controls sit across the clip rather than
-   across the page. */
+   Cut to the creation's own shape and fitted to whichever side of the inset
+   viewport runs out first, so the player's controls sit across the clip
+   rather than across the page. */
 .mina-fullscreen__player {
-  width: min(100vw, calc(100dvh * var(--player-ratio)));
-  height: min(100dvh, calc(100vw / var(--player-ratio)));
+  --fs-w: calc(100vw - var(--fs-inset) * 2);
+  --fs-h: calc(100dvh - var(--fs-inset) * 2);
+
+  width: min(var(--fs-w), calc(var(--fs-h) * var(--player-ratio)));
+  height: min(var(--fs-h), calc(var(--fs-w) / var(--player-ratio)));
 }
 
 .mina-fullscreen__player .mina-video {

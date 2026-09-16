@@ -2,6 +2,21 @@
   padding: var(--mina-shell-pad);
 }
 
+/* Set on the root element while this page is mounted: the archive can run
+   taller than the viewport, so the page still scrolls, just without the
+   browser drawing a scrollbar over it. The scrolling element is `html`
+   itself here, so `body` alone isn't enough. */
+html.mina-no-scrollbar,
+html.mina-no-scrollbar body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html.mina-no-scrollbar::-webkit-scrollbar,
+html.mina-no-scrollbar body::-webkit-scrollbar {
+  display: none;
+}
+
 /* ── top bar ── */
 
 /* Its rule stops at the page padding, matching the account row beneath it. */
