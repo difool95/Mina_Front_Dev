@@ -83,3 +83,17 @@
 .mina-fullscreen .mina-glass {
   z-index: 4;
 }
+
+/* ── clips ──
+   Cut to the creation's own shape and fitted to whichever side of the viewport
+   runs out first, so the player's controls sit across the clip rather than
+   across the page. */
+.mina-fullscreen__player {
+  width: min(100vw, calc(100dvh * var(--player-ratio)));
+  height: min(100dvh, calc(100vw / var(--player-ratio)));
+}
+
+.mina-fullscreen__player .mina-video {
+  width: 100%;
+  height: 100%;
+}

@@ -1,12 +1,13 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 
-import { isMotion, promptOf } from '@/lib/generations'
+import { isMotion, promptOf, ratioOf } from '@/lib/generations'
 import type { IconName } from '@/lib/icons'
 import { cfImage, FULLSCREEN_WIDTH } from '@/lib/media'
 import type { MegaGeneration } from '@/types/generation.types'
 
 import { GlassDisc } from './GlassDisc'
 import { Icon } from './Icon'
+import { VideoPlayer } from './VideoPlayer'
 
 import './CreationFullScreen.css'
 
@@ -132,6 +133,12 @@ export function CreationFullScreen({
   }
 
   const url = generation.mg_output_url ?? ''
+  const motion = isMotion(generation)
+
+  // `.mina-video` takes its size from whatever contains it, so the box has to
+  // be cut to the creation's own shape or the controls would span the viewport
+  // rather than the clip. Vertical is the safe default for an unknown platform.
+  const [ratioWidth, ratioHeight] = (ratioOf(generation) ?? '9:16').split(':').map(Number)
 
   return (
     <dialog
@@ -159,27 +166,30 @@ export function CreationFullScreen({
         <span className="mina-fullscreen__close-bar" aria-hidden="true" />
       </button>
 
-      <div
-        className={`mina-fullscreen__media${zoomed ? ' mina-fullscreen__media--zoomed' : ''}`}
-        onMouseMove={track}
-        onMouseLeave={leave}
-        onMouseDown={press}
-        onMouseUp={release}
-        onClick={act}
-        // The right button is the copy gesture here, so the browser's own menu
-        // would land on top of it.
-        onContextMenu={(event) => event.preventDefault()}
-      >
-        {/* Stills come through the transform capped at 1920 — the original is
-            27 MB and no screen shows more than this. A clip is served whole,
-            since it already is a delivery encode and re-transcoding it here
-            would cost more than it saves. */}
-        {isMotion(generation) ? (
-          <video src={url} autoPlay muted loop playsInline />
-        ) : (
+      {/* A clip gets the shared video player, and none of the pointer gestures: its
+          controls need a real cursor.*/}
+      {motion ? (
+        <div
+          className="mina-fullscreen__player"
+          style={{ '--player-ratio': ratioWidth! / ratioHeight! } as CSSProperties}
+        >
+          <VideoPlayer src={url} />
+        </div>
+      ) : (
+        <div
+          className={`mina-fullscreen__media${zoomed ? ' mina-fullscreen__media--zoomed' : ''}`}
+          onMouseMove={track}
+          onMouseLeave={leave}
+          onMouseDown={press}
+          onMouseUp={release}
+          onClick={act}
+          // The right button is the copy gesture here, so the browser's own
+          // menu would land on top of it.
+          onContextMenu={(event) => event.preventDefault()}
+        >
           <img src={cfImage(url, FULLSCREEN_WIDTH, 90)} alt={promptOf(generation)} />
-        )}
-      </div>
+        </div>
+      )}
 
       {pointer && (
         <GlassDisc
