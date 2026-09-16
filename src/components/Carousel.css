@@ -23,12 +23,6 @@
   object-fit: cover;
 }
 
-/* The disc it sits in comes from GlassDisc; this is only the glyph. */
-.mina-carousel__chevron {
-  font-size: var(--mina-fs-h3);
-  font-weight: var(--mina-fw-light);
-}
-
 /* ── dots ── */
 
 /* Fixed width — exactly `--dot-slots` cells — so the strip is genuinely

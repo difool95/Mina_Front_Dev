@@ -3,6 +3,7 @@ import { useRef, useState, type CSSProperties } from 'react'
 import type { OnboardContent } from '@/types'
 
 import { GlassDisc } from './GlassDisc'
+import { Icon } from './Icon'
 
 import './Carousel.css'
 
@@ -108,7 +109,7 @@ export function Carousel({ media }: { media: OnboardContent[] }) {
 
       {cursor && paged && (
         <GlassDisc x={cursor.x} y={cursor.y} anchor="absolute" size={48}>
-          <span className="mina-carousel__chevron">{cursor.side === 'prev' ? '‹' : '›'}</span>
+          <Icon name={cursor.side} />
         </GlassDisc>
       )}
 

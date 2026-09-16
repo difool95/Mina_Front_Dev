@@ -17,6 +17,8 @@ interface CreationFullScreenProps {
   onDownload: () => void
   onCopyLink: () => void
   onCopyMedia: () => void
+  /** Walks the archive by `delta`. Left out when there is nothing to page to. */
+  onNavigate?: (delta: number) => void
 }
 
 /** The middle 30% across and 87.5% down saves the file; the rest zooms. */
@@ -42,6 +44,10 @@ const FLASH_MS = 900
  * The right button carries the two copy gestures: a quick press puts the image
  * itself on the clipboard, holding it past a second offers the share link
  * instead, and the disc shows which one it is about to do.
+ *
+ * With an archive to page through, the ground outside the save zone turns into
+ * the carousel's paging gesture — previous on the left half, next on the right
+ * — and zooming gives up its place to it.
  */
 export function CreationFullScreen({
   generation,
@@ -49,11 +55,17 @@ export function CreationFullScreen({
   onDownload,
   onCopyLink,
   onCopyMedia,
+  onNavigate,
 }: CreationFullScreenProps) {
   const ref = useRef<HTMLDialogElement>(null)
   const hold = useRef<number | null>(null)
   const [zoomed, setZoomed] = useState(false)
-  const [pointer, setPointer] = useState<{ x: number; y: number; save: boolean } | null>(null)
+  const [pointer, setPointer] = useState<{
+    x: number
+    y: number
+    save: boolean
+    side: Extract<IconName, 'prev' | 'next'>
+  } | null>(null)
   const [pressing, setPressing] = useState(false)
   /** Set once the right button has been held long enough to mean "link". */
   const [armed, setArmed] = useState<IconName | null>(null)
@@ -66,12 +78,34 @@ export function CreationFullScreen({
 
   useEffect(() => () => window.clearTimeout(hold.current ?? undefined), [])
 
+  const url = generation.mg_output_url ?? ''
+  const motion = isMotion(generation)
+
   // What just happened wins, then what a release would do, then the plain
-  // left-button reading of where the pointer is.
-  const mode: IconName =
-    copied ?? armed ?? (pointer?.save ? 'download' : zoomed ? 'reduce' : 'expand')
+  // left-button reading of where the pointer is. Null means the disc has
+  // nothing to offer and stands down — over a clip, which has no zoom of its
+  // own, that is anywhere outside the save zone.
+  const discMode = (): IconName | null => {
+    if (copied) return copied
+    if (armed) return armed
+    if (!pointer) return null
+    if (pointer.save) return 'download'
+    if (onNavigate) return pointer.side
+    return motion ? null : zoomed ? 'reduce' : 'expand'
+  }
+
+  const shown = discMode()
+
+  /** The player draws its own controls, and they keep the real pointer. */
+  const onControls = (event: React.MouseEvent) =>
+    (event.target as HTMLElement).closest('.mina-video__controls') !== null
 
   const track = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (onControls(event)) {
+      setPointer(null)
+      return
+    }
+
     const rect = event.currentTarget.getBoundingClientRect()
     const offsetX = Math.abs((event.clientX - rect.left) / rect.width - 0.5)
     const offsetY = Math.abs((event.clientY - rect.top) / rect.height - 0.5)
@@ -80,19 +114,29 @@ export function CreationFullScreen({
       x: event.clientX,
       y: event.clientY,
       save: offsetX <= SAVE_ZONE.x && offsetY <= SAVE_ZONE.y,
+      side: event.clientX < rect.left + rect.width / 2 ? 'prev' : 'next',
     })
   }
 
-  const act = () => {
+  const act = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (onControls(event)) return
+
     if (pointer?.save) {
       onDownload()
       return
     }
 
-    setZoomed(!zoomed)
+    if (onNavigate) {
+      onNavigate(pointer?.side === 'prev' ? -1 : 1)
+      return
+    }
+
+    if (!motion) setZoomed(!zoomed)
   }
 
   const press = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (onControls(event)) return
+
     if (event.button === 0) {
       setPressing(true)
       return
@@ -104,6 +148,8 @@ export function CreationFullScreen({
   }
 
   const release = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (onControls(event)) return
+
     if (event.button === 0) {
       setPressing(false)
       return
@@ -131,9 +177,6 @@ export function CreationFullScreen({
     setPressing(false)
     setArmed(null)
   }
-
-  const url = generation.mg_output_url ?? ''
-  const motion = isMotion(generation)
 
   // `.mina-video` takes its size from whatever contains it, so the box has to
   // be cut to the creation's own shape or the controls would span the viewport
@@ -166,12 +209,21 @@ export function CreationFullScreen({
         <span className="mina-fullscreen__close-bar" aria-hidden="true" />
       </button>
 
-      {/* A clip gets the shared video player, and none of the pointer gestures: its
-          controls need a real cursor.*/}
+      {/* A clip gets the shared video player, and the same gestures as a
+          still — saving, paging, and the two copy gestures — except over the
+          player's own controls, which stay real buttons. */}
       {motion ? (
         <div
           className="mina-fullscreen__player"
           style={{ '--player-ratio': ratioWidth! / ratioHeight! } as CSSProperties}
+          onMouseMove={track}
+          onMouseLeave={leave}
+          onMouseDown={press}
+          onMouseUp={release}
+          onClick={act}
+          onContextMenu={(event) => {
+            if (!onControls(event)) event.preventDefault()
+          }}
         >
           <VideoPlayer src={url} />
         </div>
@@ -191,13 +243,13 @@ export function CreationFullScreen({
         </div>
       )}
 
-      {pointer && (
+      {pointer && shown && (
         <GlassDisc
           x={pointer.x}
           y={pointer.y}
           tone={copied || (pressing && pointer.save) ? 'accent' : 'glass'}
         >
-          <Icon name={mode} />
+          <Icon name={shown} />
         </GlassDisc>
       )}
     </dialog>

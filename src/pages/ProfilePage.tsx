@@ -82,6 +82,14 @@ export function ProfilePage() {
 
   const visible = filterGenerations(generations ?? [], { time, mode, ratio })
 
+  // Paging inside the full-screen view walks the archive as it is filtered,
+  // and wraps at both ends.
+  const step = (delta: number) =>
+    setOpened((current) => {
+      const index = visible.findIndex((item) => item.mg_id === current?.mg_id)
+      return visible[(index + delta + visible.length) % visible.length] ?? current
+    })
+
   const saveMedia = (generation: MegaGeneration) =>
     download.mutate({
       url: generation.mg_output_url ?? '',
@@ -257,6 +265,7 @@ export function ProfilePage() {
           onDownload={() => saveMedia(opened)}
           onCopyLink={() => copyLink.mutate(viewerLinkFor(opened))}
           onCopyMedia={() => copyMedia.mutate(opened.mg_output_url ?? '')}
+          onNavigate={visible.length > 1 ? step : undefined}
         />
       )}
 

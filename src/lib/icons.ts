@@ -23,6 +23,10 @@ export const ICON_PATHS = {
   /* Two square sheets, the front one whole and the back one drawn only where
      the front does not already cover it. */
   copy: ['M9 9V4h11v11h-5', 'M4 9h11v11H4z'],
+  /* A single open chevron, mirrored across the vertical for the other
+     direction — the carousel's paging arrows. */
+  prev: ['M14.5 6.5 8.5 12l6 5.5'],
+  next: ['M9.5 6.5 15.5 12l-6 5.5'],
 } as const
 
 export type IconName = keyof typeof ICON_PATHS

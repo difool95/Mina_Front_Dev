@@ -100,6 +100,13 @@
 
   width: min(var(--fs-w), calc(var(--fs-h) * var(--player-ratio)));
   height: min(var(--fs-h), calc(var(--fs-w) / var(--player-ratio)));
+  /* The drawn disc stands in for the pointer over a clip too — except on the
+     player's own controls, which are real targets and keep the real one. */
+  cursor: none;
+}
+
+.mina-fullscreen__player .mina-video__controls {
+  cursor: default;
 }
 
 .mina-fullscreen__player .mina-video {
