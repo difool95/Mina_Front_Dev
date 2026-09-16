@@ -33,6 +33,9 @@ const FLASH_MS = 900
 /** Each half of the crossfade when paging to another creation. */
 const PAGE_FADE_MS = 160
 
+/** A horizontal drag past this many px pages, wherever it is released. */
+const SWIPE_THRESHOLD = 50
+
 /**
  * One creation, filling the screen.
  *
@@ -53,6 +56,11 @@ const PAGE_FADE_MS = 160
  * — and zooming gives up its place to it. Paging crossfades: the creation on
  * screen fades out, then the next one swaps in and fades in behind the same
  * transition.
+ *
+ * Pointer events rather than mouse ones, so the same gestures work by touch:
+ * a tap pages by which half it lands on exactly like a click, and a drag past
+ * `SWIPE_THRESHOLD` pages regardless of where it is released — the swipe a
+ * phone expects.
  */
 export function CreationFullScreen({
   generation,
@@ -64,6 +72,10 @@ export function CreationFullScreen({
 }: CreationFullScreenProps) {
   const ref = useRef<HTMLDialogElement>(null)
   const hold = useRef<number | null>(null)
+  /** Where a drag started, so `release` can measure it against `SWIPE_THRESHOLD`. */
+  const dragStartX = useRef<number | null>(null)
+  /** Set when a drag just paged, so the click that follows it is a no-op. */
+  const swiped = useRef(false)
   // The creation actually on screen, one step behind `generation` while
   // paging: it fades out, then swaps and fades in as the new one.
   const [displayed, setDisplayed] = useState(generation)
@@ -121,10 +133,10 @@ export function CreationFullScreen({
   const shown = discMode()
 
   /** The player draws its own controls, and they keep the real pointer. */
-  const onControls = (event: React.MouseEvent) =>
+  const onControls = (event: { target: EventTarget | null }) =>
     (event.target as HTMLElement).closest('.mina-video__controls') !== null
 
-  const track = (event: React.MouseEvent<HTMLDivElement>) => {
+  const track = (event: React.PointerEvent<HTMLDivElement>) => {
     if (onControls(event)) {
       setPointer(null)
       return
@@ -143,6 +155,12 @@ export function CreationFullScreen({
   }
 
   const act = (event: React.MouseEvent<HTMLDivElement>) => {
+    // A swipe already paged on release; the click it also fires does nothing.
+    if (swiped.current) {
+      swiped.current = false
+      return
+    }
+
     if (onControls(event)) return
 
     if (pointer?.save) {
@@ -158,8 +176,13 @@ export function CreationFullScreen({
     if (!motion) setZoomed(!zoomed)
   }
 
-  const press = (event: React.MouseEvent<HTMLDivElement>) => {
+  const press = (event: React.PointerEvent<HTMLDivElement>) => {
     if (onControls(event)) return
+
+    // A touch tap fires no `pointermove` before it, so `track` never runs —
+    // seed the same pointer reading from where the touch landed instead.
+    track(event)
+    dragStartX.current = event.clientX
 
     if (event.button === 0) {
       setPressing(true)
@@ -171,11 +194,22 @@ export function CreationFullScreen({
     hold.current = window.setTimeout(() => setArmed('link'), HOLD_MS)
   }
 
-  const release = (event: React.MouseEvent<HTMLDivElement>) => {
+  const release = (event: React.PointerEvent<HTMLDivElement>) => {
     if (onControls(event)) return
+
+    const start = dragStartX.current
+    dragStartX.current = null
 
     if (event.button === 0) {
       setPressing(false)
+
+      // Past the threshold, the drag itself pages — in whichever direction it
+      // ran — rather than leaving it to where it happened to end up.
+      if (onNavigate && start !== null && Math.abs(event.clientX - start) > SWIPE_THRESHOLD) {
+        swiped.current = true
+        onNavigate(event.clientX < start ? 1 : -1)
+      }
+
       return
     }
 
@@ -197,6 +231,7 @@ export function CreationFullScreen({
 
   const leave = () => {
     window.clearTimeout(hold.current ?? undefined)
+    dragStartX.current = null
     setPointer(null)
     setPressing(false)
     setArmed(null)
@@ -240,10 +275,10 @@ export function CreationFullScreen({
         <div
           className={`mina-fullscreen__player${fading ? ' mina-fullscreen__player--fading' : ''}`}
           style={{ '--player-ratio': ratioWidth! / ratioHeight! } as CSSProperties}
-          onMouseMove={track}
-          onMouseLeave={leave}
-          onMouseDown={press}
-          onMouseUp={release}
+          onPointerMove={track}
+          onPointerLeave={leave}
+          onPointerDown={press}
+          onPointerUp={release}
           onClick={act}
           onContextMenu={(event) => {
             if (!onControls(event)) event.preventDefault()
@@ -254,10 +289,10 @@ export function CreationFullScreen({
       ) : (
         <div
           className={`mina-fullscreen__media${zoomed ? ' mina-fullscreen__media--zoomed' : ''}${fading ? ' mina-fullscreen__media--fading' : ''}`}
-          onMouseMove={track}
-          onMouseLeave={leave}
-          onMouseDown={press}
-          onMouseUp={release}
+          onPointerMove={track}
+          onPointerLeave={leave}
+          onPointerDown={press}
+          onPointerUp={release}
           onClick={act}
           // The right button is the copy gesture here, so the browser's own
           // menu would land on top of it.

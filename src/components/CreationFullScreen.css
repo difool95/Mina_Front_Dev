@@ -68,6 +68,9 @@
   line-height: 0;
   cursor: none;
   opacity: 1;
+  /* Otherwise a swipe is the browser's own back/forward gesture before it is
+     ever seen as a drag here. */
+  touch-action: none;
   transition: opacity var(--mina-anim-modal) ease;
 }
 
@@ -111,6 +114,7 @@
   /* The drawn disc stands in for the pointer over a clip too — except on the
      player's own controls, which are real targets and keep the real one. */
   cursor: none;
+  touch-action: none;
   /* Same paging crossfade as a still. */
   opacity: 1;
   transition: opacity var(--mina-anim-modal) ease;
@@ -120,8 +124,11 @@
   opacity: 0;
 }
 
+/* The player's own controls are real targets — seeking in particular needs
+   its own horizontal drag, so they keep the real cursor and native touch. */
 .mina-fullscreen__player .mina-video__controls {
   cursor: default;
+  touch-action: auto;
 }
 
 .mina-fullscreen__player .mina-video {
