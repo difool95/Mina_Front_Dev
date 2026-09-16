@@ -35,6 +35,7 @@ export function CreationMedia({ url, alt, motion }: CreationMediaProps) {
   const [poster, setPoster] = useState<string>()
   const [ready, setReady] = useState(false)
   const [failed, setFailed] = useState(false)
+  const [audible, setAudible] = useState(false)
 
   const attach = useCallback(
     (node: HTMLImageElement | HTMLVideoElement | null) => {
@@ -70,6 +71,51 @@ export function CreationMedia({ url, alt, motion }: CreationMediaProps) {
     }
   }, [inView, motion, url])
 
+  /**
+   * Clips play on their own, but only while they are on screen.
+   *
+   * This observer stays connected, unlike the one that triggers the load —
+   * playback has to follow the tile both ways, or an archive ends up running
+   * a hundred clips nobody is looking at.
+   */
+  useEffect(() => {
+    const video = element.current
+
+    if (!motion || !(video instanceof HTMLVideoElement) || !src) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) void video.play().catch(() => {})
+        else video.pause()
+      },
+      { threshold: 0.2 },
+    )
+
+    observer.observe(video)
+
+    return () => observer.disconnect()
+  }, [motion, src])
+
+  /**
+   * Sound follows the pointer.
+   *
+   * A browser only permits audio once the page has been interacted with, and
+   * where it has not, unmuting makes it pause the clip rather than play it
+   * aloud. So a refused `play()` drops back to silent — a muted tile still
+   * running beats a frozen one.
+   */
+  useEffect(() => {
+    const video = element.current
+
+    if (!audible || !(video instanceof HTMLVideoElement)) return
+
+    void video.play().catch(() => {
+      video.muted = true
+      setAudible(false)
+      void video.play().catch(() => {})
+    })
+  }, [audible])
+
   const free = () => {
     release.current?.()
     release.current = null
@@ -98,10 +144,13 @@ export function CreationMedia({ url, alt, motion }: CreationMediaProps) {
       src={src}
       poster={poster}
       data-ready={ready || undefined}
-      muted
+      autoPlay
+      muted={!audible}
       loop
       playsInline
       preload="metadata"
+      onMouseEnter={() => setAudible(true)}
+      onMouseLeave={() => setAudible(false)}
       onLoadedData={settle}
       onError={retry}
     />
