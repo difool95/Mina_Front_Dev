@@ -1,11 +1,13 @@
 /* The dialog is the whole screen, and the paper around the creation is the
    "background" a click closes on. Centred rather than scrollable: a zoomed
    creation taller than the viewport is cropped top and bottom, never scrolled.
-   `--fs-inset` is the gap kept on every side; the media/player sizing below
-   subtracts it from the viewport instead of the dialog's own padding, since a
-   flex child sizing itself in `vw`/`vh` ignores its parent's padding entirely. */
+   `--fs-inset-x`/`-y` are the gap kept on the sides and top/bottom; the
+   media/player sizing below subtracts them from the viewport instead of the
+   dialog's own padding, since a flex child sizing itself in `vw`/`vh` ignores
+   its parent's padding entirely. */
 .mina-fullscreen {
-  --fs-inset: 20px;
+  --fs-inset-x: 20px;
+  --fs-inset-y: 20px;
 
   display: flex;
   align-items: center;
@@ -18,8 +20,15 @@
   margin: 0;
   border: 0;
   background: var(--mina-bg);
-  padding: var(--fs-inset);
+  padding: var(--fs-inset-y) var(--fs-inset-x);
   overflow: hidden;
+}
+
+/* Edge to edge on a phone — only the top/bottom gap stays. */
+@media (width < 768px) {
+  .mina-fullscreen {
+    --fs-inset-x: 0px;
+  }
 }
 
 .mina-fullscreen::backdrop {
@@ -81,15 +90,15 @@
 .mina-fullscreen__media img,
 .mina-fullscreen__media video {
   display: block;
-  max-width: calc(100vw - var(--fs-inset) * 2);
-  max-height: calc(100dvh - var(--fs-inset) * 2);
+  max-width: calc(100vw - var(--fs-inset-x) * 2);
+  max-height: calc(100dvh - var(--fs-inset-y) * 2);
   object-fit: contain;
 }
 
 /* Zoomed: the creation spans the inset width, whatever that costs it in height. */
 .mina-fullscreen__media--zoomed img,
 .mina-fullscreen__media--zoomed video {
-  width: calc(100vw - var(--fs-inset) * 2);
+  width: calc(100vw - var(--fs-inset-x) * 2);
   max-width: none;
   height: auto;
   max-height: none;
@@ -106,8 +115,8 @@
    viewport runs out first, so the player's controls sit across the clip
    rather than across the page. */
 .mina-fullscreen__player {
-  --fs-w: calc(100vw - var(--fs-inset) * 2);
-  --fs-h: calc(100dvh - var(--fs-inset) * 2);
+  --fs-w: calc(100vw - var(--fs-inset-x) * 2);
+  --fs-h: calc(100dvh - var(--fs-inset-y) * 2);
 
   width: min(var(--fs-w), calc(var(--fs-h) * var(--player-ratio)));
   height: min(var(--fs-h), calc(var(--fs-w) / var(--player-ratio)));

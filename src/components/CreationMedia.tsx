@@ -28,6 +28,13 @@ interface CreationMediaProps {
  */
 export function CreationMedia({ url, alt, motion }: CreationMediaProps) {
   const { ref, inView } = useInView()
+  // Playback follows the tile both ways, so it is a second reading of the same
+  // element: this one exact to the viewport, and never done with it.
+  const { ref: playRef, inView: onScreen } = useInView({
+    rootMargin: '0px',
+    threshold: 0.2,
+    once: false,
+  })
   const element = useRef<HTMLImageElement | HTMLVideoElement | null>(null)
   const release = useRef<(() => void) | null>(null)
 
@@ -41,8 +48,9 @@ export function CreationMedia({ url, alt, motion }: CreationMediaProps) {
     (node: HTMLImageElement | HTMLVideoElement | null) => {
       element.current = node
       ref(node)
+      playRef(node)
     },
-    [ref],
+    [ref, playRef],
   )
 
   useEffect(() => {
@@ -72,29 +80,17 @@ export function CreationMedia({ url, alt, motion }: CreationMediaProps) {
   }, [inView, motion, url])
 
   /**
-   * Clips play on their own, but only while they are on screen.
-   *
-   * This observer stays connected, unlike the one that triggers the load —
-   * playback has to follow the tile both ways, or an archive ends up running
-   * a hundred clips nobody is looking at.
+   * Clips play on their own, but only while they are on screen — or an archive
+   * ends up running a hundred of them that nobody is looking at.
    */
   useEffect(() => {
     const video = element.current
 
-    if (!motion || !(video instanceof HTMLVideoElement) || !src) return
+    if (!(video instanceof HTMLVideoElement) || !src) return
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry?.isIntersecting) void video.play().catch(() => {})
-        else video.pause()
-      },
-      { threshold: 0.2 },
-    )
-
-    observer.observe(video)
-
-    return () => observer.disconnect()
-  }, [motion, src])
+    if (onScreen) void video.play().catch(() => {})
+    else video.pause()
+  }, [onScreen, src])
 
   /**
    * Sound follows the pointer.

@@ -153,6 +153,18 @@
 }
 
 @media (width < 768px) {
+  /* Each creation scales in as it reaches the viewport, in either layout and
+     every time it comes back — the class is toggled off on the way out. Held
+     small until then, so the first paint is already mid-animation. */
+  .mina-creation {
+    transform: scale(0.2);
+    transition: transform var(--mina-anim-zoom) ease-out;
+  }
+
+  .mina-creation--in-view {
+    transform: none;
+  }
+
   /* The library grid on a phone is a moodboard: tiles only, no controls and no
      captions between them. */
   .mina-archive--library .mina-creation__bar,
