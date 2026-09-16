@@ -1,0 +1,34 @@
+/* Structure comes from CreationCard.css — the skeleton wears the card's own
+   classes so both land in the grid identically. Only the grey stand-ins and
+   their breathing are defined here. */
+
+@keyframes mina-skeleton-pulse {
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.mina-creation--skeleton {
+  animation: mina-skeleton-pulse 1.6s ease-in-out infinite;
+}
+
+.mina-creation__ghost {
+  display: block;
+  border-radius: 2px;
+  background: var(--mina-hairline);
+}
+
+.mina-creation__ghost--action {
+  width: 88px;
+  height: 9px;
+}
+
+.mina-creation__ghost--menu {
+  width: 16px;
+  height: 9px;
+}
+
+.mina-creation__ghost--prompt {
+  width: 70%;
+  height: 8px;
+}

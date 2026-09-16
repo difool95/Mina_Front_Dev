@@ -103,13 +103,23 @@
   pointer-events: none;
 }
 
+/* Held at zero until the bytes land, so a tile goes from its placeholder ground
+   straight to the finished picture rather than flashing a half-painted one. */
 .mina-creation__media img,
 .mina-creation__media video {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform var(--mina-anim-zoom) ease;
+  transition:
+    opacity var(--mina-anim-fade) ease,
+    transform var(--mina-anim-zoom) ease;
+  opacity: 0;
+}
+
+.mina-creation__media img[data-ready],
+.mina-creation__media video[data-ready] {
+  opacity: 1;
 }
 
 .mina-creation:hover .mina-creation__media img,

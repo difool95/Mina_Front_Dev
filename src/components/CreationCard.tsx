@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { isMotion, promptOf } from '@/lib/generations'
 import type { MegaGeneration } from '@/types/generation.types'
 
+import { CreationMedia } from './CreationMedia'
+
 import './CreationCard.css'
 
 interface CreationCardProps {
@@ -86,11 +88,7 @@ export function CreationCard({
         style={placement ? { aspectRatio: placement.ratio } : undefined}
         onClick={onOpen}
       >
-        {isMotion(generation) ? (
-          <video src={url} muted loop playsInline preload="metadata" />
-        ) : (
-          <img src={url} alt={prompt} loading="lazy" />
-        )}
+        <CreationMedia url={url} alt={prompt} motion={isMotion(generation)} />
       </button>
 
       <footer className="mina-creation__foot">

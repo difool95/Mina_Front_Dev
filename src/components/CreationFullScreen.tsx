@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 
 import { isMotion, promptOf } from '@/lib/generations'
 import type { IconName } from '@/lib/icons'
+import { cfImage, FULLSCREEN_WIDTH } from '@/lib/media'
 import type { MegaGeneration } from '@/types/generation.types'
 
 import { GlassDisc } from './GlassDisc'
@@ -169,10 +170,14 @@ export function CreationFullScreen({
         // would land on top of it.
         onContextMenu={(event) => event.preventDefault()}
       >
+        {/* Stills come through the transform capped at 1920 — the original is
+            27 MB and no screen shows more than this. A clip is served whole,
+            since it already is a delivery encode and re-transcoding it here
+            would cost more than it saves. */}
         {isMotion(generation) ? (
           <video src={url} autoPlay muted loop playsInline />
         ) : (
-          <img src={url} alt={promptOf(generation)} />
+          <img src={cfImage(url, FULLSCREEN_WIDTH, 90)} alt={promptOf(generation)} />
         )}
       </div>
 

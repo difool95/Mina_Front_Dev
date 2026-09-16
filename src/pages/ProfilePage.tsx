@@ -5,6 +5,7 @@ import { AccountMenu } from '@/components/AccountMenu'
 import { AppFooter } from '@/components/AppFooter'
 import { CreationCard } from '@/components/CreationCard'
 import { CreationFullScreen } from '@/components/CreationFullScreen'
+import { CreationSkeleton } from '@/components/CreationSkeleton'
 import { useCustomerCredits } from '@/hooks/useCustomerCredits'
 import {
   useCopyLink,
@@ -36,6 +37,9 @@ import type {
 } from '@/types/generation.types'
 
 import './ProfilePage.css'
+
+/** Two full editorial rows of placeholders while the archive is on its way. */
+const SKELETON_COUNT = 12
 
 function formatDate(iso: string | null | undefined) {
   if (!iso) return '—'
@@ -219,6 +223,14 @@ export function ProfilePage() {
       </div>
 
       <div className={`mina-archive mina-archive--${layout}`}>
+        {isPending &&
+          Array.from({ length: SKELETON_COUNT }, (_, index) => (
+            <CreationSkeleton
+              key={index}
+              placement={layout === 'editorial' ? editorialPlacement(index) : undefined}
+            />
+          ))}
+
         {visible.map((generation, index) => (
           <CreationCard
             key={generation.mg_id}
