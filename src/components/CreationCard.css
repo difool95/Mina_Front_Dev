@@ -139,9 +139,11 @@
    Styled here rather than beside CreationOtherPanel, because it is only ever
    drawn inside a card and this stylesheet already comes with one. It takes the
    card's width by sitting in the same column, so nothing is measured. */
+/* Top-aligned, so the toggle stays on the brief's first line however many
+   lines the open panel runs to. */
 .mina-other__head {
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 10px;
 }
@@ -215,7 +217,7 @@
   transition: color var(--mina-anim-fade) ease;
   color: var(--mina-text);
   font-size: var(--mina-fs-micro);
-  font-weight: var(--mina-fw-med);
+  font-weight: var(--mina-fw-strong);
 }
 
 .mina-other__action:hover,

@@ -178,6 +178,14 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
   background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.12);
 }
 
+/* Latched on, so it holds the ground hovering would have given it. Scoped to
+   this one pill: the layout toggle carries `aria-pressed` too, and keeps its
+   own heavier ground. */
+.mina-profile__filter--liked[aria-pressed='true'] {
+  background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.12);
+  color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.6);
+}
+
 /* Keeps the heavier ground, so it reads as a control rather than a text filter. */
 .mina-profile__filter--layout {
   display: inline-flex;

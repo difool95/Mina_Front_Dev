@@ -17,6 +17,9 @@ interface CreationCardProps {
    * hangs. Library passes nothing and takes its one shape from CSS instead.
    */
   placement?: { ratio: string; span: number; offset: string }
+  /** Held by the archive, so only one creation's panel is ever open. */
+  isPanelOpen: boolean
+  onTogglePanel: () => void
   onOpen: () => void
   onDownload: () => void
   onDelete: () => void
@@ -25,6 +28,8 @@ interface CreationCardProps {
 export function CreationCard({
   generation,
   placement,
+  isPanelOpen,
+  onTogglePanel,
   onOpen,
   onDownload,
   onDelete,
@@ -99,7 +104,7 @@ export function CreationCard({
         <CreationMedia url={url} alt={prompt} motion={isMotion(generation)} />
       </button>
 
-      <CreationOtherPanel generation={generation} />
+      <CreationOtherPanel generation={generation} isOpen={isPanelOpen} onToggle={onTogglePanel} />
     </article>
   )
 }

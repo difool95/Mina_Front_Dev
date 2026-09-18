@@ -304,13 +304,21 @@ function isWithin(generation: MegaGeneration, time: TimeFilter, now: Date) {
 
 export function filterGenerations(
   generations: MegaGeneration[],
-  filters: { time: TimeFilter; mode: ModeFilter; ratio: RatioFilter },
+  filters: {
+    time: TimeFilter
+    mode: ModeFilter
+    ratio: RatioFilter
+    /** The creations to keep, or null while the Liked filter is off. */
+    likedIds: Set<string> | null
+  },
   now = new Date(),
 ) {
   return generations.filter((generation) => {
     if (!isWithin(generation, filters.time, now)) return false
 
     if (filters.mode !== 'all' && isMotion(generation) !== (filters.mode === 'motion')) return false
+
+    if (filters.likedIds && !filters.likedIds.has(generation.mg_generation_id ?? '')) return false
 
     return filters.ratio === 'all' || ratioOf(generation) === filters.ratio
   })

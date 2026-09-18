@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import {
   useCopyLink,
@@ -16,6 +16,16 @@ import { Icon } from './Icon'
 /** The studio actions the panel offers. None of them are wired to anything yet. */
 const ACTIONS = ['Set scene', 'Animate', 'Re-create']
 
+/** How long the share button says so after putting the link on the clipboard. */
+const COPIED_MS = 1500
+
+interface CreationOtherPanelProps {
+  generation: MegaGeneration
+  /** Owned by the archive, so opening one panel closes whichever was open. */
+  isOpen: boolean
+  onToggle: () => void
+}
+
 /**
  * The creation's caption, and everything behind it.
  *
@@ -26,9 +36,14 @@ const ACTIONS = ['Set scene', 'Animate', 'Re-create']
  *
  * It takes the whole creation rather than a bag of props: everything on show
  * is derived from that row, so the card has nothing to unpack on its behalf.
+ * Whether it is open is the exception — the archive holds that, so only one
+ * panel can be open at a time.
  */
-export function CreationOtherPanel({ generation }: { generation: MegaGeneration }) {
-  const [isOpen, setIsOpen] = useState(false)
+export function CreationOtherPanel({ generation, isOpen, onToggle }: CreationOtherPanelProps) {
+  const [isCopied, setIsCopied] = useState(false)
+  const copied = useRef<number | null>(null)
+
+  useEffect(() => () => window.clearTimeout(copied.current ?? undefined), [])
 
   const { session } = useAuth()
   const userId = session?.user.id
@@ -56,11 +71,7 @@ export function CreationOtherPanel({ generation }: { generation: MegaGeneration 
         <p className={`mina-other__prompt${isOpen ? ' mina-other__prompt--full' : ''}`}>
           {promptOf(generation)}
         </p>
-        <button
-          className="mina-other__toggle"
-          type="button"
-          onClick={() => setIsOpen((wasOpen) => !wasOpen)}
-        >
+        <button className="mina-other__toggle" type="button" onClick={onToggle}>
           {isOpen ? 'less' : 'more'}
         </button>
       </div>
@@ -114,9 +125,17 @@ export function CreationOtherPanel({ generation }: { generation: MegaGeneration 
               <button
                 className="mina-other__action"
                 type="button"
-                onClick={() => copyLink.mutate(viewerLinkFor(generation))}
+                onClick={() =>
+                  copyLink.mutate(viewerLinkFor(generation), {
+                    // Only says so once the clipboard has actually taken it.
+                    onSuccess: () => {
+                      setIsCopied(true)
+                      copied.current = window.setTimeout(() => setIsCopied(false), COPIED_MS)
+                    },
+                  })
+                }
               >
-                Copy link
+                {isCopied ? 'Copied' : 'Copy link'}
                 <Icon name="link" size={12} />
               </button>
             </span>

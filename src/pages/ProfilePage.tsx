@@ -13,6 +13,7 @@ import {
   useDeleteGeneration,
   useDownloadMedia,
   useGenerations,
+  useLikedGenerations,
 } from '@/hooks/useGenerations'
 import { MINA_LOGO_URL } from '@/lib/constants'
 import {
@@ -56,12 +57,16 @@ export function ProfilePage() {
   const [time, setTime] = useState<TimeFilter>('all')
   const [mode, setMode] = useState<ModeFilter>('all')
   const [ratio, setRatio] = useState<RatioFilter>('all')
+  const [isLikedOnly, setIsLikedOnly] = useState(false)
   const [layout, setLayout] = useState<ArchiveLayout>('editorial')
   // Mobile only: the account fields collapse behind this, since the row cannot
   // fit across a phone. Desktop ignores it and shows them all.
   const [menuOpen, setMenuOpen] = useState(false)
   // The creation shown full screen, or null when the archive is on show.
   const [opened, setOpened] = useState<MegaGeneration | null>(null)
+  // The one creation whose panel is open, by `mg_id`. Held here rather than in
+  // each card, which is what keeps a second panel from opening beside the first.
+  const [panel, setPanel] = useState<string | null>(null)
 
   // The archive can run taller than the viewport; the page scrolls, but
   // without the browser's own scrollbar drawn over it.
@@ -74,13 +79,19 @@ export function ProfilePage() {
   const userId = session?.user.id
 
   const { data: generations, isPending } = useGenerations(userId)
+  const { data: likedIds } = useLikedGenerations(userId)
   const { data: credits } = useCustomerCredits(userId)
   const remove = useDeleteGeneration(userId)
   const download = useDownloadMedia()
   const copyLink = useCopyLink()
   const copyMedia = useCopyMedia()
 
-  const visible = filterGenerations(generations ?? [], { time, mode, ratio })
+  const visible = filterGenerations(generations ?? [], {
+    time,
+    mode,
+    ratio,
+    likedIds: isLikedOnly ? (likedIds ?? new Set()) : null,
+  })
 
   // Paging inside the full-screen view walks the archive as it is filtered,
   // and wraps at both ends.
@@ -196,9 +207,15 @@ export function ProfilePage() {
           >
             {labelFor(MODE_FILTERS, mode)}
           </button>
-          {/* Nothing in the schema records a like yet, so this only ever reads
-              "Liked" — the slot is here for when that lands. */}
-          <button className="mina-profile__filter" type="button" data-tooltip="Liked only">
+          {/* The only filter that latches rather than stepping through values,
+              so it keeps the hover ground while it is on. */}
+          <button
+            className="mina-profile__filter mina-profile__filter--liked"
+            type="button"
+            aria-pressed={isLikedOnly}
+            data-tooltip={isLikedOnly ? 'Show all' : 'Liked only'}
+            onClick={() => setIsLikedOnly(!isLikedOnly)}
+          >
             Liked
           </button>
           <button
@@ -251,6 +268,10 @@ export function ProfilePage() {
             key={generation.mg_id}
             generation={generation}
             placement={layout === 'editorial' ? editorialPlacement(index) : undefined}
+            isPanelOpen={panel === generation.mg_id}
+            onTogglePanel={() =>
+              setPanel((current) => (current === generation.mg_id ? null : generation.mg_id))
+            }
             onOpen={() => setOpened(generation)}
             onDownload={() => saveMedia(generation)}
             onDelete={() => remove.mutate(generation.mg_id)}
