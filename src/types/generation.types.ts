@@ -9,7 +9,18 @@ export type ArchiveLayout = 'editorial' | 'library'
 
 /** The slice of `mg_mma_vars` the archive reads — the rest of the blob is the studio's. */
 export interface GenerationVars {
-  inputs?: { brief?: string }
+  /** `still` or `video`. Which lane and resolution key below apply hangs on it. */
+  mode?: string
+  inputs?: {
+    brief?: string
+    still_lane?: string
+    video_lane?: string
+    /** A still's resolution. A clip records its own under `mode`. */
+    resolution?: string
+    mode?: string
+    aspect_ratio?: string
+  }
+  meta?: { billing?: { matchas?: number } }
 }
 
 /** A `mega_generations` row whose `mg_record_type` is `generation`. */

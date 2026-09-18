@@ -6,6 +6,7 @@ import { isMotion, promptOf } from '@/lib/generations'
 import type { MegaGeneration } from '@/types/generation.types'
 
 import { CreationMedia } from './CreationMedia'
+import { CreationOtherPanel } from './CreationOtherPanel'
 
 import './CreationCard.css'
 
@@ -98,12 +99,7 @@ export function CreationCard({
         <CreationMedia url={url} alt={prompt} motion={isMotion(generation)} />
       </button>
 
-      <footer className="mina-creation__foot">
-        <p className="mina-creation__prompt">{prompt}</p>
-        <button className="mina-creation__more" type="button">
-          more
-        </button>
-      </footer>
+      <CreationOtherPanel generation={generation} />
     </article>
   )
 }

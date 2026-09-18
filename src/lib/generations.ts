@@ -69,6 +69,28 @@ export function promptOf(generation: MegaGeneration) {
 }
 
 /**
+ * The settings a creation was made with, read out of the same blob.
+ *
+ * Which key holds what depends on the lane: a still takes its lane from
+ * `still_lane` and its resolution from `resolution`, a clip takes them from
+ * `video_lane` and `mode`.
+ */
+export function detailsOf(generation: MegaGeneration) {
+  const vars = generation.mg_mma_vars
+  const inputs = vars?.inputs
+  const still = vars?.mode === 'still'
+
+  return {
+    type: vars?.mode ?? '',
+    mode: (still ? inputs?.still_lane : inputs?.video_lane) ?? '',
+    resolution: (still ? inputs?.resolution : inputs?.mode) ?? '',
+    ratio: inputs?.aspect_ratio ?? '',
+    // Creations made before billing was recorded all cost exactly one.
+    matchas: vars?.meta?.billing?.matchas ?? 1,
+  }
+}
+
+/**
  * The shareable link to a creation — the app's own viewer route carrying the
  * media URL, rather than the raw asset URL.
  *

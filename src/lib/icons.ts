@@ -27,6 +27,9 @@ export const ICON_PATHS = {
      direction — the carousel's paging arrows. */
   prev: ['M14.5 6.5 8.5 12l6 5.5'],
   next: ['M9.5 6.5 15.5 12l-6 5.5'],
+  /* Two arcs meeting at the point. Closed, so `Icon` can fill it once the
+     creation is liked. */
+  heart: ['M12 19.5c-1.2-.9-7-4.6-7-9.1a3.9 3.9 0 0 1 7-2.4 3.9 3.9 0 0 1 7 2.4c0 4.5-5.8 8.2-7 9.1z'],
 } as const
 
 export type IconName = keyof typeof ICON_PATHS

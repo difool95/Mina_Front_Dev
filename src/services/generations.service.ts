@@ -1,3 +1,4 @@
+import { isMotion } from '@/lib/generations'
 import type { MegaGeneration } from '@/types/generation.types'
 
 import { supabase } from './supabase.client'
@@ -28,6 +29,66 @@ export async function getGenerations(userId: string) {
 
 export async function deleteGeneration(mgId: string) {
   const { error } = await supabase.from('mega_generations').delete().eq('mg_id', mgId)
+
+  if (error) throw new Error(error.message)
+}
+
+/**
+ * A like is an `mma_event` row rather than a column on the creation, so the
+ * three functions below all work the same seam: same owner, same creation, and
+ * `event_type` read out of the meta blob — `mega_generations` carries many
+ * other kinds of event for the same creation.
+ */
+const LIKE_EVENT = { mg_record_type: 'mma_event', 'mg_meta->>event_type': 'like' }
+
+/** The creations this user has liked, as generation ids. */
+export async function getLikedGenerationIds(userId: string) {
+  const { data, error } = await supabase
+    .from('mega_generations')
+    .select('mg_generation_id')
+    .eq('mg_pass_id', `pass:user:${userId}`)
+    .match(LIKE_EVENT)
+
+  if (error) throw new Error(error.message)
+
+  return new Set((data ?? []).map((row) => row.mg_generation_id as string))
+}
+
+export async function likeGeneration(generation: MegaGeneration, userId: string) {
+  const at = new Date().toISOString()
+
+  const { error } = await supabase.from('mega_generations').insert({
+    mg_id: `mma_event:${crypto.randomUUID()}`,
+    mg_record_type: 'mma_event',
+    mg_pass_id: `pass:user:${userId}`,
+    mg_generation_id: generation.mg_generation_id,
+    mg_parent_id: `generation:${generation.mg_generation_id}`,
+    mg_meta: {
+      payload: {
+        url: generation.mg_output_url,
+        result_type: isMotion(generation) ? 'video' : 'image',
+      },
+      event_type: 'like',
+    },
+    mg_created_at: at,
+    mg_updated_at: at,
+  })
+
+  if (error) throw new Error(error.message)
+}
+
+/**
+ * Deletes every like this user holds on the creation, not just one: older code
+ * added a row per press without ever removing them, so the table has stacks of
+ * them to clear.
+ */
+export async function unlikeGeneration(generationId: string, userId: string) {
+  const { error } = await supabase
+    .from('mega_generations')
+    .delete()
+    .eq('mg_pass_id', `pass:user:${userId}`)
+    .eq('mg_generation_id', generationId)
+    .match(LIKE_EVENT)
 
   if (error) throw new Error(error.message)
 }

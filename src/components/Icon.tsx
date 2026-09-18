@@ -6,13 +6,22 @@ import { ICON_PATHS, type IconName } from '@/lib/icons'
  * Takes its colour from whatever it sits in via `currentColor`, so the same
  * icon works on glass, on paper, or inverted, without a variant each time.
  */
-export function Icon({ name, size = 22 }: { name: IconName; size?: number }) {
+export function Icon({
+  name,
+  size = 22,
+  isFilled = false,
+}: {
+  name: IconName
+  size?: number
+  /** Floods a closed shape with the same colour it is drawn in — a liked heart. */
+  isFilled?: boolean
+}) {
   return (
     <svg
       viewBox="0 0 24 24"
       width={size}
       height={size}
-      fill="none"
+      fill={isFilled ? 'currentColor' : 'none'}
       stroke="currentColor"
       strokeWidth="1.5"
       strokeLinecap="round"

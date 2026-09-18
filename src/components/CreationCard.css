@@ -127,6 +127,7 @@
   transform: scale(1.03);
 }
 
+/* Only the skeleton draws this now; a real creation carries the panel below. */
 .mina-creation__foot {
   display: flex;
   align-items: flex-end;
@@ -134,7 +135,20 @@
   gap: 10px;
 }
 
-.mina-creation__prompt {
+/* ── the "more" panel ──
+   Styled here rather than beside CreationOtherPanel, because it is only ever
+   drawn inside a card and this stylesheet already comes with one. It takes the
+   card's width by sitting in the same column, so nothing is measured. */
+.mina-other__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+/* Closed: one line, cut with an ellipsis wherever it runs out. Open: the whole
+   brief, however many lines that takes. */
+.mina-other__prompt {
   overflow: hidden;
   margin: 0;
   color: var(--mina-muted);
@@ -144,12 +158,75 @@
   white-space: nowrap;
 }
 
-.mina-creation__more {
+.mina-other__prompt--full {
+  overflow: visible;
+  white-space: normal;
+}
+
+.mina-other__toggle {
   flex-shrink: 0;
   color: var(--mina-muted);
   font-size: var(--mina-fs-micro);
   text-decoration: underline;
   text-underline-offset: var(--mina-btn-underline-offset);
+}
+
+/* Each block of rows draws the rule above itself, so the panel reads as a
+   short table rather than a list of boxes. */
+.mina-other__section {
+  margin-top: 8px;
+  border-top: 1px solid var(--mina-hairline);
+  padding-top: 8px;
+}
+
+.mina-other__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 20px;
+}
+
+.mina-other__label {
+  color: var(--mina-muted);
+  font-size: var(--mina-fs-micro);
+  font-weight: var(--mina-fw-light);
+}
+
+.mina-other__value {
+  color: var(--mina-text);
+  font-size: var(--mina-fs-micro);
+  font-weight: var(--mina-fw-light);
+}
+
+.mina-other__buttons {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* The row actions and the two share links read the same: a word, sometimes
+   with its icon beside it. */
+.mina-other__action,
+.mina-other__like {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: color var(--mina-anim-fade) ease;
+  color: var(--mina-text);
+  font-size: var(--mina-fs-micro);
+  font-weight: var(--mina-fw-med);
+}
+
+.mina-other__action:hover,
+.mina-other__like:hover {
+  color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.6);
+}
+
+/* Liked: only the heart turns, not the word beside it. `Icon` draws itself in
+   `currentColor`, so colouring the svg is what fills it red. */
+.mina-other__like--on svg {
+  color: var(--mina-like-red);
 }
 
 @media (width < 768px) {
@@ -168,7 +245,8 @@
   /* The library grid on a phone is a moodboard: tiles only, no controls and no
      captions between them. */
   .mina-archive--library .mina-creation__bar,
-  .mina-archive--library .mina-creation__foot {
+  .mina-archive--library .mina-creation__foot,
+  .mina-archive--library .mina-other {
     display: none;
   }
 
