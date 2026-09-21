@@ -1,0 +1,173 @@
+/* Centred by the dialog's own margin, over a blurred archive. */
+.mina-matcha {
+  width: min(640px, calc(100vw - 32px));
+  max-width: none;
+  margin: auto;
+  border: 0;
+  background: var(--mina-bg);
+  padding: 0;
+  box-shadow: 0 20px 60px rgba(var(--mina-ink-rgb, 8, 10, 0), 0.14);
+}
+
+.mina-matcha::backdrop {
+  backdrop-filter: blur(var(--mina-backdrop-blur));
+  background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.22);
+}
+
+@keyframes mina-matcha-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.mina-matcha[open] {
+  animation: mina-matcha-fade-in var(--mina-anim-modal) ease-out;
+}
+
+.mina-matcha__table {
+  --table-row-h: 28px;
+  --table-gap-y: 8px;
+
+  padding: 16px 18px 14px;
+}
+
+/* The rows are inset a little further than the table is, so the rules run
+   wider than the text standing on them. */
+.mina-matcha__table .mina-table__row {
+  padding: 0 6px;
+}
+
+/* The title stands clear of the pricing below it, and the purchase row clear
+   of the slider above it. */
+.mina-matcha__lead {
+  margin-bottom: 20px;
+}
+
+.mina-matcha__foot {
+  margin-top: 12px;
+  margin-bottom: 8px;
+}
+
+/* A rate is its rule and its row travelling together, so the three of them
+   can be hidden as one without leaving a stray line behind. */
+.mina-matcha__rate {
+  display: contents;
+}
+
+.mina-matcha__title {
+  margin: 0;
+  font-size: var(--mina-fs-h4);
+  font-weight: var(--mina-fw-title);
+}
+
+/* Same bar as the full-screen view's close, and the only way out of here. */
+.mina-matcha__close {
+  display: flex;
+  align-items: center;
+  margin: -10px -10px 0 0;
+  padding: 10px;
+  color: var(--mina-text);
+}
+
+.mina-matcha__close-bar {
+  display: block;
+  width: 10px;
+  height: 1.5px;
+  background: currentColor;
+}
+
+/* The cups sit close to the count they explain, closer than the row's own
+   cells sit to each other. */
+.mina-matcha__cups {
+  gap: 5px;
+}
+
+/* The one cell here long enough to outrun a phone. Rows hold their cells to
+   one line, so this says otherwise on itself — `white-space` is inherited, so
+   declaring it here beats the row without a specificity fight — and shrinks
+   rather than pushing the dialog wider than the screen. */
+.mina-matcha__blurb {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  color: var(--mina-muted);
+  font-size: var(--mina-fs-small);
+  font-weight: var(--mina-fw-med);
+  white-space: normal;
+}
+
+.mina-matcha__kind,
+.mina-matcha__breakdown {
+  color: var(--mina-muted);
+  font-size: var(--mina-fs-small);
+  font-weight: var(--mina-fw-med);
+}
+
+.mina-matcha__cost {
+  font-size: var(--mina-fs-small);
+  font-weight: var(--mina-fw-strong);
+}
+
+.mina-matcha__action,
+.mina-matcha__transparency {
+  transition: color var(--mina-anim-fade) ease;
+  color: var(--mina-text);
+  font-size: var(--mina-fs-small);
+  font-weight: var(--mina-fw-strong);
+  text-decoration: underline;
+  text-underline-offset: var(--mina-btn-underline-offset);
+}
+
+/* Reads as a label until it is asked for, then the answer appears beside it. */
+.mina-matcha__transparency {
+  color: var(--mina-muted);
+  font-weight: var(--mina-fw-light);
+  text-decoration: none;
+}
+
+/* Shows and hides the pricing rather than leaving the panel, so it is not
+   dressed as a link. */
+.mina-matcha__action--plain {
+  text-decoration: none;
+}
+
+.mina-matcha__action:hover,
+.mina-matcha__transparency:hover {
+  color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.6);
+}
+
+/* The slider brings its own height, and wants more room at its ends than the
+   rows above it — the outer two stops hold the very edges of the track. */
+/* Qualified by the table so it outranks the padding every row gets above. */
+.mina-matcha__table .mina-matcha__slider-row {
+  margin: 18px 0 20px;
+  padding: 0 16px;
+}
+
+.mina-matcha__slider-row .mina-slider {
+  width: 100%;
+}
+
+.mina-matcha__purchase {
+  transition: color var(--mina-anim-fade) ease;
+  color: var(--mina-text);
+  font-size: var(--mina-fs-h5);
+  font-weight: var(--mina-fw-title);
+  text-decoration: underline;
+  text-underline-offset: var(--mina-btn-underline-offset);
+}
+
+.mina-matcha__purchase:hover {
+  color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.6);
+}
+
+/* The dialog holds real controls, so they keep the pointer and the reset the
+   profile applies to its own buttons. */
+:where(.mina-matcha button) {
+  border: 0;
+  background: none;
+  color: inherit;
+  font-family: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+}

@@ -6,7 +6,8 @@ import { AppFooter } from '@/components/AppFooter'
 import { CreationCard } from '@/components/CreationCard'
 import { CreationFullScreen } from '@/components/CreationFullScreen'
 import { CreationSkeleton } from '@/components/CreationSkeleton'
-import { Row, Rule, Table } from '@/components/table/Table'
+import { MatchaPanel } from '@/components/MatchaPanel'
+import { Row, Rule, Table } from '@/components/builder/Table'
 import { useCustomerCredits } from '@/hooks/useCustomerCredits'
 import {
   useCopyLink,
@@ -63,6 +64,7 @@ export function ProfilePage() {
   // Mobile only: the account fields collapse behind this, since the row cannot
   // fit across a phone. Desktop ignores it and shows them all.
   const [menuOpen, setMenuOpen] = useState(false)
+  const [isBuying, setIsBuying] = useState(false)
   // The creation shown full screen, or null when the archive is on show.
   const [opened, setOpened] = useState<MegaGeneration | null>(null)
   // The one creation whose panel is open, by `mg_id`. Held here rather than in
@@ -119,7 +121,11 @@ export function ProfilePage() {
           <Link className="mina-profile__logo" to="/" aria-label="Mina home">
             <img src={MINA_LOGO_URL} alt="Mina" />
           </Link>
-          <button className="mina-profile__matcha" type="button">
+          <button
+            className="mina-profile__matcha"
+            type="button"
+            onClick={() => setIsBuying(true)}
+          >
             Get more Matcha
           </button>
         </Row>
@@ -318,6 +324,8 @@ export function ProfilePage() {
           onNavigate={visible.length > 1 ? step : undefined}
         />
       )}
+
+      {isBuying && <MatchaPanel onClose={() => setIsBuying(false)} />}
 
       <AppFooter current="profile" mobileOnly />
     </div>

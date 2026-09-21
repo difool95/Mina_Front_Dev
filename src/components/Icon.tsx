@@ -16,19 +16,25 @@ export function Icon({
   /** Floods a closed shape with the same colour it is drawn in — a liked heart. */
   isFilled?: boolean
 }) {
+  const entry = ICON_PATHS[name]
+  // Most icons are a bare list of paths on the house 24×24 grid; one that
+  // brought its own grid says so, and carries the stroke drawn at that size.
+  const { box, stroke, paths } =
+    'paths' in entry ? entry : { box: '0 0 24 24', stroke: 1.5, paths: entry }
+
   return (
     <svg
-      viewBox="0 0 24 24"
+      viewBox={box}
       width={size}
       height={size}
       fill={isFilled ? 'currentColor' : 'none'}
       stroke="currentColor"
-      strokeWidth="1.5"
+      strokeWidth={stroke}
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      {ICON_PATHS[name].map((d) => (
+      {paths.map((d) => (
         <path key={d} d={d} />
       ))}
     </svg>

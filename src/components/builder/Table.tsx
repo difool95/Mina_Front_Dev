@@ -9,8 +9,8 @@ interface RowProps {
    * them; `left` and `right` pack them all against one side.
    */
   anchor?: 'between' | 'left' | 'right'
-  /** `top` for a row whose cells differ in height — one holding a paragraph. */
-  valign?: 'center' | 'top'
+  /** Where the cells sit against the row's height when they are shorter. */
+  valign?: 'center' | 'top' | 'bottom'
   className?: string
   children: ReactNode
 }
@@ -47,4 +47,12 @@ export function Row({ anchor = 'between', valign = 'center', className, children
 /** The line between two rows, and a row in its own right. */
 export function Rule() {
   return <div className="mina-table__rule" />
+}
+
+/**
+ * Several cells travelling as one, so a row can hold a cluster at each end
+ * instead of spreading every cell evenly across itself.
+ */
+export function Group({ className, children }: { className?: string; children: ReactNode }) {
+  return <span className={`mina-table__group${className ? ` ${className}` : ''}`}>{children}</span>
 }

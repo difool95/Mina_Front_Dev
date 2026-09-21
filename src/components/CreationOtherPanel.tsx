@@ -12,7 +12,7 @@ import { useAuth } from '@/providers/AuthProvider'
 import type { MegaGeneration } from '@/types/generation.types'
 
 import { Icon } from './Icon'
-import { Row, Rule, Table } from './table/Table'
+import { Row, Rule, Table } from './builder/Table'
 
 /** The studio actions the panel offers. None of them are wired to anything yet. */
 const ACTIONS = ['Set scene', 'Animate', 'Re-create']

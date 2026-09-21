@@ -1,0 +1,85 @@
+.mina-slider {
+  --slider-dot: 11px;
+  --slider-rail: 2px;
+  /* What a length of rail leaves clear of the dot at each of its ends. */
+  --slider-clear: 5px;
+
+  position: relative;
+  height: 62px;
+}
+
+/* Each length runs between two stops and is held off both dots by its own
+   margins, which is what leaves the gap either side. */
+.mina-slider__rail {
+  position: absolute;
+  top: 50%;
+  height: var(--slider-rail);
+  margin: 0 calc(var(--slider-dot) / 2 + var(--slider-clear));
+  transform: translateY(-50%);
+  background: var(--mina-hairline);
+}
+
+/* The outer two dots hold the ends of the track rather than centring on
+   them, so they stand a whole dot inside it rather than half of one — and
+   the rail that meets them has to clear that much. */
+.mina-slider__rail:first-of-type {
+  margin-left: calc(var(--slider-dot) + var(--slider-clear));
+}
+
+.mina-slider__rail:last-of-type {
+  margin-right: calc(var(--slider-dot) + var(--slider-clear));
+}
+
+.mina-slider__rail--filled {
+  background: var(--mina-text);
+}
+
+/* Each stop stands at its own fraction of the track, its dot on the rail and
+   its two labels above and below. */
+.mina-slider__stop {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--at);
+  z-index: 1;
+  display: grid;
+  align-content: space-between;
+  justify-items: center;
+  transform: translateX(-50%);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--mina-muted);
+  font-family: inherit;
+  font-size: var(--mina-fs-small);
+  font-weight: var(--mina-fw-strong);
+  cursor: pointer;
+}
+
+/* The outer two would hang off the track's ends, so they hold its edges
+   instead of centring on them. By type, not by position: the rails are the
+   first children of the track, so `:first-child` would match none of these. */
+.mina-slider__stop:first-of-type {
+  transform: none;
+  justify-items: start;
+}
+
+.mina-slider__stop:last-of-type {
+  transform: translateX(-100%);
+  justify-items: end;
+}
+
+/* Reached: the amount, the dot and the price all come up to full strength. */
+.mina-slider__stop--on {
+  color: var(--mina-text);
+}
+
+.mina-slider__dot {
+  width: var(--slider-dot);
+  height: var(--slider-dot);
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* The price carries the same weight as the amount over it: the two are one
+   label split across the rail, not a heading and a note. */

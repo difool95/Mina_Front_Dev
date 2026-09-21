@@ -19,3 +19,30 @@ export const FOOTER_LINKS = [
 ] as const
 
 export const CURATOR_COUNT_LABEL = '5.5k curators use Mina'
+
+/**
+ * The matcha packs on sale, cheapest first. The second is the one offered.
+ *
+ * `at` is where each sits along the slider, as a percentage. They are placed
+ * by eye rather than by price or by even steps: the two smallest packs sit
+ * close together at the left, and the middle of the track falls on 1500.
+ */
+export const MATCHA_PACKS = [
+  { matchas: 100, price: 70, at: 0 },
+  { matchas: 500, price: 350, at: 20 },
+  { matchas: 1500, price: 1050, at: 50 },
+  { matchas: 5000, price: 2925, at: 100 },
+] as const
+
+export const DEFAULT_MATCHA_PACK = 500
+
+/** What a generation costs, by what it is. One row of the pricing table each. */
+export const MATCHA_RATES = [
+  { kinds: ['1 Niche', '1 Creative', '1 Creative+'], matchas: 1 },
+  { kinds: ['2s Director', '4s Quicks'], matchas: 2 },
+  { kinds: ['1s 4K Director', '2s 4K Quicks'], matchas: 3 },
+] as const
+
+/** Where the price of a matcha goes, revealed by "Price Transparency". */
+export const PRICE_BREAKDOWN =
+  'Cost €35 - New features €14 - Marketing & Branding €14 - Profit €7'

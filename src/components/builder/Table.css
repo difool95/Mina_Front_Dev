@@ -46,6 +46,18 @@
   align-items: flex-start;
 }
 
+.mina-table__row--bottom {
+  align-items: flex-end;
+}
+
 .mina-table__rule {
   border-top: 1px solid var(--mina-hairline);
+}
+
+/* One cell as far as the row is concerned, so the row spreads the groups and
+   not the cells inside them. */
+.mina-table__group {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--table-gap-x);
 }
