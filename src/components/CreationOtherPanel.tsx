@@ -12,6 +12,7 @@ import { useAuth } from '@/providers/AuthProvider'
 import type { MegaGeneration } from '@/types/generation.types'
 
 import { Icon } from './Icon'
+import { Row, Rule, Table } from './table/Table'
 
 /** The studio actions the panel offers. None of them are wired to anything yet. */
 const ACTIONS = ['Set scene', 'Animate', 'Re-create']
@@ -66,82 +67,86 @@ export function CreationOtherPanel({ generation, isOpen, onToggle }: CreationOth
   ]
 
   return (
-    <div className="mina-other">
-      <div className="mina-other__head">
+    <Table className="mina-other">
+      <Row valign="top">
         <p className={`mina-other__prompt${isOpen ? ' mina-other__prompt--full' : ''}`}>
           {promptOf(generation)}
         </p>
         <button className="mina-other__toggle" type="button" onClick={onToggle}>
           {isOpen ? 'less' : 'more'}
         </button>
-      </div>
+      </Row>
 
       {isOpen && (
         <>
-          <div className="mina-other__section mina-other__row">
+          <Rule />
+
+          <Row>
             <span className="mina-other__label">Type</span>
             <span className="mina-other__value">{details.type}</span>
-          </div>
+          </Row>
 
-          <div className="mina-other__section mina-other__row">
+          <Rule />
+
+          {/* The buttons are cells of this row, so they spread across it and
+              carry to the next line whole rather than breaking their words. */}
+          <Row>
             <span className="mina-other__label">Actions</span>
-            <span className="mina-other__buttons">
-              {ACTIONS.map((action) => (
-                <button className="mina-other__action" type="button" key={action}>
-                  {action}
-                </button>
-              ))}
-            </span>
-          </div>
-
-          <div className="mina-other__section">
-            {rows.map(([label, value]) => (
-              <div className="mina-other__row" key={label}>
-                <span className="mina-other__label">{label}</span>
-                <span className="mina-other__value">{value}</span>
-              </div>
+            {ACTIONS.map((action) => (
+              <button className="mina-other__action" type="button" key={action}>
+                {action}
+              </button>
             ))}
+          </Row>
 
-            <div className="mina-other__row">
-              <span className="mina-other__label">Like</span>
-              <button
-                className={`mina-other__like${isLiked ? ' mina-other__like--on' : ''}`}
-                type="button"
-                onClick={() => (isLiked ? unlike.mutate(generationId) : like.mutate(generation))}
-              >
-                {isLiked ? 'Dislike' : 'Like'}
-                <Icon name="heart" size={13} isFilled={isLiked} />
-              </button>
-            </div>
-          </div>
+          <Rule />
 
-          <div className="mina-other__section mina-other__row">
+          {rows.map(([label, value]) => (
+            <Row key={label}>
+              <span className="mina-other__label">{label}</span>
+              <span className="mina-other__value">{value}</span>
+            </Row>
+          ))}
+
+          <Row>
+            <span className="mina-other__label">Like</span>
+            <button
+              className={`mina-other__like${isLiked ? ' mina-other__like--on' : ''}`}
+              type="button"
+              onClick={() => (isLiked ? unlike.mutate(generationId) : like.mutate(generation))}
+            >
+              {isLiked ? 'Dislike' : 'Like'}
+              <Icon name="heart" size={13} isFilled={isLiked} />
+            </button>
+          </Row>
+
+          <Rule />
+
+          <Row>
             <span className="mina-other__label">Share</span>
-            <span className="mina-other__buttons">
-              <button className="mina-other__action" type="button">
-                Prompt file
-                <Icon name="download" size={12} />
-              </button>
-              <button
-                className="mina-other__action"
-                type="button"
-                onClick={() =>
-                  copyLink.mutate(viewerLinkFor(generation), {
-                    // Only says so once the clipboard has actually taken it.
-                    onSuccess: () => {
-                      setIsCopied(true)
-                      copied.current = window.setTimeout(() => setIsCopied(false), COPIED_MS)
-                    },
-                  })
-                }
-              >
-                {isCopied ? 'Copied' : 'Copy link'}
-                <Icon name="link" size={12} />
-              </button>
-            </span>
-          </div>
+            <button className="mina-other__action" type="button">
+              Prompt file
+              <Icon name="download" size={12} />
+            </button>
+            <button
+              className="mina-other__action"
+              type="button"
+              onClick={() =>
+                copyLink.mutate(viewerLinkFor(generation), {
+                  // Only says so once the clipboard has actually taken it.
+                  onSuccess: () => {
+                    setIsCopied(true)
+                    copied.current = window.setTimeout(() => setIsCopied(false), COPIED_MS)
+                  },
+                })
+              }
+            >
+              {isCopied ? 'Copied' : 'Copy link'}
+              <Icon name="link" size={12} />
+            </button>
+          </Row>
         </>
       )}
-    </div>
+    </Table>
   )
 }

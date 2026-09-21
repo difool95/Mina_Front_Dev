@@ -1,6 +1,11 @@
+/* The font size is set here as well as on the trigger: as an inline-block this
+   box is as tall as its line box, and an unset size leaves that measured
+   against the inherited 16px rather than the 10.5px actually drawn — which
+   stands the account row ~7px taller than every other row beside it. */
 .mina-account {
   position: relative;
   display: inline-block;
+  font-size: var(--mina-fs-label);
 }
 
 /* Left as an inline button rather than a flex box, so its text baseline is the

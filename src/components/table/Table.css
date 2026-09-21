@@ -1,0 +1,51 @@
+/* The three knobs a table is tuned by. Override them on the table's own class
+   to change its beat without touching any row. */
+.mina-table {
+  --table-row-h: 22px;
+  --table-gap-x: 14px;
+  --table-gap-y: 6px;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--table-gap-y);
+}
+
+/* `white-space` is inherited, so a cell that genuinely needs to wrap — a
+   prompt — overrides it on itself and wins without a specificity fight. */
+.mina-table__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--table-gap-x);
+  min-height: var(--table-row-h);
+  white-space: nowrap;
+}
+
+/* Cells may shrink under their content, which is what lets a long one end in
+   an ellipsis rather than push the row wider than the table. */
+.mina-table__row > * {
+  min-width: 0;
+}
+
+.mina-table__row--between {
+  justify-content: space-between;
+}
+
+.mina-table__row--left {
+  justify-content: flex-start;
+}
+
+.mina-table__row--right {
+  justify-content: flex-end;
+}
+
+.mina-table__row--center {
+  align-items: center;
+}
+
+.mina-table__row--top {
+  align-items: flex-start;
+}
+
+.mina-table__rule {
+  border-top: 1px solid var(--mina-hairline);
+}

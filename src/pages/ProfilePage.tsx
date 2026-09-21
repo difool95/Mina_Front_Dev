@@ -6,6 +6,7 @@ import { AppFooter } from '@/components/AppFooter'
 import { CreationCard } from '@/components/CreationCard'
 import { CreationFullScreen } from '@/components/CreationFullScreen'
 import { CreationSkeleton } from '@/components/CreationSkeleton'
+import { Row, Rule, Table } from '@/components/table/Table'
 import { useCustomerCredits } from '@/hooks/useCustomerCredits'
 import {
   useCopyLink,
@@ -122,10 +123,10 @@ export function ProfilePage() {
         </button>
       </header>
 
-      {/* The two wrappers below are `display: contents` on desktop, so every
-          field still lays out as one wrapping row there. */}
-      <div className="mina-profile__account">
-        <div className="mina-profile__account-head">
+      {/* Four rows and their rules on a phone. On desktop the rows dissolve and
+          every field lays out on one wrapping line — see ProfilePage.css. */}
+      <Table className="mina-profile__account">
+        <Row className="mina-profile__account-head">
           {/* Spelled out on desktop, clipped to fit the phone header. */}
           <Link className="mina-profile__back" to="/" data-tooltip="Back to the studio">
             <span className="mina-profile__back--long">Go Back</span>
@@ -139,45 +140,61 @@ export function ProfilePage() {
           >
             {menuOpen ? 'Close Menu' : 'Menu'}
           </button>
-        </div>
+        </Row>
 
-        {/* Each label sits with its own value, so the two share a baseline
-            however wide the value turns out to be. */}
+        <Rule />
+
+        {/* Dissolves like the rows do, so these are rows of the same table.
+            It exists only to hide the three of them at once on a phone. */}
         <div className="mina-profile__fields" data-open={menuOpen || undefined}>
-          <span className="mina-profile__field mina-profile__field--email">
-            <span className="mina-profile__label">Email</span>
-            <AccountMenu email={session?.user.email ?? ''} />
-          </span>
+          {/* Brand Memory is dropped on a phone, which is what leaves Email
+              and Auto-Matcha alone on this row. */}
+          <Row>
+            <span className="mina-profile__field mina-profile__field--email">
+              <span className="mina-profile__label">Email</span>
+              <AccountMenu email={session?.user.email ?? ''} />
+            </span>
 
-          <span className="mina-profile__field mina-profile__field--brand">
-            <span className="mina-profile__label">Brand Memory</span>
-            <button className="mina-profile__toggle" type="button">
-              ON
+            <span className="mina-profile__field mina-profile__field--brand">
+              <span className="mina-profile__label">Brand Memory</span>
+              <button className="mina-profile__toggle" type="button">
+                ON
+              </button>
+            </span>
+
+            <span className="mina-profile__field mina-profile__field--auto">
+              <span className="mina-profile__label">Auto-Matcha</span>
+              <button className="mina-profile__toggle" type="button">
+                OFF
+              </button>
+            </span>
+          </Row>
+
+          <Rule />
+
+          <Row>
+            <span className="mina-profile__field mina-profile__field--matcha">
+              <span className="mina-profile__label">Matcha</span>
+              <span className="mina-profile__value">{credits?.mg_credits ?? 0}</span>
+            </span>
+
+            <span className="mina-profile__field mina-profile__field--expiry">
+              <span className="mina-profile__label">Best before</span>
+              <span className="mina-profile__value">{formatDate(credits?.mg_expires_at)}</span>
+            </span>
+          </Row>
+
+          <Rule />
+
+          <Row anchor="right">
+            <button className="mina-profile__logout" type="button" onClick={() => void signOut()}>
+              Logout
             </button>
-          </span>
+          </Row>
 
-          <span className="mina-profile__field mina-profile__field--auto">
-            <span className="mina-profile__label">Auto-Matcha</span>
-            <button className="mina-profile__toggle" type="button">
-              OFF
-            </button>
-          </span>
-
-          <span className="mina-profile__field mina-profile__field--matcha">
-            <span className="mina-profile__label">Matcha</span>
-            <span className="mina-profile__value">{credits?.mg_credits ?? 0}</span>
-          </span>
-
-          <span className="mina-profile__field mina-profile__field--expiry">
-            <span className="mina-profile__label">Best before</span>
-            <span className="mina-profile__value">{formatDate(credits?.mg_expires_at)}</span>
-          </span>
-
-          <button className="mina-profile__logout" type="button" onClick={() => void signOut()}>
-            Logout
-          </button>
+          <Rule />
         </div>
-      </div>
+      </Table>
 
       <div className="mina-profile__archive-head">
         <div>

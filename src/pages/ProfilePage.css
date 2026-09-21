@@ -47,8 +47,12 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
 
 /* ── account row ── */
 
-.mina-profile__account {
-  display: flex;
+/* The account is a `Table`, but only on a phone. Here its rows dissolve so
+   every field lands on one wrapping line, which is what `display: contents`
+   below does. Prefixed with `.mina-profile` to outrank `.mina-table`'s own
+   column layout whichever order the two stylesheets are bundled in. */
+.mina-profile .mina-profile__account {
+  flex-direction: row;
   flex-wrap: wrap;
   align-items: baseline;
   gap: var(--mina-stack-row-gap) calc(var(--mina-stack-col-gap) * 1.75);
@@ -56,11 +60,14 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
   padding: var(--mina-account-row-pad-y) 0;
 }
 
-/* The wrappers exist for the mobile menu only — dissolving them here keeps
-   every field a direct child of the flex row on desktop. */
-.mina-profile__account-head,
+.mina-profile__account .mina-table__row,
 .mina-profile__fields {
   display: contents;
+}
+
+/* One line needs no rules across it; the row beneath draws its own. */
+.mina-profile__account .mina-table__rule {
+  display: none;
 }
 
 .mina-profile__menu {
@@ -335,22 +342,40 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
 
   /* ── account becomes a collapsible menu ── */
 
-  /* The head and the last open field each draw their own rule, so the row's
-     own border would double up against them. */
-  .mina-profile__account {
-    display: block;
+  /* The table stands back up: rows stack, each drawing its own rule, so the
+     block's own border would double against the last one. */
+  /* `stretch` undoes the baseline alignment the one-line desktop layout wants:
+     stacked rows have to fill the width, or nothing in them can anchor right. */
+  .mina-profile .mina-profile__account {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
     border-bottom: 0;
     padding: 0;
   }
 
-  /* Bled out past the page's side padding so its rule reaches both screen
-     edges, then padded back so Back and Menu keep their place. */
-  .mina-profile__account-head {
+  .mina-profile__account .mina-table__row {
     display: flex;
-    align-items: baseline;
-    justify-content: space-between;
+    padding: var(--mina-account-row-pad-y) 0;
+  }
+
+  .mina-profile__account .mina-table__rule {
+    display: block;
+  }
+
+  /* The head and its rule are bled past the page's side padding so that line
+     reaches both screen edges, then padded back so Back and Menu keep their
+     place. The rows below keep to the page.
+
+     Qualified by the table, or the generic row rule above — which is the more
+     specific of the two — zeroes that padding back out and drops Back and
+     Menu onto the screen edges. */
+  .mina-profile__account-head,
+  .mina-profile__account-head + .mina-table__rule {
     margin: 0 calc(-1 * var(--mina-footer-pad-x));
-    border-bottom: 1px solid var(--mina-hairline);
+  }
+
+  .mina-profile__account .mina-profile__account-head {
     padding: var(--mina-account-row-pad-y) var(--mina-footer-pad-x);
   }
 
@@ -358,42 +383,20 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
     display: inline;
   }
 
+  /* Closed, the three rows and their rules go with it; open, it dissolves and
+     they become rows of the table again. */
   .mina-profile__fields {
     display: none;
   }
 
-  /* Two columns, so each row reads label-left / value-right like the design.
-     No column gap: the cell borders meet and draw one continuous hairline. */
   .mina-profile__fields[data-open] {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 0;
+    display: contents;
   }
 
-  /* Every cell fills its half of the grid rather than shrinking to its text,
-     so the two borders in a row meet and draw one unbroken rule. */
-  .mina-profile__field,
-  .mina-profile__fields .mina-profile__logout {
-    display: flex;
-    border-bottom: 1px solid var(--mina-hairline);
-    padding: var(--mina-account-row-pad-y) 0;
-  }
-
-  /* No room for it on a phone, and it is the least used of the five. */
+  /* No room for it on a phone, and it is the least used of the five — which
+     is what leaves Email and Auto-Matcha alone on their row. */
   .mina-profile__field--brand {
     display: none;
-  }
-
-  /* Pushed to the right inside a full-width cell — not shrunk with
-     `justify-self`, which would pull the border in with it. */
-  .mina-profile__field--auto,
-  .mina-profile__field--expiry,
-  .mina-profile__fields .mina-profile__logout {
-    justify-content: flex-end;
-  }
-
-  .mina-profile__fields .mina-profile__logout {
-    grid-column: 1 / -1;
   }
 
   /* ── archive ── */

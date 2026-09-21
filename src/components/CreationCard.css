@@ -136,21 +136,16 @@
 }
 
 /* ── the "more" panel ──
-   Styled here rather than beside CreationOtherPanel, because it is only ever
-   drawn inside a card and this stylesheet already comes with one. It takes the
-   card's width by sitting in the same column, so nothing is measured. */
-/* Top-aligned, so the toggle stays on the brief's first line however many
-   lines the open panel runs to. */
-.mina-other__head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px;
-}
+   A `Table`, so only the cells are styled here — the rows, their rule and the
+   wrapping all come from `table/Table.css`. Styled in this file rather than
+   beside CreationOtherPanel because it is only ever drawn inside a card, and
+   this stylesheet already arrives with one. */
 
 /* Closed: one line, cut with an ellipsis wherever it runs out. Open: the whole
-   brief, however many lines that takes. */
+   brief, however many lines that takes — `white-space` is inherited, so this
+   overrides the row's own `nowrap` without a fight. */
 .mina-other__prompt {
+  flex: 1;
   overflow: hidden;
   margin: 0;
   color: var(--mina-muted);
@@ -173,22 +168,6 @@
   text-underline-offset: var(--mina-btn-underline-offset);
 }
 
-/* Each block of rows draws the rule above itself, so the panel reads as a
-   short table rather than a list of boxes. */
-.mina-other__section {
-  margin-top: 8px;
-  border-top: 1px solid var(--mina-hairline);
-  padding-top: 8px;
-}
-
-.mina-other__row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  min-height: 20px;
-}
-
 .mina-other__label {
   color: var(--mina-muted);
   font-size: var(--mina-fs-micro);
@@ -199,12 +178,6 @@
   color: var(--mina-text);
   font-size: var(--mina-fs-micro);
   font-weight: var(--mina-fw-light);
-}
-
-.mina-other__buttons {
-  display: flex;
-  align-items: center;
-  gap: 14px;
 }
 
 /* The row actions and the two share links read the same: a word, sometimes
