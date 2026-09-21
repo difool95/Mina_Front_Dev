@@ -19,13 +19,15 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
 
 /* ── top bar ── */
 
-/* Its rule stops at the page padding, matching the account row beneath it. */
-.mina-profile__top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--mina-hairline);
-  padding-bottom: 18px;
+/* The header and the account line are one row each and the same height, each
+   closed by a rule — so the top of the page reads as two rows of a table
+   rather than two bordered blocks. The height is the one the header already
+   stood at, so nothing below it moves. */
+.mina-profile__head,
+.mina-profile__account {
+  --table-row-h: 45px;
+  /* Each rule sits flush under the row it closes. */
+  --table-gap-y: 0;
 }
 
 .mina-profile__logo {
@@ -38,7 +40,10 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
   height: auto;
 }
 
+/* The one cell that leaves the row's centre line: it sits at the top while
+   the logo beside it stays centred. */
 .mina-profile__matcha {
+  align-self: flex-start;
   font-size: var(--mina-fs-h5);
   font-weight: var(--mina-link-fw);
   text-decoration: underline;
@@ -47,26 +52,25 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
 
 /* ── account row ── */
 
-/* The account is a `Table`, but only on a phone. Here its rows dissolve so
-   every field lands on one wrapping line, which is what `display: contents`
-   below does. Prefixed with `.mina-profile` to outrank `.mina-table`'s own
-   column layout whichever order the two stylesheets are bundled in. */
-.mina-profile .mina-profile__account {
-  flex-direction: row;
+/* The seven cells share this one line, which carries the row height. The rule
+   that closes it is a sibling below, not a cell in it — inside, it would make
+   this a two-line flex box and the height would spread around both, leaving
+   the cells sitting against the top. */
+.mina-profile__line {
+  display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: center;
+  min-height: var(--table-row-h);
   gap: var(--mina-stack-row-gap) calc(var(--mina-stack-col-gap) * 1.75);
-  border-bottom: 1px solid var(--mina-hairline);
-  padding: var(--mina-account-row-pad-y) 0;
 }
 
-.mina-profile__account .mina-table__row,
+.mina-profile__line .mina-table__row,
 .mina-profile__fields {
   display: contents;
 }
 
-/* One line needs no rules across it; the row beneath draws its own. */
-.mina-profile__account .mina-table__rule {
+/* The rules between the phone's rows have nothing to separate on one line. */
+.mina-profile__line .mina-table__rule {
   display: none;
 }
 
@@ -318,9 +322,36 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
     padding: 16px var(--mina-footer-pad-x) 72px;
   }
 
-  /* Same bleed as desktop, against the narrower phone padding. */
-  .mina-profile__top {
+  /* Rows here take their height from their content and their own padding, not
+     from the one height the two desktop rows share. */
+  .mina-profile__head,
+  .mina-profile__account {
+    --table-row-h: 22px;
+  }
+
+  /* No single line to hold: the rows go back to stacking in the table, each
+     with its own rule, and the one that closed that line would double against
+     the rule already under Logout. */
+  .mina-profile__line {
+    display: contents;
+  }
+
+  .mina-profile__line .mina-table__rule {
+    display: block;
+  }
+
+  .mina-profile__account > .mina-table__rule {
+    display: none;
+  }
+
+  /* The header and its rule bleed to both screen edges, the header padding
+     itself back so the logo keeps its place. */
+  .mina-profile__top,
+  .mina-profile__top + .mina-table__rule {
     margin: 0 calc(-1 * var(--mina-footer-pad-x));
+  }
+
+  .mina-profile__top {
     padding: 0 var(--mina-footer-pad-x) 18px;
   }
 
@@ -357,10 +388,6 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
   .mina-profile__account .mina-table__row {
     display: flex;
     padding: var(--mina-account-row-pad-y) 0;
-  }
-
-  .mina-profile__account .mina-table__rule {
-    display: block;
   }
 
   /* The head and its rule are bled past the page's side padding so that line

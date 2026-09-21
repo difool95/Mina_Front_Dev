@@ -114,86 +114,98 @@ export function ProfilePage() {
 
   return (
     <div className="mina-profile">
-      <header className="mina-profile__top">
-        <Link className="mina-profile__logo" to="/" aria-label="Mina home">
-          <img src={MINA_LOGO_URL} alt="Mina" />
-        </Link>
-        <button className="mina-profile__matcha" type="button">
-          Get more Matcha
-        </button>
-      </header>
+      <Table className="mina-profile__head">
+        <Row className="mina-profile__top">
+          <Link className="mina-profile__logo" to="/" aria-label="Mina home">
+            <img src={MINA_LOGO_URL} alt="Mina" />
+          </Link>
+          <button className="mina-profile__matcha" type="button">
+            Get more Matcha
+          </button>
+        </Row>
+        <Rule />
+      </Table>
 
       {/* Four rows and their rules on a phone. On desktop the rows dissolve and
           every field lays out on one wrapping line — see ProfilePage.css. */}
       <Table className="mina-profile__account">
-        <Row className="mina-profile__account-head">
-          {/* Spelled out on desktop, clipped to fit the phone header. */}
-          <Link className="mina-profile__back" to="/" data-tooltip="Back to the studio">
-            <span className="mina-profile__back--long">Go Back</span>
-            <span className="mina-profile__back--short">Back</span>
-          </Link>
-          <button
-            className="mina-profile__menu"
-            type="button"
-            aria-expanded={menuOpen}
-            onClick={() => setMenuOpen((wasOpen) => !wasOpen)}
-          >
-            {menuOpen ? 'Close Menu' : 'Menu'}
-          </button>
-        </Row>
-
-        <Rule />
-
-        {/* Dissolves like the rows do, so these are rows of the same table.
-            It exists only to hide the three of them at once on a phone. */}
-        <div className="mina-profile__fields" data-open={menuOpen || undefined}>
-          {/* Brand Memory is dropped on a phone, which is what leaves Email
-              and Auto-Matcha alone on this row. */}
-          <Row>
-            <span className="mina-profile__field mina-profile__field--email">
-              <span className="mina-profile__label">Email</span>
-              <AccountMenu email={session?.user.email ?? ''} />
-            </span>
-
-            <span className="mina-profile__field mina-profile__field--brand">
-              <span className="mina-profile__label">Brand Memory</span>
-              <button className="mina-profile__toggle" type="button">
-                ON
-              </button>
-            </span>
-
-            <span className="mina-profile__field mina-profile__field--auto">
-              <span className="mina-profile__label">Auto-Matcha</span>
-              <button className="mina-profile__toggle" type="button">
-                OFF
-              </button>
-            </span>
-          </Row>
-
-          <Rule />
-
-          <Row>
-            <span className="mina-profile__field mina-profile__field--matcha">
-              <span className="mina-profile__label">Matcha</span>
-              <span className="mina-profile__value">{credits?.mg_credits ?? 0}</span>
-            </span>
-
-            <span className="mina-profile__field mina-profile__field--expiry">
-              <span className="mina-profile__label">Best before</span>
-              <span className="mina-profile__value">{formatDate(credits?.mg_expires_at)}</span>
-            </span>
-          </Row>
-
-          <Rule />
-
-          <Row anchor="right">
-            <button className="mina-profile__logout" type="button" onClick={() => void signOut()}>
-              Logout
+        {/* The one desktop line. It holds every row so they can dissolve into
+            it, which leaves the closing rule below outside the line rather
+            than wrapped into it — that is what centres the cells. */}
+        <div className="mina-profile__line">
+          <Row className="mina-profile__account-head">
+            {/* Spelled out on desktop, clipped to fit the phone header. */}
+            <Link className="mina-profile__back" to="/" data-tooltip="Back to the studio">
+              <span className="mina-profile__back--long">Go Back</span>
+              <span className="mina-profile__back--short">Back</span>
+            </Link>
+            <button
+              className="mina-profile__menu"
+              type="button"
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen((wasOpen) => !wasOpen)}
+            >
+              {menuOpen ? 'Close Menu' : 'Menu'}
             </button>
           </Row>
 
           <Rule />
+
+          {/* Dissolves like the rows do, so these are rows of the same table.
+              It exists only to hide the three of them at once on a phone. */}
+          <div className="mina-profile__fields" data-open={menuOpen || undefined}>
+            {/* Brand Memory is dropped on a phone, which is what leaves Email
+                and Auto-Matcha alone on this row. */}
+            <Row>
+              <span className="mina-profile__field mina-profile__field--email">
+                <span className="mina-profile__label">Email</span>
+                <AccountMenu email={session?.user.email ?? ''} />
+              </span>
+
+              <span className="mina-profile__field mina-profile__field--brand">
+                <span className="mina-profile__label">Brand Memory</span>
+                <button className="mina-profile__toggle" type="button">
+                  ON
+                </button>
+              </span>
+
+              <span className="mina-profile__field mina-profile__field--auto">
+                <span className="mina-profile__label">Auto-Matcha</span>
+                <button className="mina-profile__toggle" type="button">
+                  OFF
+                </button>
+              </span>
+            </Row>
+
+            <Rule />
+
+            <Row>
+              <span className="mina-profile__field mina-profile__field--matcha">
+                <span className="mina-profile__label">Matcha</span>
+                <span className="mina-profile__value">{credits?.mg_credits ?? 0}</span>
+              </span>
+
+              <span className="mina-profile__field mina-profile__field--expiry">
+                <span className="mina-profile__label">Best before</span>
+                <span className="mina-profile__value">{formatDate(credits?.mg_expires_at)}</span>
+              </span>
+            </Row>
+
+            <Rule />
+
+            <Row anchor="right">
+              <button className="mina-profile__logout" type="button" onClick={() => void signOut()}>
+                Logout
+              </button>
+            </Row>
+
+            <Rule />
+          </div>
         </div>
+
+        {/* Closes the desktop line. On a phone the rule above, under Logout,
+            already does it — and this one would double against it. */}
+        <Rule />
       </Table>
 
       <div className="mina-profile__archive-head">
