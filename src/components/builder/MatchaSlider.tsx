@@ -4,7 +4,8 @@ import './MatchaSlider.css'
 
 export interface MatchaStop {
   matchas: number
-  price: number
+  /** Already converted and formatted — the track knows nothing of currency. */
+  price: string
   /** Where it stands along the track, as a percentage of it. */
   at: number
 }
@@ -48,12 +49,12 @@ export function MatchaSlider({ stops, value, onChange }: MatchaSliderProps) {
           key={stop.matchas}
           style={{ '--at': `${stop.at}%` } as CSSProperties}
           aria-pressed={index === chosen}
-          aria-label={`${stop.matchas} matcha for €${stop.price}`}
+          aria-label={`${stop.matchas} matcha for ${stop.price}`}
           onClick={() => onChange(stop.matchas)}
         >
           <span className="mina-slider__amount">{stop.matchas}</span>
           <span className="mina-slider__dot" />
-          <span className="mina-slider__price">€{stop.price}</span>
+          <span className="mina-slider__price">{stop.price}</span>
         </button>
       ))}
     </div>

@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 
+import { useExchangeRates } from '@/hooks/useExchangeRates'
 import {
   DEFAULT_MATCHA_PACK,
   MATCHA_PACKS,
   MATCHA_RATES,
   PRICE_BREAKDOWN,
 } from '@/lib/constants'
+import { currencyForClient, formatMoney } from '@/lib/currency'
 
 import { Group, Row, Rule, Table } from './builder/Table'
 import { Icon } from './Icon'
@@ -30,9 +32,23 @@ export function MatchaPanel({ onClose }: { onClose: () => void }) {
   const [isPricingOpen, setIsPricingOpen] = useState(true)
   const [isBreakdownOpen, setIsBreakdownOpen] = useState(false)
 
+  const { data: rates } = useExchangeRates()
+
   useEffect(() => {
     ref.current?.showModal()
   }, [])
+
+  // Prices are held in pounds. A British viewer needs no rate at all; everyone
+  // else waits on one, and until it lands the pound price stands — unconverted
+  // but never wrong, which a price built from a missing rate would be.
+  const currency = currencyForClient()
+  const rate = currency === 'GBP' ? 1 : rates?.[currency]
+
+  const stops = MATCHA_PACKS.map((pack) => ({
+    matchas: pack.matchas,
+    at: pack.at,
+    price: formatMoney(Math.round(pack.gbp * (rate ?? 1)), rate ? currency : 'GBP'),
+  }))
 
   return (
     <dialog
@@ -101,7 +117,7 @@ export function MatchaPanel({ onClose }: { onClose: () => void }) {
         </Row>
 
         <Row className="mina-matcha__slider-row">
-          <MatchaSlider stops={MATCHA_PACKS} value={pack} onChange={setPack} />
+          <MatchaSlider stops={stops} value={pack} onChange={setPack} />
         </Row>
 
         <Row className="mina-matcha__foot">

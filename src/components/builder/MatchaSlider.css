@@ -83,3 +83,29 @@
 
 /* The price carries the same weight as the amount over it: the two are one
    label split across the rail, not a heading and a note. */
+
+/* On a phone the two closest stops stand about 55px apart, and the longest
+   prices ("AED 12,281") are wider than that — the labels collide. Smaller,
+   and free to break at the space a currency code leaves, they clear each
+   other; the track grows to take the second line. */
+@media (width < 768px) {
+  .mina-slider {
+    height: 76px;
+  }
+
+  /* Narrow enough that a price with a currency code in it has to break —
+     without a cap the stop shrink-wraps its text and never wraps at all. */
+  .mina-slider__stop {
+    max-width: 6ch;
+    font-size: var(--mina-fs-micro);
+    white-space: normal;
+  }
+
+  .mina-slider__stop:first-of-type {
+    text-align: left;
+  }
+
+  .mina-slider__stop:last-of-type {
+    text-align: right;
+  }
+}

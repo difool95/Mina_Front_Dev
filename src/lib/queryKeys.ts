@@ -10,4 +10,6 @@ export const queryKeys = {
   customer: (userId: string) => ['customer', userId] as const,
   generations: (userId: string) => ['generations', userId] as const,
   likes: (userId: string) => ['likes', userId] as const,
+  /** The same for everyone, so it takes no id. */
+  rates: ['rates'] as const,
 }
