@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 
 import { useExchangeRates } from '@/hooks/useExchangeRates'
+import { useUpdateAutoRefill } from '@/hooks/useUpdateAutoRefill'
 import { DEFAULT_MATCHA_PACK, MATCHA_PACKS } from '@/lib/constants'
 import { currencyForClient, formatMoney } from '@/lib/currency'
+import { useAuth } from '@/providers/AuthProvider'
+import type { MmaPreferences } from '@/types/customer.types'
 
 import { Row, Rule, Table } from './builder/Table'
 
@@ -23,13 +26,28 @@ const REFILL_PACKS = MATCHA_PACKS.filter((pack) => pack.matchas !== 1500)
  * Same `<dialog>` chrome as `MatchaPanel`: no Escape, no backdrop click,
  * built with the same table builder.
  */
-export function AutoMatchaPanel({ onBack, onTurnOn }: { onBack: () => void; onTurnOn: () => void }) {
+export function AutoMatchaPanel({
+  onBack,
+  onTurnOn,
+  initialAutoRefill,
+}: {
+  onBack: () => void
+  onTurnOn: () => void
+  /** The customer's saved settings, if any — reopening the panel starts from these. */
+  initialAutoRefill?: MmaPreferences['autoRefill'] | null
+}) {
   const ref = useRef<HTMLDialogElement>(null)
-  const [threshold, setThreshold] = useState(10)
-  const [refillPack, setRefillPack] = useState<number>(DEFAULT_MATCHA_PACK)
-  const [monthlyLimit, setMonthlyLimit] = useState<number | null>(null)
+  const [threshold, setThreshold] = useState(initialAutoRefill?.threshold ?? 10)
+  const [refillPack, setRefillPack] = useState<number>(
+    initialAutoRefill ? initialAutoRefill.qty * 50 : DEFAULT_MATCHA_PACK,
+  )
+  const [monthlyLimit, setMonthlyLimit] = useState<number | null>(
+    initialAutoRefill?.monthlyLimitAmount ?? null,
+  )
 
+  const { session } = useAuth()
   const { data: rates } = useExchangeRates()
+  const updateAutoRefill = useUpdateAutoRefill()
 
   useEffect(() => {
     ref.current?.showModal()
@@ -37,6 +55,34 @@ export function AutoMatchaPanel({ onBack, onTurnOn }: { onBack: () => void; onTu
 
   const currency = currencyForClient()
   const rate = currency === 'GBP' ? 1 : rates?.[currency]
+
+  // Turning it on always starts a fresh monthly window — a month from now,
+  // and a count of zero refills used in it.
+  const turnOn = () => {
+    if (!session) return
+
+    const pack = REFILL_PACKS.find((candidate) => candidate.matchas === refillPack)!
+    const packPrice = Math.round(pack.gbp * (rate ?? 1))
+    const monthlyResetAt = new Date()
+    monthlyResetAt.setUTCMonth(monthlyResetAt.getUTCMonth() + 1)
+
+    const preferences: MmaPreferences = {
+      autoRefill: {
+        // 100/500/5000 matcha packs, in units of 50 matcha.
+        qty: refillPack / 50,
+        enabled: true,
+        currency: currency.toLowerCase(),
+        threshold,
+        monthlyCount: 0,
+        // Rounded down: a part-way-there refill is one this cap wouldn't cover.
+        monthlyLimit: monthlyLimit === null ? null : Math.floor(monthlyLimit / packPrice),
+        monthlyResetAt: monthlyResetAt.toISOString(),
+        monthlyLimitAmount: monthlyLimit,
+      },
+    }
+
+    updateAutoRefill.mutate({ userId: session.user.id, preferences }, { onSuccess: onTurnOn })
+  }
 
   return (
     <dialog
@@ -112,12 +158,20 @@ export function AutoMatchaPanel({ onBack, onTurnOn }: { onBack: () => void; onTu
             }}
           />
         </Row>
-                <Rule />
 
+        <Rule />
 
         <Row className="mina-auto__foot" anchor="right">
-          <button className="mina-auto__turn-on" type="button" onClick={onTurnOn}>
-            Turn on
+          {updateAutoRefill.isError && (
+            <span className="mina-auto__error">Could not save — try again.</span>
+          )}
+          <button
+            className="mina-auto__turn-on"
+            type="button"
+            disabled={updateAutoRefill.isPending}
+            onClick={turnOn}
+          >
+            {updateAutoRefill.isPending ? 'Turning on…' : 'Turn on'}
           </button>
         </Row>
       </Table>

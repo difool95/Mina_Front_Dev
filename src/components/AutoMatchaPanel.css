@@ -120,6 +120,12 @@
   margin-bottom: 8px;
 }
 
+.mina-auto__error {
+  color: var(--mina-muted);
+  font-size: var(--mina-fs-small);
+  font-weight: var(--mina-fw-med);
+}
+
 .mina-auto__turn-on {
   transition: color var(--mina-anim-fade) ease;
   color: var(--mina-text);

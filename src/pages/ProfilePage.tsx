@@ -70,7 +70,6 @@ export function ProfilePage() {
   // Which of the two matcha dialogs is open, if either — "Back" in the auto
   // panel always returns to the buy panel, so one slot is enough for both.
   const [matchaPanel, setMatchaPanel] = useState<'buy' | 'auto' | null>(null)
-  const [isAutoMatchaOn, setIsAutoMatchaOn] = useState(false)
   // The creation shown full screen, or null when the archive is on show.
   const [opened, setOpened] = useState<MegaGeneration | null>(null)
   // The one creation whose panel is open, by `mg_id`. Held here rather than in
@@ -103,6 +102,8 @@ export function ProfilePage() {
   const { data: generations, isPending } = useGenerations(userId)
   const { data: likedIds } = useLikedGenerations(userId)
   const { data: credits } = useCustomerCredits(userId)
+  const autoRefill = credits?.mg_mma_preferences?.autoRefill
+  const isAutoMatchaOn = autoRefill?.enabled ?? false
   const remove = useDeleteGeneration(userId)
   const download = useDownloadMedia()
   const copyLink = useCopyLink()
@@ -357,10 +358,8 @@ export function ProfilePage() {
       {matchaPanel === 'auto' && (
         <AutoMatchaPanel
           onBack={() => setMatchaPanel('buy')}
-          onTurnOn={() => {
-            setIsAutoMatchaOn(true)
-            setMatchaPanel(null)
-          }}
+          onTurnOn={() => setMatchaPanel(null)}
+          initialAutoRefill={autoRefill}
         />
       )}
 
