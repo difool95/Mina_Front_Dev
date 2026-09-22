@@ -28,7 +28,15 @@ import './MatchaPanel.css'
  * Laid out with the table builder: eight rows, and a rule wherever the design
  * draws a line between them.
  */
-export function MatchaPanel({ onClose }: { onClose: () => void }) {
+export function MatchaPanel({
+  onClose,
+  isAutoMatchaOn,
+  onOpenAutoMatcha,
+}: {
+  onClose: () => void
+  isAutoMatchaOn: boolean
+  onOpenAutoMatcha: () => void
+}) {
   const ref = useRef<HTMLDialogElement>(null)
   const [pack, setPack] = useState<number>(DEFAULT_MATCHA_PACK)
   const [isPricingOpen, setIsPricingOpen] = useState(true)
@@ -140,8 +148,8 @@ export function MatchaPanel({ onClose }: { onClose: () => void }) {
         </Row>
 
         <Row className="mina-matcha__foot">
-          <button className="mina-matcha__action" type="button">
-            Auto-Matcha OFF
+          <button className="mina-matcha__action" type="button" onClick={onOpenAutoMatcha}>
+            Auto-Matcha {isAutoMatchaOn ? 'ON' : 'OFF'}
           </button>
           <Group className="mina-matcha__buy">
             {checkout.isError && (

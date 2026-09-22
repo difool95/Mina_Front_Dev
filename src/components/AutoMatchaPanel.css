@@ -1,0 +1,143 @@
+/* Same modal chrome as MatchaPanel.css — centred by the dialog's own margin,
+   over the same blurred archive. */
+.mina-auto {
+  width: min(640px, calc(100vw - 32px));
+  max-width: none;
+  margin: auto;
+  border: 0;
+  background: var(--mina-bg);
+  padding: 0;
+  box-shadow: 0 20px 60px rgba(var(--mina-ink-rgb, 8, 10, 0), 0.14);
+}
+
+.mina-auto::backdrop {
+  backdrop-filter: blur(var(--mina-backdrop-blur));
+  background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.22);
+}
+
+@keyframes mina-auto-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.mina-auto[open] {
+  animation: mina-auto-fade-in var(--mina-anim-modal) ease-out;
+}
+
+.mina-auto__table {
+  --table-row-h: 28px;
+  --table-gap-y: 8px;
+
+  padding: 16px 18px 14px;
+}
+
+.mina-auto__table .mina-table__row {
+  padding: 0 6px;
+}
+
+.mina-auto__lead {
+  margin-bottom: 20px;
+}
+
+.mina-auto__title {
+  margin: 0;
+  font-size: var(--mina-fs-h4);
+  font-weight: var(--mina-fw-title);
+}
+
+.mina-auto__back {
+  transition: color var(--mina-anim-fade) ease;
+  color: var(--mina-text);
+  font-size: var(--mina-fs-small);
+  font-weight: var(--mina-fw-strong);
+}
+
+.mina-auto__blurb {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  color: var(--mina-muted);
+  font-size: var(--mina-fs-small);
+  font-weight: var(--mina-fw-med);
+  white-space: normal;
+}
+
+.mina-auto__label {
+  color: var(--mina-muted);
+  font-size: var(--mina-fs-small);
+  font-weight: var(--mina-fw-med);
+}
+
+/* The label stays put; an auto margin on the first pack pushes the group of
+   three to the right edge, while each stays its own row cell — so a narrow
+   screen wraps them one at a time instead of as a block. */
+.mina-auto__packs-row button:first-of-type {
+  margin-left: auto;
+}
+
+.mina-auto__pack {
+  color: var(--mina-muted);
+  font-size: var(--mina-fs-small);
+  font-weight: var(--mina-fw-strong);
+}
+
+.mina-auto__pack[aria-pressed='true'] {
+  color: var(--mina-text);
+}
+
+.mina-auto__input {
+  border: 0;
+  outline: none;
+  background: none;
+  color: var(--mina-text);
+  font-family: inherit;
+  font-size: var(--mina-fs-body);
+  font-weight: var(--mina-fw-strong);
+  text-align: right;
+}
+
+.mina-auto__input::placeholder {
+  color: var(--mina-muted);
+  font-weight: var(--mina-fw-light);
+}
+
+.mina-auto__input--threshold {
+  width: 4.5em;
+}
+
+.mina-auto__input--limit {
+  width: 21em;
+}
+
+.mina-auto__back:hover,
+.mina-auto__pack:hover {
+  color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.6);
+}
+
+.mina-auto__foot {
+  margin-top: 12px;
+  margin-bottom: 8px;
+}
+
+.mina-auto__turn-on {
+  transition: color var(--mina-anim-fade) ease;
+  color: var(--mina-text);
+  font-size: var(--mina-fs-h5);
+  font-weight: var(--mina-fw-title);
+  text-decoration: underline;
+  text-underline-offset: var(--mina-btn-underline-offset);
+}
+
+.mina-auto__turn-on:hover {
+  color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.6);
+}
+
+:where(.mina-auto button) {
+  border: 0;
+  background: none;
+  color: inherit;
+  font-family: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+}

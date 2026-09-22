@@ -4,6 +4,7 @@ import { Link, Navigate, useSearchParams } from 'react-router-dom'
 
 import { AccountMenu } from '@/components/AccountMenu'
 import { AppFooter } from '@/components/AppFooter'
+import { AutoMatchaPanel } from '@/components/AutoMatchaPanel'
 import { CreationCard } from '@/components/CreationCard'
 import { CreationFullScreen } from '@/components/CreationFullScreen'
 import { CreationSkeleton } from '@/components/CreationSkeleton'
@@ -66,7 +67,10 @@ export function ProfilePage() {
   // Mobile only: the account fields collapse behind this, since the row cannot
   // fit across a phone. Desktop ignores it and shows them all.
   const [menuOpen, setMenuOpen] = useState(false)
-  const [isBuying, setIsBuying] = useState(false)
+  // Which of the two matcha dialogs is open, if either — "Back" in the auto
+  // panel always returns to the buy panel, so one slot is enough for both.
+  const [matchaPanel, setMatchaPanel] = useState<'buy' | 'auto' | null>(null)
+  const [isAutoMatchaOn, setIsAutoMatchaOn] = useState(false)
   // The creation shown full screen, or null when the archive is on show.
   const [opened, setOpened] = useState<MegaGeneration | null>(null)
   // The one creation whose panel is open, by `mg_id`. Held here rather than in
@@ -139,7 +143,7 @@ export function ProfilePage() {
           <button
             className="mina-profile__matcha"
             type="button"
-            onClick={() => setIsBuying(true)}
+            onClick={() => setMatchaPanel('buy')}
           >
             Get more Matcha
           </button>
@@ -190,12 +194,14 @@ export function ProfilePage() {
                 </button>
               </span>
 
-              <span className="mina-profile__field mina-profile__field--auto">
+              <button
+                className="mina-profile__field mina-profile__field--auto"
+                type="button"
+                onClick={() => setMatchaPanel('auto')}
+              >
                 <span className="mina-profile__label">Auto-Matcha</span>
-                <button className="mina-profile__toggle" type="button">
-                  OFF
-                </button>
-              </span>
+                <span className="mina-profile__toggle">{isAutoMatchaOn ? 'ON' : 'OFF'}</span>
+              </button>
             </Row>
 
             <Rule />
@@ -340,7 +346,23 @@ export function ProfilePage() {
         />
       )}
 
-      {isBuying && <MatchaPanel onClose={() => setIsBuying(false)} />}
+      {matchaPanel === 'buy' && (
+        <MatchaPanel
+          onClose={() => setMatchaPanel(null)}
+          isAutoMatchaOn={isAutoMatchaOn}
+          onOpenAutoMatcha={() => setMatchaPanel('auto')}
+        />
+      )}
+
+      {matchaPanel === 'auto' && (
+        <AutoMatchaPanel
+          onBack={() => setMatchaPanel('buy')}
+          onTurnOn={() => {
+            setIsAutoMatchaOn(true)
+            setMatchaPanel(null)
+          }}
+        />
+      )}
 
       <AppFooter current="profile" mobileOnly />
     </div>
