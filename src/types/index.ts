@@ -2,6 +2,7 @@ export type { Currency } from './currency.types'
 export type { OnboardContent } from './onboardContent.types'
 export type { CustomerRole, MegaCustomer } from './customer.types'
 export type { SignupBonusResult } from './credit.types'
+export type { CreateCheckoutSessionResult } from './checkout.types'
 export type {
   ArchiveLayout,
   GenerationVars,

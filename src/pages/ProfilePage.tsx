@@ -1,5 +1,6 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
-import { Link, Navigate } from 'react-router-dom'
+import { Link, Navigate, useSearchParams } from 'react-router-dom'
 
 import { AccountMenu } from '@/components/AccountMenu'
 import { AppFooter } from '@/components/AppFooter'
@@ -29,6 +30,7 @@ import {
   RATIO_FILTERS,
   TIME_FILTERS,
 } from '@/lib/generations'
+import { queryKeys } from '@/lib/queryKeys'
 import { useAuth } from '@/providers/AuthProvider'
 import { signOut } from '@/services/auth.service'
 import type {
@@ -80,6 +82,19 @@ export function ProfilePage() {
 
   const { session, loading } = useAuth()
   const userId = session?.user.id
+  const [searchParams, setSearchParams] = useSearchParams()
+  const queryClient = useQueryClient()
+
+  // Stripe redirects back here once checkout finishes; the balance it paid
+  // for is already in Supabase by then, so a refetch is all this needs.
+  useEffect(() => {
+    if (!userId || searchParams.get('purchase') !== 'success') return
+    void queryClient.invalidateQueries({ queryKey: queryKeys.customer(userId) })
+    setSearchParams((params) => {
+      params.delete('purchase')
+      return params
+    })
+  }, [userId, searchParams, queryClient, setSearchParams])
 
   const { data: generations, isPending } = useGenerations(userId)
   const { data: likedIds } = useLikedGenerations(userId)

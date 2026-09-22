@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
+import { useCheckout } from '@/hooks/useCheckout'
 import { useExchangeRates } from '@/hooks/useExchangeRates'
 import {
   DEFAULT_MATCHA_PACK,
@@ -8,6 +9,7 @@ import {
   PRICE_BREAKDOWN,
 } from '@/lib/constants'
 import { currencyForClient, formatMoney } from '@/lib/currency'
+import { useAuth } from '@/providers/AuthProvider'
 
 import { Group, Row, Rule, Table } from './builder/Table'
 import { Icon } from './Icon'
@@ -32,7 +34,9 @@ export function MatchaPanel({ onClose }: { onClose: () => void }) {
   const [isPricingOpen, setIsPricingOpen] = useState(true)
   const [isBreakdownOpen, setIsBreakdownOpen] = useState(false)
 
+  const { session } = useAuth()
   const { data: rates } = useExchangeRates()
+  const checkout = useCheckout()
 
   useEffect(() => {
     ref.current?.showModal()
@@ -49,6 +53,17 @@ export function MatchaPanel({ onClose }: { onClose: () => void }) {
     at: pack.at,
     price: formatMoney(Math.round(pack.gbp * (rate ?? 1)), rate ? currency : 'GBP'),
   }))
+
+  // The API redirects the whole tab to Stripe rather than returning a token
+  // to embed — there is nothing left for the panel to render once this
+  // succeeds, so there is no local "purchased" state to hold.
+  const buy = () => {
+    if (!session) return
+    checkout.mutate(
+      { token: session.access_token, matchas: pack },
+      { onSuccess: ({ url }) => window.location.assign(url) },
+    )
+  }
 
   return (
     <dialog
@@ -75,7 +90,7 @@ export function MatchaPanel({ onClose }: { onClose: () => void }) {
             aria-expanded={isPricingOpen}
             onClick={() => setIsPricingOpen((wasOpen) => !wasOpen)}
           >
-            {isPricingOpen ? 'Close Pricing' : 'Show Pricing'}
+            {isPricingOpen ? 'Close Pricing' : 'Pricing'}
           </button>
         </Row>
 
@@ -102,19 +117,23 @@ export function MatchaPanel({ onClose }: { onClose: () => void }) {
             </div>
           ))}
 
-        <Rule />
+        {isPricingOpen && (
+          <>
+            <Rule />
 
-        <Row>
-          <button
-            className="mina-matcha__transparency"
-            type="button"
-            aria-expanded={isBreakdownOpen}
-            onClick={() => setIsBreakdownOpen((wasOpen) => !wasOpen)}
-          >
-            Price Transparency
-          </button>
-          {isBreakdownOpen && <span className="mina-matcha__breakdown">{PRICE_BREAKDOWN}</span>}
-        </Row>
+            <Row>
+              <button
+                className="mina-matcha__transparency"
+                type="button"
+                aria-expanded={isBreakdownOpen}
+                onClick={() => setIsBreakdownOpen((wasOpen) => !wasOpen)}
+              >
+                Price Transparency
+              </button>
+              {isBreakdownOpen && <span className="mina-matcha__breakdown">{PRICE_BREAKDOWN}</span>}
+            </Row>
+          </>
+        )}
 
         <Row className="mina-matcha__slider-row">
           <MatchaSlider stops={stops} value={pack} onChange={setPack} />
@@ -124,9 +143,19 @@ export function MatchaPanel({ onClose }: { onClose: () => void }) {
           <button className="mina-matcha__action" type="button">
             Auto-Matcha OFF
           </button>
-          <button className="mina-matcha__purchase" type="button">
-            Purchase
-          </button>
+          <Group className="mina-matcha__buy">
+            {checkout.isError && (
+              <span className="mina-matcha__breakdown">Could not start checkout — try again.</span>
+            )}
+            <button
+              className="mina-matcha__purchase"
+              type="button"
+              disabled={checkout.isPending}
+              onClick={buy}
+            >
+              {checkout.isPending ? 'Redirecting…' : 'Purchase'}
+            </button>
+          </Group>
         </Row>
       </Table>
     </dialog>
