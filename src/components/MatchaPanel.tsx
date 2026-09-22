@@ -60,7 +60,7 @@ export function MatchaPanel({ onClose }: { onClose: () => void }) {
   const buy = () => {
     if (!session) return
     checkout.mutate(
-      { token: session.access_token, matchas: pack },
+      { token: session.access_token, matchas: pack, currency },
       { onSuccess: ({ url }) => window.location.assign(url) },
     )
   }
