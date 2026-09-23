@@ -11,6 +11,7 @@ import { CreationSkeleton } from '@/components/CreationSkeleton'
 import { MatchaPanel } from '@/components/MatchaPanel'
 import { Row, Rule, Table } from '@/components/builder/Table'
 import { useSignOutAccount, useSwitchAccount } from '@/hooks/useAccounts'
+import { useBillingPortal } from '@/hooks/useBillingPortal'
 import { useCustomerCredits } from '@/hooks/useCustomerCredits'
 import {
   useCopyLink,
@@ -111,6 +112,7 @@ export function ProfilePage() {
     credits?.mg_credit_lots?.some(
       (lot) => lot.ref_type === 'stripe_checkout' || lot.ref_type === 'stripe_auto_refill',
     ) ?? false
+  const billingPortal = useBillingPortal()
   const remove = useDeleteGeneration(userId)
   const download = useDownloadMedia()
   const copyLink = useCopyLink()
@@ -238,7 +240,17 @@ export function ProfilePage() {
 
             <Row>
               {hasInvoices && (
-                <button className="mina-profile__invoices" type="button">
+                <button
+                  className="mina-profile__invoices"
+                  type="button"
+                  disabled={billingPortal.isPending}
+                  onClick={() =>
+                    session &&
+                    billingPortal.mutate(session.access_token, {
+                      onSuccess: ({ url }) => window.location.assign(url),
+                    })
+                  }
+                >
                   Invoices
                 </button>
               )}
