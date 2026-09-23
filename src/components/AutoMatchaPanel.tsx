@@ -28,14 +28,15 @@ const REFILL_PACKS = MATCHA_PACKS.filter((pack) => pack.matchas !== 1500)
  */
 export function AutoMatchaPanel({
   onBack,
-  onTurnOn,
+  onSaved,
   initialAutoRefill,
 }: {
   onBack: () => void
-  onTurnOn: () => void
+  onSaved: () => void
   /** The customer's saved settings, if any — reopening the panel starts from these. */
   initialAutoRefill?: MmaPreferences['autoRefill'] | null
 }) {
+  const isOn = initialAutoRefill?.enabled ?? false
   const ref = useRef<HTMLDialogElement>(null)
   const [threshold, setThreshold] = useState(initialAutoRefill?.threshold ?? 10)
   const [refillPack, setRefillPack] = useState<number>(
@@ -81,7 +82,15 @@ export function AutoMatchaPanel({
       },
     }
 
-    updateAutoRefill.mutate({ userId: session.user.id, preferences }, { onSuccess: onTurnOn })
+    updateAutoRefill.mutate({ userId: session.user.id, preferences }, { onSuccess: onSaved })
+  }
+
+  // Keeps every other saved setting as-is — only the flag flips.
+  const turnOff = () => {
+    if (!session || !initialAutoRefill) return
+
+    const preferences: MmaPreferences = { autoRefill: { ...initialAutoRefill, enabled: false } }
+    updateAutoRefill.mutate({ userId: session.user.id, preferences }, { onSuccess: onSaved })
   }
 
   return (
@@ -169,9 +178,15 @@ export function AutoMatchaPanel({
             className="mina-auto__turn-on"
             type="button"
             disabled={updateAutoRefill.isPending}
-            onClick={turnOn}
+            onClick={isOn ? turnOff : turnOn}
           >
-            {updateAutoRefill.isPending ? 'Turning on…' : 'Turn on'}
+            {updateAutoRefill.isPending
+              ? isOn
+                ? 'Turning off…'
+                : 'Turning on…'
+              : isOn
+                ? 'Turn off'
+                : 'Turn on'}
           </button>
         </Row>
       </Table>

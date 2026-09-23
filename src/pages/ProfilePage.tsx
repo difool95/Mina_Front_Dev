@@ -358,7 +358,7 @@ export function ProfilePage() {
       {matchaPanel === 'auto' && (
         <AutoMatchaPanel
           onBack={() => setMatchaPanel('buy')}
-          onTurnOn={() => setMatchaPanel(null)}
+          onSaved={() => setMatchaPanel(null)}
           initialAutoRefill={autoRefill}
         />
       )}
