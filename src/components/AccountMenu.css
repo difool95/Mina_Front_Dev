@@ -14,7 +14,7 @@
   transition: color var(--mina-anim-fade) ease;
   color: var(--mina-muted);
   font-size: var(--mina-fs-label);
-  font-weight: var(--mina-fw-light);
+  font-weight: var(--mina-fw-med);
 }
 
 .mina-account__trigger:hover {
@@ -34,6 +34,7 @@
   min-width: 240px;
   border: 1px solid var(--mina-hairline);
   background: var(--mina-bg);
+  padding: 4px;
   box-shadow: 0 8px 24px rgba(var(--mina-ink-rgb, 8, 10, 0), 0.08);
 }
 
@@ -47,26 +48,36 @@
   gap: 16px;
   width: 100%;
   margin: 0;
-  padding: var(--mina-panel-row-pad-y) 14px;
+  padding: 6px 8px;
   font-size: var(--mina-fs-label);
   text-align: left;
 }
 
 .mina-account__current {
+  background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.12);
   font-weight: var(--mina-fw-med);
 }
 
 .mina-account__other,
 .mina-account__add {
+  transition: background var(--mina-anim-fade) ease;
+}
+
+.mina-account__other {
+  font-weight: var(--mina-fw-med);
+}
+
+.mina-account__add {
+  margin-top: 4px;
   border-top: 1px solid var(--mina-hairline);
+  padding-top: calc(6px + 4px);
   color: var(--mina-muted);
-  font-weight: var(--mina-fw-light);
-  transition: color var(--mina-anim-fade) ease;
+  font-weight: var(--mina-fw-med);
 }
 
 .mina-account__other:hover,
 .mina-account__add:hover:not(:disabled) {
-  color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.6);
+  background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.06);
 }
 
 .mina-account__add:disabled {
