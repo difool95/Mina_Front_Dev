@@ -1,14 +1,14 @@
 import type { User } from '@supabase/supabase-js'
 
-import type { MmaPreferences } from '@/types/customer.types'
+import type { CreditLot, MmaPreferences } from '@/types/customer.types'
 
 import { supabase } from './supabase.client'
 
-/** The balance, expiry and auto-refill settings the profile page shows. */
+/** The balance, expiry, auto-refill settings and credit lots the profile page shows. */
 export async function getCustomerCredits(userId: string) {
   const { data, error } = await supabase
     .from('mega_customers')
-    .select('mg_credits, mg_expires_at, mg_mma_preferences')
+    .select('mg_credits, mg_expires_at, mg_mma_preferences, mg_credit_lots')
     .eq('mg_user_id', userId)
     .maybeSingle()
 
@@ -18,6 +18,7 @@ export async function getCustomerCredits(userId: string) {
     mg_credits: number | null
     mg_expires_at: string | null
     mg_mma_preferences: MmaPreferences | null
+    mg_credit_lots: CreditLot[] | null
   } | null
 }
 
@@ -66,7 +67,8 @@ export async function ensureCustomer(user: User) {
   if (error) throw new Error(error.message)
 }
 
-/** Writes the auto-refill settings the backend's cron will later read. */
+//THIS METHOD IS UPDATING THE AUTO REFILL PREFERENCES FOR THE CUSTOMER WITH THE GIVEN USER ID. IT UPDATES THE PREFERENCES IN THE DATABASE 
+// AND SETS THE UPDATED AT TIMESTAMP.
 export async function updateAutoRefillPreferences(userId: string, preferences: MmaPreferences) {
   const now = new Date().toISOString()
 

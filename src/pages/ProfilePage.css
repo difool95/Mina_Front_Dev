@@ -387,6 +387,11 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
     text-decoration: none;
   }
 
+  /* Holds the right edge even when Invoices is absent and Logout is alone. */
+  .mina-profile__logout {
+    margin-left: auto;
+  }
+
   .mina-profile__back--short {
     display: inline;
   }

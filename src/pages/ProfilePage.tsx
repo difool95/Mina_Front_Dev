@@ -107,6 +107,10 @@ export function ProfilePage() {
   const { data: credits } = useCustomerCredits(userId)
   const autoRefill = credits?.mg_mma_preferences?.autoRefill
   const isAutoMatchaOn = autoRefill?.enabled ?? false
+  const hasInvoices =
+    credits?.mg_credit_lots?.some(
+      (lot) => lot.ref_type === 'stripe_checkout' || lot.ref_type === 'stripe_auto_refill',
+    ) ?? false
   const remove = useDeleteGeneration(userId)
   const download = useDownloadMedia()
   const copyLink = useCopyLink()
@@ -233,9 +237,11 @@ export function ProfilePage() {
             <Rule />
 
             <Row>
-              <button className="mina-profile__invoices" type="button">
-                Invoices
-              </button>
+              {hasInvoices && (
+                <button className="mina-profile__invoices" type="button">
+                  Invoices
+                </button>
+              )}
               <button
                 className="mina-profile__logout"
                 type="button"

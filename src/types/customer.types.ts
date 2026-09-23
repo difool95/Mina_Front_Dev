@@ -21,6 +21,14 @@ export interface MmaPreferences {
   }
 }
 
+export interface CreditLot {
+  amount: number
+  ref_id: string
+  ref_type: 'free_signup' | 'stripe_checkout' | 'stripe_auto_refill'
+  created_at: string
+  expires_at: string
+}
+
 /** A row of the Supabase `mega_customers` table. */
 export interface MegaCustomer {
   /** Always `pass:user:` followed by the Supabase auth uuid. */
@@ -36,7 +44,7 @@ export interface MegaCustomer {
   mg_last_active: string | null
   mg_expires_at: string | null
   mg_credits: number
-  mg_credit_lots: unknown
+  mg_credit_lots: CreditLot[] | null
   mg_admin_allowlist: boolean
   mg_disabled: boolean
 }
