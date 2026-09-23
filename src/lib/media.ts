@@ -85,6 +85,14 @@ export function cfImage(url: string, width: number, quality = 80) {
   return `${ASSET_ORIGIN}cdn-cgi/image/width=${width},quality=${quality},format=auto/${path}`
 }
 
+export function cfImageCarousel(url: string, width: number, quality = 90) {
+  const path = assetPath(url)
+
+  if (!path || isVideoUrl(path)) return url
+
+  return `${ASSET_ORIGIN}cdn-cgi/image/width=${width},quality=${quality},format=auto/${path}`
+}
+
 export function cfVideo(url: string, width: number) {
   const path = assetPath(url)
 

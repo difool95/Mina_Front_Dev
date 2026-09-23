@@ -1,5 +1,6 @@
-import { useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 
+import { cfImageCarousel, cfPoster, cfVideo, imageWidthFor, videoWidthFor } from '@/lib/media'
 import type { OnboardContent } from '@/types'
 
 import { GlassDisc } from './GlassDisc'
@@ -49,6 +50,13 @@ export function Carousel({ media }: { media: OnboardContent[] }) {
   // Also doubles as the hover flag: null means the pointer is outside.
   const [cursor, setCursor] = useState<{ x: number; y: number; side: 'prev' | 'next' } | null>(null)
   const dragStartX = useRef<number | null>(null)
+  const root = useRef<HTMLDivElement>(null)
+  // Nothing is requested until the box is measured, so the original never loads.
+  const [boxWidth, setBoxWidth] = useState(0)
+
+  useEffect(() => {
+    setBoxWidth(root.current?.clientWidth ?? 0)
+  }, [])
 
   const go = (delta: number) => {
     if (media.length === 0) return
@@ -72,9 +80,17 @@ export function Carousel({ media }: { media: OnboardContent[] }) {
 
   const current = media[index]
   const paged = media.length > 1
+  // Nothing to request until there is both a URL and a measured box.
+  const url = boxWidth ? current?.media_url : null
+  const videoWidth = videoWidthFor(boxWidth)
+  // A transform can fail where the original does not; fall back to it once.
+  const fallBack = (event: React.SyntheticEvent<HTMLImageElement | HTMLVideoElement>) => {
+    if (url && event.currentTarget.src !== url) event.currentTarget.src = url
+  }
 
   return (
     <div
+      ref={root}
       className={`mina-carousel${paged ? ' mina-carousel--paged' : ''}`}
       onPointerDown={(event) => {
         dragStartX.current = event.clientX
@@ -90,8 +106,15 @@ export function Carousel({ media }: { media: OnboardContent[] }) {
       {current?.media_type === 'video' ? (
         <video
           className="mina-carousel__media"
-          src={current.media_url ?? undefined}
-          poster={current.thumbnail ?? undefined}
+          src={url ? cfVideo(url, videoWidth) : undefined}
+          poster={
+            !url
+              ? undefined
+              : current.thumbnail
+                ? cfImageCarousel(current.thumbnail, imageWidthFor(boxWidth))
+                : cfPoster(url, videoWidth)
+          }
+          onError={fallBack}
           aria-label={current.alt_text ?? undefined}
           autoPlay
           muted
@@ -101,8 +124,9 @@ export function Carousel({ media }: { media: OnboardContent[] }) {
       ) : (
         <img
           className="mina-carousel__media"
-          src={current?.media_url ?? undefined}
+          src={url ? cfImageCarousel(url, imageWidthFor(boxWidth)) : undefined}
           alt={current?.alt_text ?? ''}
+          onError={fallBack}
           draggable={false}
         />
       )}
