@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { AppFooter } from '@/components/AppFooter'
-import { useAccountSetup } from '@/hooks/useAccountSetup'
+import { useAccountSetup } from '@/hooks/useAccounts'
 import { MINA_LOGO_URL } from '@/lib/constants'
 import { useAuth } from '@/providers/AuthProvider'
 

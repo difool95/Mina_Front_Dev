@@ -38,6 +38,8 @@
 }
 
 .mina-account__current,
+.mina-account__other,
+.mina-account__error,
 .mina-account__add {
   display: flex;
   align-items: center;
@@ -54,8 +56,24 @@
   font-weight: var(--mina-fw-med);
 }
 
+.mina-account__other,
 .mina-account__add {
   border-top: 1px solid var(--mina-hairline);
   color: var(--mina-muted);
+  font-weight: var(--mina-fw-light);
+  transition: color var(--mina-anim-fade) ease;
+}
+
+.mina-account__other:hover,
+.mina-account__add:hover:not(:disabled) {
+  color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.6);
+}
+
+.mina-account__add:disabled {
+  cursor: default;
+}
+
+.mina-account__error {
+  color: var(--mina-delete-red);
   font-weight: var(--mina-fw-light);
 }

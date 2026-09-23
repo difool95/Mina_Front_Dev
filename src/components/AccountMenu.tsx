@@ -1,14 +1,32 @@
 import { useEffect, useRef, useState } from 'react'
 
+import type { SavedAccount } from '@/types/account.types'
+
 import './AccountMenu.css'
 
 /**
- * The signed-in address, and the list of accounts behind it.
- *
- * "Add another account…" is inert for now — the second account flow does not
- * exist yet, but the design calls for the slot.
+ * The signed-in address, and the other accounts signed in on this browser —
+ * each one a click away, no login needed.
  */
-export function AccountMenu({ email }: { email: string }) {
+export function AccountMenu({
+  email,
+  currentUserId,
+  accounts,
+  canAdd,
+  error,
+  onSwitch,
+  onAdd,
+}: {
+  email: string
+  currentUserId: string
+  accounts: SavedAccount[]
+  /** False once this browser holds as many accounts as it is allowed. */
+  canAdd: boolean
+  /** Why the last switch failed, if it did. */
+  error: string | null
+  onSwitch: (account: SavedAccount) => void
+  onAdd: () => void
+}) {
   const [open, setOpen] = useState(false)
   const root = useRef<HTMLDivElement>(null)
 
@@ -23,6 +41,8 @@ export function AccountMenu({ email }: { email: string }) {
 
     return () => document.removeEventListener('mousedown', close)
   }, [open])
+
+  const others = accounts.filter((account) => account.userId !== currentUserId)
 
   return (
     <div className="mina-account" ref={root}>
@@ -45,8 +65,22 @@ export function AccountMenu({ email }: { email: string }) {
             {email}
             <span aria-hidden="true">✓</span>
           </p>
-          <button className="mina-account__add" type="button">
-            Add another account&hellip;
+          {others.map((account) => (
+            <button
+              key={account.userId}
+              className="mina-account__other"
+              type="button"
+              onClick={() => {
+                setOpen(false)
+                onSwitch(account)
+              }}
+            >
+              {account.email}
+            </button>
+          ))}
+          {error && <p className="mina-account__error">{error}</p>}
+          <button className="mina-account__add" type="button" disabled={!canAdd} onClick={onAdd}>
+            {canAdd ? <>Add another account&hellip;</> : 'Account limit reached'}
           </button>
         </div>
       )}

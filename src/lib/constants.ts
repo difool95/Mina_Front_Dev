@@ -20,6 +20,9 @@ export const FOOTER_LINKS = [
 
 export const CURATOR_COUNT_LABEL = '5.5k curators use Mina'
 
+/** How many accounts one browser can keep signed in to switch between. */
+export const MAX_ACCOUNTS = 24
+
 /**
  * The matcha packs on sale, cheapest first. The second is the one offered.
  *

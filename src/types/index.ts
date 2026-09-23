@@ -1,3 +1,4 @@
+export type { SavedAccount } from './account.types'
 export type { Currency } from './currency.types'
 export type { OnboardContent } from './onboardContent.types'
 export type { CustomerRole, MegaCustomer, MmaPreferences } from './customer.types'

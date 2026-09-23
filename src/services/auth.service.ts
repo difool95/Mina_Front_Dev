@@ -42,12 +42,10 @@ export async function signInWithGoogle() {
   if (error) throw new Error(error.message)
 }
 
-/**
- * Ends the session and clears the stored token. The auth listener in
- * AuthProvider picks this up, so callers do not need to reset anything.
- */
+//THIS SIGNOUT IS FOR SIGNING OUT THE CURRENT ACCOUNT. IT CALLS THE SUPABASE AUTH SERVICE TO SIGN OUT ONLY ONE SESSION. 
+// IT DOES NOT SIGN OUT ALL ACCOUNTS.
 export async function signOut() {
-  const { error } = await supabase.auth.signOut()
+  const { error } = await supabase.auth.signOut({ scope: 'local' })
 
   if (error) throw new Error(error.message)
 }

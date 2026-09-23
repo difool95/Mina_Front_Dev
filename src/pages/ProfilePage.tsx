@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
-import { Link, Navigate, useSearchParams } from 'react-router-dom'
+import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 
 import { AccountMenu } from '@/components/AccountMenu'
 import { AppFooter } from '@/components/AppFooter'
@@ -10,6 +10,7 @@ import { CreationFullScreen } from '@/components/CreationFullScreen'
 import { CreationSkeleton } from '@/components/CreationSkeleton'
 import { MatchaPanel } from '@/components/MatchaPanel'
 import { Row, Rule, Table } from '@/components/builder/Table'
+import { useSignOutAccount, useSwitchAccount } from '@/hooks/useAccounts'
 import { useCustomerCredits } from '@/hooks/useCustomerCredits'
 import {
   useCopyLink,
@@ -19,7 +20,7 @@ import {
   useGenerations,
   useLikedGenerations,
 } from '@/hooks/useGenerations'
-import { MINA_LOGO_URL } from '@/lib/constants'
+import { MAX_ACCOUNTS, MINA_LOGO_URL } from '@/lib/constants'
 import {
   editorialPlacement,
   filenameOf,
@@ -33,7 +34,6 @@ import {
 } from '@/lib/generations'
 import { queryKeys } from '@/lib/queryKeys'
 import { useAuth } from '@/providers/AuthProvider'
-import { signOut } from '@/services/auth.service'
 import type {
   ArchiveLayout,
   MegaGeneration,
@@ -83,10 +83,13 @@ export function ProfilePage() {
     return () => document.documentElement.classList.remove('mina-no-scrollbar')
   }, [])
 
-  const { session, loading } = useAuth()
+  const { session, loading, accounts } = useAuth()
   const userId = session?.user.id
   const [searchParams, setSearchParams] = useSearchParams()
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
+  const switchAccount = useSwitchAccount()
+  const signOutAccount = useSignOutAccount()
 
   // Stripe redirects back here once checkout finishes; the balance it paid
   // for is already in Supabase by then, so a refetch is all this needs.
@@ -185,7 +188,15 @@ export function ProfilePage() {
             <Row>
               <span className="mina-profile__field mina-profile__field--email">
                 <span className="mina-profile__label">Email</span>
-                <AccountMenu email={session?.user.email ?? ''} />
+                <AccountMenu
+                  email={session?.user.email ?? ''}
+                  currentUserId={userId ?? ''}
+                  accounts={accounts}
+                  canAdd={accounts.length < MAX_ACCOUNTS}
+                  error={switchAccount.error?.message ?? null}
+                  onSwitch={(account) => switchAccount.mutate(account)}
+                  onAdd={() => navigate('/add-account', { state: { from: userId } })}
+                />
               </span>
 
               <span className="mina-profile__field mina-profile__field--brand">
@@ -222,7 +233,12 @@ export function ProfilePage() {
             <Rule />
 
             <Row anchor="right">
-              <button className="mina-profile__logout" type="button" onClick={() => void signOut()}>
+              <button
+                className="mina-profile__logout"
+                type="button"
+                disabled={signOutAccount.isPending}
+                onClick={() => userId && signOutAccount.mutate(userId)}
+              >
                 Logout
               </button>
             </Row>
