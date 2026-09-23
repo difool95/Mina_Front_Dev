@@ -232,7 +232,10 @@ export function ProfilePage() {
 
             <Rule />
 
-            <Row anchor="right">
+            <Row>
+              <button className="mina-profile__invoices" type="button">
+                Invoices
+              </button>
               <button
                 className="mina-profile__logout"
                 type="button"

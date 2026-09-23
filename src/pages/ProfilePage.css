@@ -125,11 +125,23 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
   font-weight: var(--mina-fw-strong);
 }
 
+/* Ahead of Logout in the markup for the phone row; on the one desktop line it
+   is sent to the far end instead. */
+.mina-profile__invoices {
+  order: 1;
+  margin-left: auto;
+  font-size: var(--mina-fs-label);
+  font-weight: var(--mina-fw-strong);
+  text-decoration: underline;
+  text-underline-offset: var(--mina-btn-underline-offset);
+}
+
 /* ── hover ──
    Every text action fades a little; the pills also darken their ground. */
 .mina-profile__back,
 .mina-profile__matcha,
 .mina-profile__toggle,
+.mina-profile__invoices,
 .mina-profile__logout,
 .mina-profile__filter {
   transition:
@@ -140,6 +152,7 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
 .mina-profile__back:hover,
 .mina-profile__matcha:hover,
 .mina-profile__toggle:hover,
+.mina-profile__invoices:hover,
 .mina-profile__filter:hover {
   color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.6);
 }
@@ -365,6 +378,13 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
 
   .mina-profile__back--long {
     display: none;
+  }
+
+  /* Shares Logout's row: first in it, with Logout anchored right. */
+  .mina-profile__invoices {
+    order: 0;
+    margin-left: 0;
+    text-decoration: none;
   }
 
   .mina-profile__back--short {
