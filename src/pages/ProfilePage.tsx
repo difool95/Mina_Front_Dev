@@ -9,6 +9,7 @@ import { CreationCard } from '@/components/CreationCard'
 import { CreationFullScreen } from '@/components/CreationFullScreen'
 import { CreationSkeleton } from '@/components/CreationSkeleton'
 import { MatchaPanel } from '@/components/MatchaPanel'
+import { RoleTagCard } from '@/components/RoleTagCard'
 import { Row, Rule, Table } from '@/components/builder/Table'
 import { useSignOutAccount, useSwitchAccount } from '@/hooks/useAccounts'
 import { useBillingPortal } from '@/hooks/useBillingPortal'
@@ -147,9 +148,12 @@ export function ProfilePage() {
     <div className="mina-profile">
       <Table className="mina-profile__head">
         <Row className="mina-profile__top">
-          <Link className="mina-profile__logo" to="/" aria-label="Mina home">
-            <img src={MINA_LOGO_URL} alt="Mina" />
-          </Link>
+          <div className="mina-profile__brand">
+            <Link className="mina-profile__logo" to="/" aria-label="Mina home">
+              <img src={MINA_LOGO_URL} alt="Mina" />
+            </Link>
+            <RoleTagCard />
+          </div>
           <button
             className="mina-profile__matcha"
             type="button"

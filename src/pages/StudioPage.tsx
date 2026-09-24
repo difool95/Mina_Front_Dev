@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { AppFooter } from '@/components/AppFooter'
+import { RoleTagCard } from '@/components/RoleTagCard'
 import { useAccountSetup } from '@/hooks/useAccounts'
 import { MINA_LOGO_URL } from '@/lib/constants'
 import { useAuth } from '@/providers/AuthProvider'
@@ -28,9 +29,12 @@ export function StudioPage() {
     <div className="mina-studio">
       <section className="mina-studio__main">
         <header className="mina-studio__bar">
-          <Link className="mina-studio__logo" to="/" aria-label="Mina home">
-            <img src={MINA_LOGO_URL} alt="Mina" />
-          </Link>
+          <div className="mina-studio__brand">
+            <Link className="mina-studio__logo" to="/" aria-label="Mina home">
+              <img src={MINA_LOGO_URL} alt="Mina" />
+            </Link>
+            <RoleTagCard />
+          </div>
 
           <nav className="mina-studio__modes">
             <button

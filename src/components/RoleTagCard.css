@@ -1,0 +1,10 @@
+.mina-role-tag {
+  margin-left: 10px;
+  border-radius: 2px;
+  background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.02);
+  padding: 6px 12px;
+  color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.4);
+  font-size: var(--mina-fs-small);
+  white-space: nowrap;
+  font-weight: var(--mina-fw-med);
+}

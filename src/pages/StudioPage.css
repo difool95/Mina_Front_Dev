@@ -23,6 +23,11 @@
   padding: var(--mina-header-top) var(--mina-header-x) 18px;
 }
 
+.mina-studio__brand {
+  display: flex;
+  align-items: center;
+}
+
 .mina-studio__logo {
   width: var(--mina-logo-w);
 }

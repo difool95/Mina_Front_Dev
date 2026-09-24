@@ -30,6 +30,11 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
   --table-gap-y: 0;
 }
 
+.mina-profile__brand {
+  display: flex;
+  align-items: center;
+}
+
 .mina-profile__logo {
   width: var(--mina-logo-w);
 }
