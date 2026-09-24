@@ -23,9 +23,11 @@
   padding: var(--mina-header-top) var(--mina-header-x) 18px;
 }
 
+/* Same height as the profile's, so the logo and role tag sit at the same spot on both pages. */
 .mina-studio__brand {
   display: flex;
   align-items: center;
+  min-height: 26px;
 }
 
 .mina-studio__logo {
