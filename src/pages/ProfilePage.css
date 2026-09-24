@@ -379,10 +379,6 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
     padding: 0 var(--mina-footer-pad-x) 18px;
   }
 
-  .mina-profile__matcha {
-    font-size: var(--mina-fs-h6);
-  }
-
   .mina-profile__back {
     text-decoration: none;
   }
