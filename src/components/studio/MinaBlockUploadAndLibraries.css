@@ -48,4 +48,9 @@
   background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.04);
   color: var(--mina-muted);
   font-size: var(--mina-fs-body);
+  transition: background-color var(--mina-anim-fade) ease;
+}
+
+.mina-uploads__library:hover .mina-uploads__more {
+  background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.09);
 }

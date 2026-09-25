@@ -5,7 +5,8 @@
   width: 100%;
 }
 
-.mina-block__group {
+.mina-block__group,
+.mina-block__switch {
   display: flex;
   flex-direction: column;
   gap: inherit;
@@ -131,10 +132,65 @@
   animation: mina-block-simple-bounce-fade calc(var(--mina-anim-block-step) * 3) ease-in-out both;
 }
 
+/* ── upload switch ──
+   Hovering another "+" pill brings its upload row (with the rule over it) in
+   over the last one: from a little below when moving up the Scene → Logo →
+   Product stack. Moving up, the new row rises from the rule below it into
+   place, fading in. Moving down, the row on top slides down and away from
+   where it stands, and the one behind it fades in quickly underneath. The
+   moves start quick and ease off. Not played on the row's first appearance,
+   which the entrance already covers. */
+@keyframes mina-block-upload-rise {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+}
+
+@keyframes mina-block-upload-reveal {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes mina-block-upload-leave {
+  to {
+    transform: translateY(100%);
+  }
+}
+
+/* Clipped, so a moving row never slides over the brief or the actions. */
+.mina-block__group--uploads {
+  position: relative;
+  overflow: hidden;
+}
+
+.mina-block__switch[data-switch='up'] {
+  animation: mina-block-upload-rise calc(var(--mina-anim-block-step) * 3.5) cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.mina-block__switch[data-switch='down'] {
+  animation: mina-block-upload-reveal calc(var(--mina-anim-block-step) * 1.5) ease-out;
+}
+
+/* Laid over the row now shown, on the page's own ground so it hides it until it moves off. */
+.mina-block__switch--leaving {
+  position: absolute;
+  inset: 0 0 auto;
+  background: var(--mina-bg);
+  animation: mina-block-upload-leave calc(var(--mina-anim-block-step) * 3.5) cubic-bezier(0.33, 1, 0.68, 1) forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .mina-block[data-animation] .mina-block__brief,
   .mina-block[data-animation] .mina-block__group,
-  .mina-block[data-animation] .mina-pills__pill {
+  .mina-block[data-animation] .mina-pills__pill,
+  .mina-block__switch[data-switch] {
     animation: none;
+  }
+
+  /* With no exit to wait for, the leaving row never ends its animation. */
+  .mina-block__switch--leaving {
+    display: none;
   }
 }
