@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { AppFooter } from '@/components/AppFooter'
@@ -20,7 +20,15 @@ type Mode = 'create' | 'animate'
  */
 export function StudioPage() {
   const [mode, setMode] = useState<Mode>('create')
+  const block = useRef<{ animate: () => void }>(null)
   const { session } = useAuth()
+
+  // Either mode button also plays the prompt block's entrance: the long one
+  // if it has not opened yet, the simple one once it has.
+  const pickMode = (next: Mode) => {
+    setMode(next)
+    block.current?.animate()
+  }
 
   // The free matchas are granted here rather than in AuthProvider, so the
   // magic-link tab — which never reaches the studio — cannot grant them too.
@@ -42,7 +50,7 @@ export function StudioPage() {
               className="mina-studio__mode"
               type="button"
               aria-current={mode === 'create'}
-              onClick={() => setMode('create')}
+              onClick={() => pickMode('create')}
             >
               Create
             </button>
@@ -50,7 +58,7 @@ export function StudioPage() {
               className="mina-studio__mode"
               type="button"
               aria-current={mode === 'animate'}
-              onClick={() => setMode('animate')}
+              onClick={() => pickMode('animate')}
             >
               Animate
             </button>
@@ -59,6 +67,7 @@ export function StudioPage() {
 
         <main className="mina-studio__prompt">
           <MinaBlock
+            ref={block}
             placeholder={
               mode === 'animate'
                 ? 'Describe the motion, the sound and the scene'

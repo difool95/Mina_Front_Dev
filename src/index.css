@@ -72,6 +72,7 @@
   --mina-anim-zoom: 220ms;   /* media hover zoom */
   --mina-anim-layout: 420ms; /* layout toggle worm scroll */
   --mina-anim-modal: 160ms;  /* panels/modals slide-in */
+  --mina-anim-block-step: 100ms; /* one beat of the studio prompt block entrance */
   --mina-backdrop-blur: 14px;
   --mina-accent-green: #5E8C3A; /* Mina talking / generating */
   --mina-copycat-gold: #D5AA53;

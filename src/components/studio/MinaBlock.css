@@ -5,6 +5,12 @@
   width: 100%;
 }
 
+.mina-block__group {
+  display: flex;
+  flex-direction: column;
+  gap: inherit;
+}
+
 .mina-block__vision,
 .mina-block__cta {
   align-self: flex-start;
@@ -27,4 +33,108 @@
 .mina-block__vision:hover,
 .mina-block__cta:hover {
   color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.6);
+}
+
+/* ── entrance ──
+   Two of them, both timed in steps of --mina-anim-block-step (100ms).
+
+   Long — the block opening. The brief stands alone until it is focused (or a
+   mode is picked); then, while it slides to its place in the full block, the
+   uploads come in from above, the actions from below, and the pills one by
+   one from the left: brief 0–300, uploads 0–200, actions 100–300, pills from
+   200 at 120ms apart, 600ms each. The other sections only mount on opening,
+   so their animations start from then.
+
+   Simple — a mode picked once the block is open. Brief, rules and sections
+   dip a little and come back (0–300), the sections and rules fading out and
+   in with the dip, then the pills replay their long entrance from 300. */
+@keyframes mina-block-long-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--block-from, 0));
+  }
+}
+
+/* No fade: only the move. `--block-from` is the gap MinaBlock measures
+   between where the brief stood alone and where it lands. */
+@keyframes mina-block-long-slide {
+  from {
+    transform: translateY(var(--block-from, 0));
+  }
+}
+
+@keyframes mina-block-simple-bounce {
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+@keyframes mina-block-simple-bounce-fade {
+  50% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.mina-block[data-animation='long'] .mina-block__brief {
+  animation: mina-block-long-slide calc(var(--mina-anim-block-step) * 3) ease-in-out both;
+}
+
+.mina-block__group,
+.mina-block .mina-pills__pill {
+  animation: mina-block-long-in calc(var(--mina-anim-block-step) * 2) ease-out var(--block-delay) both;
+}
+
+.mina-block__group--uploads {
+  --block-from: -6px;
+  --block-delay: 0s;
+}
+
+.mina-block__group--actions {
+  --block-from: 6px;
+  --block-delay: var(--mina-anim-block-step);
+}
+
+.mina-block .mina-pills__pill {
+  --block-from: -6px;
+  --block-delay: calc(var(--mina-anim-block-step) * (var(--pills-start, 2) + var(--pill-i, 0) * 1.2));
+
+  animation-duration: calc(var(--mina-anim-block-step) * 6);
+}
+
+.mina-block .mina-pills__pill:nth-child(2) {
+  --pill-i: 1;
+}
+
+.mina-block .mina-pills__pill:nth-child(3) {
+  --pill-i: 2;
+}
+
+.mina-block .mina-pills__pill:nth-child(4) {
+  --pill-i: 3;
+}
+
+.mina-block .mina-pills__pill:nth-child(5) {
+  --pill-i: 4;
+}
+
+/* The pills wait for the dip to finish before they replay. */
+.mina-block[data-animation='simple'] {
+  --pills-start: 3;
+}
+
+.mina-block[data-animation='simple'] .mina-block__brief {
+  animation: mina-block-simple-bounce calc(var(--mina-anim-block-step) * 3) ease-in-out both;
+}
+
+.mina-block[data-animation='simple'] .mina-block__group {
+  animation: mina-block-simple-bounce-fade calc(var(--mina-anim-block-step) * 3) ease-in-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mina-block[data-animation] .mina-block__brief,
+  .mina-block[data-animation] .mina-block__group,
+  .mina-block[data-animation] .mina-pills__pill {
+    animation: none;
+  }
 }
