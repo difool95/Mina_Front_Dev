@@ -1,0 +1,51 @@
+.mina-uploads__title {
+  margin: 0 0 12px;
+  font-size: var(--mina-fs-body);
+  font-weight: var(--mina-fw-med);
+}
+
+.mina-uploads__cards {
+  display: flex;
+  gap: 8px;
+}
+
+.mina-uploads__add,
+.mina-uploads__library {
+  width: 72px;
+  height: 72px;
+}
+
+.mina-uploads__add {
+  background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.05);
+  font-size: var(--mina-fs-h6);
+  transition: background-color var(--mina-anim-fade) ease;
+}
+
+.mina-uploads__add:hover {
+  background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.09);
+}
+
+/* Three pictures from the library and a "+" as the fourth tile. `minmax(0, …)`
+   stops a tall picture stretching its track, so every tile stays square. */
+.mina-uploads__library {
+  display: grid;
+  grid-template: repeat(2, minmax(0, 1fr)) / repeat(2, minmax(0, 1fr));
+  gap: 2px;
+}
+
+/* Square whatever the picture's own ratio, cropped to fill it. */
+.mina-uploads__library img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.mina-uploads__more {
+  display: grid;
+  place-items: center;
+  background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.04);
+  color: var(--mina-muted);
+  font-size: var(--mina-fs-body);
+}

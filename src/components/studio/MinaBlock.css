@@ -1,0 +1,30 @@
+.mina-block {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+}
+
+.mina-block__vision,
+.mina-block__cta {
+  align-self: flex-start;
+  transition: color var(--mina-anim-fade) ease;
+}
+
+.mina-block__vision {
+  margin-top: 6px;
+  font-size: var(--mina-fs-micro);
+  font-weight: var(--mina-fw-med);
+}
+
+.mina-block__cta {
+  font-size: var(--mina-cta-fs);
+  font-weight: var(--mina-cta-fw);
+  text-decoration: underline;
+  text-underline-offset: var(--mina-btn-underline-offset);
+}
+
+.mina-block__vision:hover,
+.mina-block__cta:hover {
+  color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.6);
+}

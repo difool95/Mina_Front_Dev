@@ -1,0 +1,68 @@
+.mina-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Every pill stands as tall as one with an icon slot, text-only ones included. */
+.mina-pills__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mina-pill-gap);
+  min-height: 34px;
+  border-radius: 2px;
+  background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.03);
+  padding: var(--mina-pill-pad);
+  font-size: var(--mina-fs-small);
+  font-weight: var(--mina-fw-pill);
+  white-space: nowrap;
+  transition: background-color var(--mina-anim-fade) ease;
+}
+
+.mina-pills__pill--text {
+  padding: var(--mina-filter-pill-pad);
+}
+
+.mina-pills__pill:hover,
+.mina-pills__pill[aria-pressed='true'] {
+  background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.07);
+}
+
+/* A square of its own for the "+" or the ratio frame, not just a space before the label. */
+.mina-pills__icon {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  font-size: var(--mina-fs-body);
+  font-weight: var(--mina-fw-light);
+}
+
+/* The ratio drawn as its own outline: tall for 9:16, square for 1:1. */
+.mina-pills__frame {
+  height: 12px;
+  border: 1.5px solid currentColor;
+  border-radius: 1px;
+}
+
+.mina-pills__muted {
+  color: var(--mina-muted);
+  font-weight: var(--mina-fw-med);
+}
+
+/* One line that swipes sideways instead of wrapping onto a second. */
+@media (width < 768px) {
+  .mina-pills {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .mina-pills::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mina-pills__pill {
+    flex-shrink: 0;
+  }
+}

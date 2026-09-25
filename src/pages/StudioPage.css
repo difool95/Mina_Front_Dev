@@ -55,19 +55,19 @@
   color: var(--mina-text);
 }
 
+/* Inset past the logo and footer. Scrolls on a short window, and the block is
+   centred with auto margins rather than align-items, which would clip its top
+   once it overflows. */
 .mina-studio__prompt {
   display: flex;
-  align-items: center;
-  padding: 0 var(--mina-header-x);
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 24px calc(var(--mina-header-x) + 56px);
 }
 
-.mina-studio__brief {
-  margin: 0;
-  max-width: 22ch;
-  color: rgba(var(--mina-ink-rgb, 8, 10, 0), var(--mina-muted-o));
-  font-size: var(--mina-cta-fs);
-  font-weight: var(--mina-cta-fw);
-  line-height: 1.15;
+.mina-studio__prompt > * {
+  margin-block: auto;
 }
 
 /* ── upload side ── */
@@ -124,10 +124,6 @@
 
   .mina-studio__prompt {
     padding: 28px var(--mina-footer-pad-x) 32px;
-  }
-
-  .mina-studio__brief {
-    max-width: none;
   }
 
   .mina-studio__panel {

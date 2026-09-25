@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { AppFooter } from '@/components/AppFooter'
+import { MinaBlock } from '@/components/studio/MinaBlock'
 import { RoleTagCard } from '@/components/RoleTagCard'
 import { useAccountSetup } from '@/hooks/useAccounts'
 import { MINA_LOGO_URL } from '@/lib/constants'
@@ -18,7 +19,7 @@ type Mode = 'create' | 'animate'
  * yet, so the two panels are laid out and left inert.
  */
 export function StudioPage() {
-  const [mode, setMode] = useState<Mode>('animate')
+  const [mode, setMode] = useState<Mode>('create')
   const { session } = useAuth()
 
   // The free matchas are granted here rather than in AuthProvider, so the
@@ -57,11 +58,13 @@ export function StudioPage() {
         </header>
 
         <main className="mina-studio__prompt">
-          <p className="mina-studio__brief">
-            {mode === 'animate'
-              ? 'Describe the motion, the sound and the scene'
-              : 'Describe the image you want to create'}
-          </p>
+          <MinaBlock
+            placeholder={
+              mode === 'animate'
+                ? 'Describe the motion, the sound and the scene'
+                : 'Describe how you want your image'
+            }
+          />
         </main>
 
         <AppFooter current="studio" />
