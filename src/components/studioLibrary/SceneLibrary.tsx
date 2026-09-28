@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { CreationMedia } from '@/components/CreationMedia'
 import { useSceneLibrary } from '@/hooks/useSceneLibrary'
+import { MINA_LOGO_URL } from '@/lib/constants'
 import { toRoman } from '@/lib/format'
 import { cfImage, imageWidthFor } from '@/lib/media'
 import {
@@ -88,6 +89,14 @@ export function SceneLibrary({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="mina-scene-library">
+      {/* Phones only: the studio's own logo row, with the way out spelled out. */}
+      <div className="mina-scene-library__mobile-bar">
+        <img className="mina-scene-library__logo" src={MINA_LOGO_URL} alt="Mina" />
+        <button className="mina-scene-library__mobile-close" type="button" onClick={onClose}>
+          Close
+        </button>
+      </div>
+
       <header className="mina-scene-library__bar">
         <h2 className="mina-scene-library__title">Scene Library</h2>
         <input

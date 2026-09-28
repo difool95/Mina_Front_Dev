@@ -154,14 +154,69 @@
   object-fit: cover;
 }
 
+.mina-scene-library__mobile-bar {
+  display: none;
+}
+
 @media (width < 768px) {
   .mina-scene-library {
-    grid-template: auto minmax(0, 1fr) / 100%;
+    grid-template: auto auto minmax(0, 1fr) / 100%;
   }
 
+  /* The studio and profile phone headers' exact measure — 16px over, 18px
+     under, a 26px line — so the logo stands at the same height on all three. */
+  .mina-scene-library__mobile-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: content-box;
+    min-height: 26px;
+    border-bottom: 1px solid var(--mina-hairline);
+    padding: 16px var(--mina-footer-pad-x) 18px;
+  }
+
+  .mina-scene-library__logo {
+    display: block;
+    width: var(--mina-logo-w);
+    height: auto;
+  }
+
+  /* Sized like the studio's Create / Animate toggles. */
+  .mina-scene-library__mobile-close {
+    font-size: var(--mina-header-toggle-fs);
+    font-weight: var(--mina-header-toggle-fw);
+    text-decoration: underline;
+    text-underline-offset: var(--mina-btn-underline-offset);
+  }
+
+  /* Title and search on one line, every filter (and the close bar) on a
+     second that swipes sideways rather than wrapping. */
   .mina-scene-library__bar {
     flex-wrap: wrap;
     padding: var(--mina-panel-pad);
+  }
+
+  .mina-scene-library__filters {
+    flex: 0 0 100%;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    margin-left: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .mina-scene-library__filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mina-scene-library__filter,
+  .mina-scene-library__close {
+    flex-shrink: 0;
+  }
+
+  /* Every picture shows as it loads: no hiding, so no fading in or out. */
+  .mina-scene-library__cell[data-hidden] .mina-scene-library__media img[data-ready] {
+    opacity: 1;
   }
 
   .mina-scene-library__row {
