@@ -12,12 +12,17 @@ export function MinaBlockUploadAndLibraries({ upload }: { upload: UploadKind }) 
       <p className="mina-uploads__title">{title}</p>
 
       <div className="mina-uploads__cards">
-        <button className="mina-uploads__add" type="button" aria-label={title}>
+        <button className="mina-uploads__add" type="button" aria-label={title} data-tooltip="Add image">
           +
         </button>
 
         {upload === 'scene' && (
-          <button className="mina-uploads__library" type="button" aria-label="Open library">
+          <button
+            className="mina-uploads__library"
+            type="button"
+            aria-label="Browse scene library"
+            data-tooltip="Browse scene library"
+          >
             {LIBRARY_PREVIEW_URLS.map((url) => (
               <img key={url} src={cfImage(url, imageWidthFor(36))} alt="" draggable={false} />
             ))}

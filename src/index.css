@@ -127,3 +127,40 @@ body {
   font-family: var(--mina-font, "Schibsted Grotesk", system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif), "Tajawal", sans-serif;
   letter-spacing: -0.02em;
 }
+
+/* ── tooltips ──
+   Any element with `data-tooltip` shows it on hover or keyboard focus, below
+   itself by default. */
+[data-tooltip] {
+  position: relative;
+}
+
+[data-tooltip]::after {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  z-index: 3;
+  transform: translateX(-50%);
+  transition: opacity var(--mina-anim-fade) ease;
+  opacity: 0;
+  border-radius: 3px;
+  background: var(--mina-ink);
+  padding: 5px 8px;
+  content: attr(data-tooltip);
+  color: var(--mina-bg);
+  font-size: var(--mina-fs-micro);
+  font-weight: var(--mina-fw-light);
+  letter-spacing: 0;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+[data-tooltip]:hover::after,
+[data-tooltip]:focus-visible::after {
+  opacity: 1;
+}
+
+/* Once the account dropdown is open the tooltip would sit on top of it. */
+[aria-expanded='true'][data-tooltip]:hover::after {
+  opacity: 0;
+}

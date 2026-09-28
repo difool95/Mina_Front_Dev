@@ -1,10 +1,25 @@
 import type { Ratio, UploadKind } from '@/types'
 
-/** The three "+" pills, and what the upload row asks for under each. */
-export const UPLOAD_KINDS: { kind: UploadKind; label: string; title: string }[] = [
-  { kind: 'scene', label: 'Scene', title: 'Add scene or inspiration' },
-  { kind: 'logo', label: 'Logo', title: 'Add logo, label, icon, text, packaging or design' },
-  { kind: 'product', label: 'Product', title: 'Add product, logo, elements, video, sound or references' },
+/** The three "+" pills, their hover tooltip, and what the upload row asks for under each. */
+export const UPLOAD_KINDS: { kind: UploadKind; label: string; tooltip: string; title: string }[] = [
+  {
+    kind: 'scene',
+    label: 'Scene',
+    tooltip: 'Scene / Composition / Vibe',
+    title: 'Add scene or inspiration',
+  },
+  {
+    kind: 'logo',
+    label: 'Logo',
+    tooltip: 'Logo / Label / Icon / Text / Design',
+    title: 'Add logo, label, icon, text, packaging or design',
+  },
+  {
+    kind: 'product',
+    label: 'Product',
+    tooltip: 'Product / Element / Texture / Material',
+    title: 'Add product, logo, elements, video, sound or references',
+  },
 ]
 
 /** The ratio pill cycles through these in order, starting on the first. */

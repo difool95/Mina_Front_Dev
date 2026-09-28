@@ -20,12 +20,13 @@ export function MinaBlockPills({
     <div className="mina-pills">
       {/* Hovering picks one and it stays picked, so exactly one is ever lit.
           Click covers touch, where there is no hover. */}
-      {UPLOAD_KINDS.map(({ kind, label }) => (
+      {UPLOAD_KINDS.map(({ kind, label, tooltip }) => (
         <button
           key={kind}
           className="mina-pills__pill"
           type="button"
           aria-pressed={upload === kind}
+          data-tooltip={tooltip}
           onMouseEnter={() => onUpload(kind)}
           onClick={() => onUpload(kind)}
         >
@@ -39,6 +40,7 @@ export function MinaBlockPills({
       <button
         className="mina-pills__pill mina-pills__pill--text"
         type="button"
+        data-tooltip="Niche - 1 matcha · Creative - 1 matcha"
         onClick={() => setIsCreative((was) => !was)}
       >
         {isCreative ? 'Creative' : 'Niche'}
@@ -47,6 +49,7 @@ export function MinaBlockPills({
       <button
         className="mina-pills__pill"
         type="button"
+        data-tooltip="Tap to cycle · Hold to flip landscape"
         onClick={() => setRatioIndex((index) => (index + 1) % STUDIO_RATIOS.length)}
       >
         <span className="mina-pills__icon" aria-hidden="true">

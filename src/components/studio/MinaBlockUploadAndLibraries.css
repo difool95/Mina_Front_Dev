@@ -9,6 +9,13 @@
   gap: 8px;
 }
 
+/* Above the cards, not below: the upload group clips its bottom edge for the
+   switch animation, which would cut a tooltip hanging under them. */
+.mina-uploads__cards [data-tooltip]::after {
+  top: auto;
+  bottom: calc(100% + 8px);
+}
+
 .mina-uploads__add,
 .mina-uploads__library {
   width: 72px;

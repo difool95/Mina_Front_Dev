@@ -280,41 +280,6 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
   y: 9px;
 }
 
-/* ── tooltips ──
-   Scoped to the page so it covers AccountMenu too, which renders inside it. */
-.mina-profile [data-tooltip] {
-  position: relative;
-}
-
-.mina-profile [data-tooltip]::after {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 50%;
-  z-index: 3;
-  transform: translateX(-50%);
-  transition: opacity var(--mina-anim-fade) ease;
-  opacity: 0;
-  border-radius: 3px;
-  background: var(--mina-ink);
-  padding: 5px 8px;
-  content: attr(data-tooltip);
-  color: var(--mina-bg);
-  font-size: var(--mina-fs-micro);
-  font-weight: var(--mina-fw-light);
-  letter-spacing: 0;
-  white-space: nowrap;
-  pointer-events: none;
-}
-
-.mina-profile [data-tooltip]:hover::after,
-.mina-profile [data-tooltip]:focus-visible::after {
-  opacity: 1;
-}
-
-/* Once the account dropdown is open the tooltip would sit on top of it. */
-.mina-profile [aria-expanded='true'][data-tooltip]:hover::after {
-  opacity: 0;
-}
 
 /* ── archive grid ── */
 
