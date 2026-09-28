@@ -16,6 +16,9 @@
   font-size: var(--mina-fs-small);
   font-weight: var(--mina-fw-pill);
   white-space: nowrap;
+  /* Holding the ratio pill must not start selecting its text. */
+  user-select: none;
+  -webkit-touch-callout: none;
   transition: background-color var(--mina-anim-fade) ease;
 }
 
@@ -43,6 +46,13 @@
   height: 12px;
   border: 1.5px solid currentColor;
   border-radius: 1px;
+}
+
+/* Landscape frames are sized by their width instead, so they mirror the
+   portrait ones rather than growing wider than them. */
+.mina-pills__frame--landscape {
+  width: 12px;
+  height: auto;
 }
 
 .mina-pills__muted {

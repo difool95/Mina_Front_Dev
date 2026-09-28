@@ -4,6 +4,7 @@ import { UPLOAD_KINDS } from '@/lib/studio'
 import type { UploadKind } from '@/types'
 
 import { Rule } from '../builder/Table'
+import { StudioLibrary } from '../studioLibrary/StudioLibrary'
 import { MinaBlockPills } from './MinaBlockPills'
 import { MinaBlockUploadAndLibraries } from './MinaBlockUploadAndLibraries'
 import { MinaBlockUserBrief } from './MinaBlockUserBrief'
@@ -30,6 +31,7 @@ export function MinaBlock({
   const [leavingUpload, setLeavingUpload] = useState<UploadKind | null>(null)
   const [animation, setAnimation] = useState<'long' | 'simple' | null>(null)
   const [simpleRuns, setSimpleRuns] = useState(0)
+  const [isLibraryOpen, setIsLibraryOpen] = useState(false)
   const isOpen = animation !== null
   const block = useRef<HTMLDivElement>(null)
   const brief = useRef<HTMLDivElement>(null)
@@ -93,7 +95,7 @@ export function MinaBlock({
             {/* Keyed by the upload, so every switch remounts it and replays the slide. */}
             <div key={upload} className="mina-block__switch" data-switch={uploadSwitch ?? undefined}>
               <Rule />
-              <MinaBlockUploadAndLibraries upload={upload} />
+              <MinaBlockUploadAndLibraries upload={upload} onBrowseLibrary={() => setIsLibraryOpen(true)} />
             </div>
             {leavingUpload && (
               <div
@@ -102,7 +104,7 @@ export function MinaBlock({
                 onAnimationEnd={(event) => event.target === event.currentTarget && setLeavingUpload(null)}
               >
                 <Rule />
-                <MinaBlockUploadAndLibraries upload={leavingUpload} />
+                <MinaBlockUploadAndLibraries upload={leavingUpload} onBrowseLibrary={() => setIsLibraryOpen(true)} />
               </div>
             )}
           </div>
@@ -113,6 +115,7 @@ export function MinaBlock({
           </div>
         </>
       )}
+      {isLibraryOpen && <StudioLibrary onClose={() => setIsLibraryOpen(false)} />}
     </div>
   )
 }

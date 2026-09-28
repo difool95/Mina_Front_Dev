@@ -5,6 +5,7 @@ export type { CreditLot, CustomerRole, MegaCustomer, MmaPreferences } from './cu
 export type { SignupBonusResult } from './credit.types'
 export type { CreateCheckoutSessionResult } from './checkout.types'
 export type { UploadKind } from './studio.types'
+export type { SceneLibraryItem } from './sceneLibrary.types'
 export type {
   ArchiveLayout,
   GenerationVars,

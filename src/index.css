@@ -15,7 +15,7 @@
   --mina-muted-o: 0.3;  /* muted label opacity (pcd labels, faint rows) */
   --mina-quiet-o: 0.55; /* secondary text opacity (subtitles) */
   --mina-font: "Schibsted Grotesk", system-ui, -apple-system, sans-serif;
-  --mina-fs-micro: 9px;  /* card prompt, pcd rows */
+  --mina-fs-micro: 8px;  /* card prompt, pcd rows */
   --mina-fs-small: 10.5px; /* pill actions, footers */
   --mina-fs-label: 10.5px; /* account row labels */
   --mina-fs-body: 12px;  /* panel rows */

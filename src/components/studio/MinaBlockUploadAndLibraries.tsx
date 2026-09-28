@@ -4,7 +4,13 @@ import type { UploadKind } from '@/types'
 
 import './MinaBlockUploadAndLibraries.css'
 
-export function MinaBlockUploadAndLibraries({ upload }: { upload: UploadKind }) {
+export function MinaBlockUploadAndLibraries({
+  upload,
+  onBrowseLibrary,
+}: {
+  upload: UploadKind
+  onBrowseLibrary: () => void
+}) {
   const { title } = UPLOAD_KINDS.find((entry) => entry.kind === upload)!
 
   return (
@@ -22,6 +28,7 @@ export function MinaBlockUploadAndLibraries({ upload }: { upload: UploadKind }) 
             type="button"
             aria-label="Browse scene library"
             data-tooltip="Browse scene library"
+            onClick={onBrowseLibrary}
           >
             {LIBRARY_PREVIEW_URLS.map((url) => (
               <img key={url} src={cfImage(url, imageWidthFor(36))} alt="" draggable={false} />

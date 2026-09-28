@@ -1,0 +1,26 @@
+.mina-library {
+  box-sizing: border-box;
+  width: 100vw;
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0;
+  border: 0;
+  background: var(--mina-bg);
+  padding: 0;
+  overflow: hidden;
+  color: var(--mina-text);
+}
+
+/* The dialog lives outside the studio's markup, so it carries its own reset.
+   :where() keeps it weightless, so the library's own rules always win. */
+:where(.mina-library button, .mina-library input) {
+  margin: 0;
+  border: 0;
+  background: none;
+  padding: 0;
+  color: inherit;
+  font-family: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+}

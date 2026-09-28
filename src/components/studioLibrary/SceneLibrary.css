@@ -1,0 +1,176 @@
+/* The bar across the top; below it, the grid (70%) and the hovered picture (30%). */
+.mina-scene-library {
+  display: grid;
+  grid-template: auto minmax(0, 1fr) / 70% 30%;
+  height: 100%;
+}
+
+.mina-scene-library__bar {
+  display: flex;
+  grid-column: 1 / -1;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid var(--mina-hairline);
+  /* Left edge lines up with the pictures' 20px; the right keeps the studio header's distance. */
+  padding: 14px var(--mina-header-x) 14px 20px;
+}
+
+.mina-scene-library__title {
+  margin: 0;
+  font-size: var(--mina-fs-body);
+  font-weight: var(--mina-fw-med);
+  white-space: nowrap;
+}
+
+.mina-scene-library__search {
+  min-width: 0;
+  outline: none;
+  font-size: var(--mina-fs-body);
+  font-weight: var(--mina-fw-med);
+  cursor: text;
+}
+
+.mina-scene-library__search::placeholder {
+  color: var(--mina-muted);
+}
+
+/* Anchored right, with the close bar last. */
+.mina-scene-library__filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.mina-scene-library__filter {
+  border: 1px solid var(--mina-border-soft);
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 9px;
+  font-weight: var(--mina-fw-med);
+  white-space: nowrap;
+  transition: background-color var(--mina-anim-fade) ease;
+}
+
+.mina-scene-library__filter:hover {
+  background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.07);
+}
+
+.mina-scene-library__filter[aria-pressed='true'] {
+  border-color: transparent;
+  background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.88);
+  color: var(--mina-bg);
+}
+
+.mina-scene-library__close {
+  margin-left: 16px;
+  font-size: var(--mina-fs-body);
+}
+
+/* ── grid ── */
+
+/* Scrolls, but never draws a scrollbar. */
+.mina-scene-library__grid {
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.mina-scene-library__grid::-webkit-scrollbar {
+  display: none;
+}
+
+/* Seven to a row, each row closed by a rule that runs the grid's full width. */
+.mina-scene-library__row {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  column-gap: 40px;
+  border-bottom: 1px solid var(--mina-hairline);
+  padding: 20px;
+}
+
+.mina-scene-library__cell {
+  display: block;
+  text-align: left;
+}
+
+.mina-scene-library__number {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--mina-muted);
+  font-family: var(--mina-font);
+  font-size: var(--mina-fs-micro);
+  font-weight: var(--mina-fw-med);
+}
+
+.mina-scene-library__media {
+  display: block;
+  aspect-ratio: 3 / 4;
+}
+
+/* Held at zero until the bytes land, as on the profile's creations. */
+.mina-scene-library__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition:
+    opacity var(--mina-anim-fade) ease,
+    transform var(--mina-anim-zoom) ease;
+  opacity: 0;
+}
+
+.mina-scene-library__media img[data-ready] {
+  opacity: 1;
+}
+
+/* Outranks `[data-ready]`, so a loaded picture still fades out when it is
+   one of those waiting to be hovered — 2.5× slower than it fades in, since a
+   transition runs at the speed of the state it is heading into. */
+.mina-scene-library__cell[data-hidden] .mina-scene-library__media img {
+  transition:
+    opacity calc(var(--mina-anim-fade) * 2.5) ease,
+    transform var(--mina-anim-zoom) ease;
+  opacity: 0;
+}
+
+.mina-scene-library__cell:hover .mina-scene-library__media img {
+  transform: scale(1.04);
+}
+
+/* ── hovered picture ── */
+
+.mina-scene-library__preview {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.mina-scene-library__preview img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (width < 768px) {
+  .mina-scene-library {
+    grid-template: auto minmax(0, 1fr) / 100%;
+  }
+
+  .mina-scene-library__bar {
+    flex-wrap: wrap;
+    padding: var(--mina-panel-pad);
+  }
+
+  .mina-scene-library__row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    padding: 20px var(--mina-footer-pad-x);
+  }
+
+  .mina-scene-library__preview {
+    display: none;
+  }
+}
