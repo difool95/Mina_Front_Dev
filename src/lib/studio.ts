@@ -106,6 +106,16 @@ export const SCENE_LIBRARY_MAX_VISIBLE = 35
 
 export const CONTENT_LIBRARY_MAX_VISIBLE = 11
 
+export const CREATOR_LIBRARY_MAX_VISIBLE = 28
+
+
+/**
+ * A library's list before its query has data. One shared array, not a fresh
+ * `[]` each render: the libraries re-deal which items are visible whenever the
+ * list changes identity, and a new empty list every render would loop.
+ */
+export const NO_LIBRARY_ITEMS: never[] = []
+
 /** The CSS width a library's large preview is asked for at: its column's size, so it stays sharp there. */
 export const libraryPreviewWidth = () => Math.max(window.innerWidth * 0.3, window.innerHeight * 0.75)
 

@@ -7,6 +7,7 @@ export type { CreateCheckoutSessionResult } from './checkout.types'
 export type { StudioMode, UploadKind } from './studio.types'
 export type { SceneLibraryItem } from './sceneLibrary.types'
 export type { ContentLibraryItem, ContentLibraryRecreate } from './contentLibrary.types'
+export type { CreatorLibraryItem } from './creatorLibrary.types'
 export type {
   ArchiveLayout,
   GenerationVars,

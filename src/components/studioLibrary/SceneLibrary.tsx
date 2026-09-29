@@ -11,6 +11,7 @@ import {
   SCENE_LIBRARY_MAX_VISIBLE,
   LIBRARY_PER_ROW,
   libraryPreviewWidth,
+  NO_LIBRARY_ITEMS,
   pickRandom,
   SCENE_LIBRARY_FILTERS,
 } from '@/lib/studio'
@@ -24,7 +25,7 @@ import {
  * `LIBRARY_HIDE_DELAY_MS`, one random visible picture fades out for it.
  */
 export function SceneLibrary({ onClose }: { onClose: () => void }) {
-  const { data: scenes = [] } = useSceneLibrary()
+  const { data: scenes = NO_LIBRARY_ITEMS } = useSceneLibrary()
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState<string | null>(null)
   const [shown, setShown] = useState<string[]>([])

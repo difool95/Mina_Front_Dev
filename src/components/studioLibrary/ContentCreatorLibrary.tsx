@@ -3,34 +3,27 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { CreationMedia } from '@/components/CreationMedia'
 import { RoleTagCard } from '@/components/RoleTagCard'
 import { useContentLibrary } from '@/hooks/useContentLibrary'
+import { useCreatorLibrary } from '@/hooks/useCreatorLibrary'
 import { MINA_LOGO_URL } from '@/lib/constants'
 import { toRoman } from '@/lib/format'
 import { cfImage, cfVideo, imageWidthFor, videoWidthFor } from '@/lib/media'
 import {
   LIBRARY_HIDE_DELAY_MS,
   CONTENT_LIBRARY_MAX_VISIBLE,
+  CREATOR_LIBRARY_MAX_VISIBLE,
   LIBRARY_PER_ROW,
   libraryPreviewWidth,
+  NO_LIBRARY_ITEMS,
   pickRandom,
 } from '@/lib/studio'
-import type { ContentLibraryItem } from '@/types'
+import type { ContentLibraryItem, CreatorLibraryItem } from '@/types'
 
-/**
- * Animate mode's library: video templates, laid out like the Scene Library.
- *
- * A card shows its thumbnail; hovered, it plays its video over it, and the
- * preview on the right plays the same one with sound. The preview keeps
- * playing — muted — after the card is left, and hovering it turns sound back
- * on. The card plays muted so the sound only ever comes from one place.
- *
- * Only `CONTENT_LIBRARY_MAX_VISIBLE` cards are visible at once. Hovering a hidden one
- * fades it in straight away; after `LIBRARY_HIDE_DELAY_MS`, one random visible
- * card fades out for it.
- *
- * "Content" is the one tab for now; "Creator" is kept for the Creators Library.
- */
 export function ContentCreatorLibrary({ onClose }: { onClose: () => void }) {
-  const { data: items = [] } = useContentLibrary()
+  const { data: contents = NO_LIBRARY_ITEMS } = useContentLibrary()
+  const { data: creators = NO_LIBRARY_ITEMS } = useCreatorLibrary()
+  const [tab, setTab] = useState<'content' | 'creator'>('content')
+  const isContent = tab === 'content'
+  const items: (ContentLibraryItem | CreatorLibraryItem)[] = isContent ? contents : creators
   const [search, setSearch] = useState('')
   const [shown, setShown] = useState<string[]>([])
   const [previewId, setPreviewId] = useState<string | null>(null)
@@ -49,15 +42,17 @@ export function ContentCreatorLibrary({ onClose }: { onClose: () => void }) {
     if (!term) return items
 
     return items.filter((item) =>
-      [item.title, item.content_type, item.asset_ref, ...(item.keywords ?? []), ...(item.tags ?? [])].some(
-        (text) => text?.toLowerCase().includes(term),
-      ),
+      // Creators are searched by their keywords; templates by those and how they are filed.
+      ('content_type' in item
+        ? [item.title, item.content_type, item.asset_ref, ...(item.keywords ?? []), ...(item.tags ?? [])]
+        : [item.title, ...(item.keywords ?? [])]
+      ).some((text) => text?.toLowerCase().includes(term)),
     )
   }, [items, search])
 
   // A fresh, scattered set of visible cards every time the list itself changes.
   useEffect(() => {
-    setShown(pickRandom(matches, CONTENT_LIBRARY_MAX_VISIBLE).map((item) => item.id))
+    setShown(pickRandom(matches, isContent ? CONTENT_LIBRARY_MAX_VISIBLE : CREATOR_LIBRARY_MAX_VISIBLE).map((item) => item.id))
   }, [matches])
 
   // Shows the card at once; after the delay, one random other fades out in its
@@ -76,7 +71,7 @@ export function ContentCreatorLibrary({ onClose }: { onClose: () => void }) {
       fresh.current.delete(id)
       setShown((ids) => {
         const droppable = ids.filter((shownId) => !fresh.current.has(shownId))
-        if (ids.length <= CONTENT_LIBRARY_MAX_VISIBLE || !droppable.length) return ids
+        if (ids.length <= (isContent ? CONTENT_LIBRARY_MAX_VISIBLE : CREATOR_LIBRARY_MAX_VISIBLE) || !droppable.length) return ids
 
         const dropped = droppable[Math.floor(Math.random() * droppable.length)]
         return ids.filter((shownId) => shownId !== dropped)
@@ -105,7 +100,7 @@ export function ContentCreatorLibrary({ onClose }: { onClose: () => void }) {
       </div>
 
       <header className="mina-library__bar">
-        <h2 className="mina-library__title">Content Library</h2>
+        <h2 className="mina-library__title">{isContent ? 'Content Library' : 'Creators Library'}</h2>
         <input
           className="mina-library__search"
           type="text"
@@ -115,13 +110,23 @@ export function ContentCreatorLibrary({ onClose }: { onClose: () => void }) {
         />
 
         <div className="mina-library__filters">
-          <button className="mina-library__filter" type="button" aria-pressed="true">
+          <button
+            className="mina-library__filter"
+            type="button"
+            aria-pressed={isContent}
+            onClick={() => setTab('content')}
+          >
             Content
           </button>
-          <button className="mina-library__filter" type="button">
+          <button
+            className="mina-library__filter"
+            type="button"
+            aria-pressed={!isContent}
+            onClick={() => setTab('creator')}
+          >
             Creator
           </button>
-          <button className="mina-library__close" type="button" aria-label="Close content library" onClick={onClose}>
+          <button className="mina-library__close" type="button" aria-label="Close library" onClick={onClose}>
             —
           </button>
         </div>
@@ -143,7 +148,7 @@ export function ContentCreatorLibrary({ onClose }: { onClose: () => void }) {
                 <span className="mina-library__number">{toRoman(item.sort_order)}.</span>
                 <span className="mina-library__media">
                   <CreationMedia url={item.thumbnail_url} alt={item.title} motion={false} />
-                  {hoveredId === item.id && (
+                  {isContent && hoveredId === item.id && (
                     <video src={cfVideo(item.url, videoWidthFor(150))} autoPlay loop muted playsInline />
                   )}
                 </span>
@@ -154,7 +159,12 @@ export function ContentCreatorLibrary({ onClose }: { onClose: () => void }) {
       </div>
 
       <div className="mina-library__preview">
-        {preview && <ContentPreview key={preview.id} item={preview} isCardHovered={hoveredId === preview.id} />}
+        {preview &&
+          ('content_type' in preview ? (
+            <ContentPreview key={preview.id} item={preview} isCardHovered={hoveredId === preview.id} />
+          ) : (
+            <img src={cfImage(preview.url, imageWidthFor(libraryPreviewWidth()))} alt={preview.title} />
+          ))}
       </div>
     </div>
   )
