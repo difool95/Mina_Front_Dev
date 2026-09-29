@@ -268,10 +268,11 @@
     opacity: 1;
   }
 
+  /* Tighter on a phone, so the three columns get the width rather than the gaps. */
   .mina-library__row {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 20px;
-    padding: 20px var(--mina-footer-pad-x);
+    gap: 10px;
+    padding: 12px 16px;
   }
 
   .mina-library__preview {
