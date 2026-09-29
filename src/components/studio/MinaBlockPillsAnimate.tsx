@@ -6,12 +6,19 @@ import { MinaBlockRatioPill } from './MinaBlockRatioPill'
 
 import './MinaBlockPills.css'
 
-export function MinaBlockPillsAnimate() {
-  const [resolutionIndex, setResolutionIndex] = useState(0)
+/** Resolution and duration are held by `MinaBlock`, whose call to action prices them. */
+export function MinaBlockPillsAnimate({
+  resolution,
+  duration,
+  onNextResolution,
+  onNextDuration,
+}: {
+  resolution: (typeof ANIMATE_RESOLUTIONS)[number]
+  duration: (typeof ANIMATE_DURATIONS)[number]
+  onNextResolution: () => void
+  onNextDuration: () => void
+}) {
   const [isMuted, setIsMuted] = useState(false)
-  const [durationIndex, setDurationIndex] = useState(0)
-  const resolution = ANIMATE_RESOLUTIONS[resolutionIndex]!
-  const duration = ANIMATE_DURATIONS[durationIndex]!
   // Shared by the resolution and duration pills, and follows both.
   const costTooltip = `${ANIMATE_MATCHA_COST[resolution][duration]} matcha (${duration}, Director, ${resolution})`
 
@@ -39,7 +46,7 @@ export function MinaBlockPillsAnimate() {
         className="mina-pills__pill mina-pills__pill--text"
         type="button"
         data-tooltip={costTooltip}
-        onClick={() => setResolutionIndex((index) => (index + 1) % ANIMATE_RESOLUTIONS.length)}
+        onClick={onNextResolution}
       >
         {resolution}
       </button>
@@ -57,7 +64,7 @@ export function MinaBlockPillsAnimate() {
         className="mina-pills__pill mina-pills__pill--text"
         type="button"
         data-tooltip={costTooltip}
-        onClick={() => setDurationIndex((index) => (index + 1) % ANIMATE_DURATIONS.length)}
+        onClick={onNextDuration}
       >
         {duration}
       </button>

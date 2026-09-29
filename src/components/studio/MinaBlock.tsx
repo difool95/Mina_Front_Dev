@@ -1,12 +1,16 @@
 import { useImperativeHandle, useLayoutEffect, useRef, useState, type Ref } from 'react'
 
 import {
+  ANIMATE_DURATIONS,
+  ANIMATE_RESOLUTIONS,
   ANIMATE_UPLOAD_TITLE,
   BRIEF_PLACEHOLDERS,
   CONTENT_LIBRARY_PREVIEW_URLS,
   LIBRARY_PREVIEW_URLS,
+  NEED_MATCHA_LABEL,
   STUDIO_CTA_LABELS,
   UPLOAD_KINDS,
+  canAffordGeneration,
 } from '@/lib/studio'
 import type { StudioMode, UploadKind } from '@/types'
 
@@ -26,9 +30,27 @@ import './MinaBlock.css'
  * the page calling `animate()` through `ref` before it has opened — brings in
  * everything else, with the brief sliding from where it stood alone to its
  * place in the full block. Once open, each `animate()` plays the simple one.
+ *
+ * `credits` is undefined until the balance has loaded; the call to action
+ * keeps its usual label until then rather than flashing the matcha one.
  */
-export function MinaBlock({ mode, ref }: { mode: StudioMode; ref?: Ref<{ animate: () => void }> }) {
+export function MinaBlock({
+  mode,
+  credits,
+  onNeedMatcha,
+  ref,
+}: {
+  mode: StudioMode
+  credits: number | undefined
+  onNeedMatcha: () => void
+  ref?: Ref<{ animate: () => void }>
+}) {
   const [upload, setUpload] = useState<UploadKind>('scene')
+  const [resolutionIndex, setResolutionIndex] = useState(0)
+  const [durationIndex, setDurationIndex] = useState(0)
+  const resolution = ANIMATE_RESOLUTIONS[resolutionIndex]!
+  const duration = ANIMATE_DURATIONS[durationIndex]!
+  const canAfford = credits === undefined || canAffordGeneration(credits, mode, resolution, duration)
   const [uploadSwitch, setUploadSwitch] = useState<'up' | 'down' | null>(null)
   const [leavingUpload, setLeavingUpload] = useState<UploadKind | null>(null)
   const [animation, setAnimation] = useState<'long' | 'simple' | null>(null)
@@ -118,7 +140,12 @@ export function MinaBlock({ mode, ref }: { mode: StudioMode; ref?: Ref<{ animate
     <div ref={block} className="mina-block" data-animation={animation ?? undefined}>
       {isOpen &&
         (mode === 'animate' ? (
-          <MinaBlockPillsAnimate />
+          <MinaBlockPillsAnimate
+            resolution={resolution}
+            duration={duration}
+            onNextResolution={() => setResolutionIndex((index) => (index + 1) % ANIMATE_RESOLUTIONS.length)}
+            onNextDuration={() => setDurationIndex((index) => (index + 1) % ANIMATE_DURATIONS.length)}
+          />
         ) : (
           <MinaBlockPillsCreate upload={upload} onUpload={pickUpload} />
         ))}
@@ -152,7 +179,11 @@ export function MinaBlock({ mode, ref }: { mode: StudioMode; ref?: Ref<{ animate
           <div className="mina-block__group mina-block__group--actions">
             <Rule />
             <MinaBlockVisionIntelligence />
-            <MinaBlockCTA label={STUDIO_CTA_LABELS[mode]} />
+            {canAfford ? (
+              <MinaBlockCTA label={STUDIO_CTA_LABELS[mode]} />
+            ) : (
+              <MinaBlockCTA label={NEED_MATCHA_LABEL} onClick={onNeedMatcha} />
+            )}
           </div>
         </>
       )}
@@ -171,9 +202,9 @@ function MinaBlockVisionIntelligence() {
   )
 }
 
-function MinaBlockCTA({ label }: { label: string }) {
+function MinaBlockCTA({ label, onClick }: { label: string; onClick?: () => void }) {
   return (
-    <button className="mina-block__cta" type="button">
+    <button className="mina-block__cta" type="button" onClick={onClick}>
       {label}
     </button>
   )

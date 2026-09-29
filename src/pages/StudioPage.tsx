@@ -2,9 +2,12 @@ import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { AppFooter } from '@/components/AppFooter'
+import { AutoMatchaPanel } from '@/components/AutoMatchaPanel'
+import { MatchaPanel } from '@/components/MatchaPanel'
 import { MinaBlock } from '@/components/studio/MinaBlock'
 import { RoleTagCard } from '@/components/RoleTagCard'
 import { useAccountSetup } from '@/hooks/useAccounts'
+import { useCustomerCredits } from '@/hooks/useCustomerCredits'
 import { MINA_LOGO_URL } from '@/lib/constants'
 import { useAuth } from '@/providers/AuthProvider'
 import type { StudioMode } from '@/types'
@@ -20,7 +23,11 @@ import './StudioPage.css'
 export function StudioPage() {
   const [mode, setMode] = useState<StudioMode>('create')
   const block = useRef<{ animate: () => void }>(null)
+  // Same single slot as the profile: "Back" in the auto panel returns to the buy panel.
+  const [matchaPanel, setMatchaPanel] = useState<'buy' | 'auto' | null>(null)
   const { session } = useAuth()
+  const { data: credits, isSuccess: hasCredits } = useCustomerCredits(session?.user.id)
+  const autoRefill = credits?.mg_mma_preferences?.autoRefill
 
   // Either mode button also plays the prompt block's entrance: the long one
   // if it has not opened yet, the simple one once it has.
@@ -65,10 +72,15 @@ export function StudioPage() {
         </header>
 
         <main className="mina-studio__prompt">
-          <MinaBlock ref={block} mode={mode} />
+          <MinaBlock
+            ref={block}
+            mode={mode}
+            credits={hasCredits ? (credits?.mg_credits ?? 0) : undefined}
+            onNeedMatcha={() => setMatchaPanel('buy')}
+          />
         </main>
 
-        <AppFooter current="studio" />
+        <AppFooter current="studio" onOpenMatcha={() => setMatchaPanel('buy')} />
       </section>
 
       <section className="mina-studio__panel">
@@ -76,6 +88,22 @@ export function StudioPage() {
           + Upload image or video
         </button>
       </section>
+
+      {matchaPanel === 'buy' && (
+        <MatchaPanel
+          onClose={() => setMatchaPanel(null)}
+          isAutoMatchaOn={autoRefill?.enabled ?? false}
+          onOpenAutoMatcha={() => setMatchaPanel('auto')}
+        />
+      )}
+
+      {matchaPanel === 'auto' && (
+        <AutoMatchaPanel
+          onBack={() => setMatchaPanel('buy')}
+          onSaved={() => setMatchaPanel(null)}
+          initialAutoRefill={autoRefill}
+        />
+      )}
     </div>
   )
 }

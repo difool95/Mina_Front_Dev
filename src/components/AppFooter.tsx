@@ -9,6 +9,8 @@ interface AppFooterProps {
   current: 'studio' | 'profile'
   /** Profile has no footer on desktop — only phones get the nav bar there. */
   mobileOnly?: boolean
+  /** The desktop-only Matcha entry, so only the studio passes it. */
+  onOpenMatcha?: () => void
 }
 
 /**
@@ -18,7 +20,7 @@ interface AppFooterProps {
  * a fixed bar with Studio / Profile / Need help?, while the studio's desktop
  * footer keeps Tutorials and Matcha instead of the Studio link.
  */
-export function AppFooter({ current, mobileOnly }: AppFooterProps) {
+export function AppFooter({ current, mobileOnly, onOpenMatcha }: AppFooterProps) {
   return (
     <footer className={`mina-appfooter${mobileOnly ? ' mina-appfooter--mobile-only' : ''}`}>
       <Link
@@ -38,7 +40,11 @@ export function AppFooter({ current, mobileOnly }: AppFooterProps) {
       <button className="mina-appfooter__link mina-appfooter__link--desktop" type="button">
         Tutorials
       </button>
-      <button className="mina-appfooter__link mina-appfooter__link--desktop" type="button">
+      <button
+        className="mina-appfooter__link mina-appfooter__link--desktop"
+        type="button"
+        onClick={onOpenMatcha}
+      >
         Matcha
       </button>
       <a

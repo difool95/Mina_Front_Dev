@@ -37,6 +37,23 @@ export const ANIMATE_MATCHA_COST: Record<
   '1080p': { '5s': 10, '10s': 18, '15s': 30, '30s': 54 },
 }
 
+/** Every Create generation costs the same. */
+export const CREATE_MATCHA_COST = 1
+
+/** The call to action's label when the balance cannot cover the generation. */
+export const NEED_MATCHA_LABEL = 'I need more matcha'
+
+/** Whether `credits` covers the generation the studio is currently set up for. */
+export function canAffordGeneration(
+  credits: number,
+  mode: StudioMode,
+  resolution: (typeof ANIMATE_RESOLUTIONS)[number],
+  duration: (typeof ANIMATE_DURATIONS)[number],
+) {
+  const cost = mode === 'create' ? CREATE_MATCHA_COST : ANIMATE_MATCHA_COST[resolution][duration]
+  return credits >= cost
+}
+
 /** Up to `count` items of `list`, picked at random. */
 export function pickRandom<T>(list: readonly T[], count: number) {
   return [...list].sort(() => Math.random() - 0.5).slice(0, count)
