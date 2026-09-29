@@ -246,7 +246,7 @@
   }
 
   .mina-library__filters {
-    flex: 0 0 100%;
+    flex: 0 0 98%;
     flex-wrap: nowrap;
     justify-content: flex-start;
     margin-left: 0;
@@ -258,9 +258,16 @@
     display: none;
   }
 
-  .mina-library__filter,
+  .mina-library__filter {
+    flex-shrink: 0;
+  }
+
+  /* Pushed to the row's right end when the pills leave room (Content /
+     Creator); when they overflow (the scene filters) the padding keeps its gap. */
   .mina-library__close {
     flex-shrink: 0;
+    margin-left: auto;
+    padding-left: 16px;
   }
 
   /* Every picture shows as it loads: no hiding, so no fading in or out. */
