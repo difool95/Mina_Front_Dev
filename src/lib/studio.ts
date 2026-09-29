@@ -98,14 +98,19 @@ export const SCENE_LIBRARY_FILTERS = [
   'Product',
 ]
 
-/** Pictures per row, each row closed by a rule. */
-export const SCENE_LIBRARY_PER_ROW = 7
+/** Both libraries: pictures per row, each row closed by a rule. */
+export const LIBRARY_PER_ROW = 7
 
 /** At most this many pictures are ever visible at once; the rest wait, hidden, to be hovered. */
 export const SCENE_LIBRARY_MAX_VISIBLE = 35
 
+export const CONTENT_LIBRARY_MAX_VISIBLE = 11
+
+/** The CSS width a library's large preview is asked for at: its column's size, so it stays sharp there. */
+export const libraryPreviewWidth = () => Math.max(window.innerWidth * 0.3, window.innerHeight * 0.75)
+
 /** How long a hovered picture stays in before others fade out to bring the count back down. */
-export const SCENE_LIBRARY_HIDE_DELAY_MS = 2500
+export const LIBRARY_HIDE_DELAY_MS = 2500
 
 export const BRIEF_MAX_LENGTH = 10000
 

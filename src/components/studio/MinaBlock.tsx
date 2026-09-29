@@ -33,7 +33,7 @@ export function MinaBlock({ mode, ref }: { mode: StudioMode; ref?: Ref<{ animate
   const [leavingUpload, setLeavingUpload] = useState<UploadKind | null>(null)
   const [animation, setAnimation] = useState<'long' | 'simple' | null>(null)
   const [simpleRuns, setSimpleRuns] = useState(0)
-  const [isLibraryOpen, setIsLibraryOpen] = useState(false)
+  const [openLibrary, setOpenLibrary] = useState<'scene' | 'content' | null>(null)
   const isOpen = animation !== null
   const block = useRef<HTMLDivElement>(null)
   const brief = useRef<HTMLDivElement>(null)
@@ -96,6 +96,7 @@ export function MinaBlock({ mode, ref }: { mode: StudioMode; ref?: Ref<{ animate
         library={{
           label: 'Open the Content Library - pick a template to load its whole setup',
           previewUrls: CONTENT_LIBRARY_PREVIEW_URLS,
+          onBrowse: () => setOpenLibrary('content'),
         }}
       />
     ) : (
@@ -106,7 +107,7 @@ export function MinaBlock({ mode, ref }: { mode: StudioMode; ref?: Ref<{ animate
             ? {
                 label: 'Browse scene library',
                 previewUrls: LIBRARY_PREVIEW_URLS,
-                onBrowse: () => setIsLibraryOpen(true),
+                onBrowse: () => setOpenLibrary('scene'),
               }
             : undefined
         }
@@ -155,7 +156,7 @@ export function MinaBlock({ mode, ref }: { mode: StudioMode; ref?: Ref<{ animate
           </div>
         </>
       )}
-      {isLibraryOpen && <StudioLibrary onClose={() => setIsLibraryOpen(false)} />}
+      {openLibrary && <StudioLibrary library={openLibrary} onClose={() => setOpenLibrary(null)} />}
     </div>
   )
 }

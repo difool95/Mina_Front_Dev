@@ -7,7 +7,9 @@
  */
 export const queryKeys = {
   onboardContent: ['onboardContent'] as const,
-  sceneLibrary: ['sceneLibrary'] as const,  customer: (userId: string) => ['customer', userId] as const,
+  sceneLibrary: ['sceneLibrary'] as const,
+  contentLibrary: ['contentLibrary'] as const,
+  customer: (userId: string) => ['customer', userId] as const,
   generations: (userId: string) => ['generations', userId] as const,
   likes: (userId: string) => ['likes', userId] as const,
   /** The same for everyone, so it takes no id. */

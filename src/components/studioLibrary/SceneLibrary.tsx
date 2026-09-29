@@ -7,22 +7,21 @@ import { MINA_LOGO_URL } from '@/lib/constants'
 import { toRoman } from '@/lib/format'
 import { cfImage, imageWidthFor } from '@/lib/media'
 import {
+  LIBRARY_HIDE_DELAY_MS,
+  SCENE_LIBRARY_MAX_VISIBLE,
+  LIBRARY_PER_ROW,
+  libraryPreviewWidth,
   pickRandom,
   SCENE_LIBRARY_FILTERS,
-  SCENE_LIBRARY_HIDE_DELAY_MS,
-  SCENE_LIBRARY_MAX_VISIBLE,
-  SCENE_LIBRARY_PER_ROW,
 } from '@/lib/studio'
 
-import './SceneLibrary.css'
-
 /**
- * The scene library: a grid of pictures and, beside it, the last one hovered
- * shown large.
+ * Create mode's library: a grid of pictures and, beside it, the last one
+ * hovered shown large.
  *
- * Every picture is loaded, but only `SCENE_LIBRARY_MAX_VISIBLE` are visible at
- * once. Hovering a hidden one fades it in straight away; after
- * `SCENE_LIBRARY_HIDE_DELAY_MS`, one random visible picture fades out for it.
+ * Every picture is loaded, but only `SCENE_LIBRARY_MAX_VISIBLE` are visible at once.
+ * Hovering a hidden one fades it in straight away; after
+ * `LIBRARY_HIDE_DELAY_MS`, one random visible picture fades out for it.
  */
 export function SceneLibrary({ onClose }: { onClose: () => void }) {
   const { data: scenes = [] } = useSceneLibrary()
@@ -74,44 +73,44 @@ export function SceneLibrary({ onClose }: { onClose: () => void }) {
         const dropped = droppable[Math.floor(Math.random() * droppable.length)]
         return ids.filter((shownId) => shownId !== dropped)
       })
-    }, SCENE_LIBRARY_HIDE_DELAY_MS)
+    }, LIBRARY_HIDE_DELAY_MS)
 
     timers.current.add(timer)
   }
 
   const preview = matches.find((scene) => scene.id === previewId) ?? matches[0]
-  const rows = Array.from({ length: Math.ceil(matches.length / SCENE_LIBRARY_PER_ROW) }, (_, row) =>
-    matches.slice(row * SCENE_LIBRARY_PER_ROW, (row + 1) * SCENE_LIBRARY_PER_ROW),
+  const rows = Array.from({ length: Math.ceil(matches.length / LIBRARY_PER_ROW) }, (_, row) =>
+    matches.slice(row * LIBRARY_PER_ROW, (row + 1) * LIBRARY_PER_ROW),
   )
 
   return (
-    <div className="mina-scene-library">
+    <div className="mina-library__panel">
       {/* Phones only: the studio's own logo row, with the way out spelled out. */}
-      <div className="mina-scene-library__mobile-bar">
-        <span className="mina-scene-library__brand">
-          <img className="mina-scene-library__logo" src={MINA_LOGO_URL} alt="Mina" />
+      <div className="mina-library__mobile-bar">
+        <span className="mina-library__brand">
+          <img className="mina-library__logo" src={MINA_LOGO_URL} alt="Mina" />
           <RoleTagCard />
         </span>
-        <button className="mina-scene-library__mobile-close" type="button" onClick={onClose}>
+        <button className="mina-library__mobile-close" type="button" onClick={onClose}>
           Close
         </button>
       </div>
 
-      <header className="mina-scene-library__bar">
-        <h2 className="mina-scene-library__title">Scene Library</h2>
+      <header className="mina-library__bar">
+        <h2 className="mina-library__title">Scene Library</h2>
         <input
-          className="mina-scene-library__search"
+          className="mina-library__search"
           type="text"
           placeholder="Search..."
           value={search}
           onChange={(event) => setSearch(event.target.value)}
         />
 
-        <div className="mina-scene-library__filters">
+        <div className="mina-library__filters">
           {SCENE_LIBRARY_FILTERS.map((name) => (
             <button
               key={name}
-              className="mina-scene-library__filter"
+              className="mina-library__filter"
               type="button"
               aria-pressed={filter === name}
               onClick={() => setFilter((current) => (current === name ? null : name))}
@@ -119,31 +118,26 @@ export function SceneLibrary({ onClose }: { onClose: () => void }) {
               {name}
             </button>
           ))}
-          <button
-            className="mina-scene-library__close"
-            type="button"
-            aria-label="Close scene library"
-            onClick={onClose}
-          >
+          <button className="mina-library__close" type="button" aria-label="Close scene library" onClick={onClose}>
             —
           </button>
         </div>
       </header>
 
-      <div className="mina-scene-library__grid">
+      <div className="mina-library__grid">
         {rows.map((row) => (
-          <div key={row[0]!.id} className="mina-scene-library__row">
+          <div key={row[0]!.id} className="mina-library__row">
             {row.map((scene) => (
               <button
                 key={scene.id}
-                className="mina-scene-library__cell"
+                className="mina-library__cell"
                 type="button"
                 data-hidden={!shown.includes(scene.id) || undefined}
                 onMouseEnter={() => reveal(scene.id)}
                 onFocus={() => reveal(scene.id)}
               >
-                <span className="mina-scene-library__number">{toRoman(scene.sort_order)}.</span>
-                <span className="mina-scene-library__media">
+                <span className="mina-library__number">{toRoman(scene.sort_order)}.</span>
+                <span className="mina-library__media">
                   <CreationMedia url={scene.url} alt={scene.title} motion={false} />
                 </span>
               </button>
@@ -152,14 +146,8 @@ export function SceneLibrary({ onClose }: { onClose: () => void }) {
         ))}
       </div>
 
-      <div className="mina-scene-library__preview">
-        {preview && (
-          // Asked for at the size the column is drawn, so it stays sharp there.
-          <img
-            src={cfImage(preview.url, imageWidthFor(Math.max(window.innerWidth * 0.3, window.innerHeight * 0.75)))}
-            alt={preview.title}
-          />
-        )}
+      <div className="mina-library__preview">
+        {preview && <img src={cfImage(preview.url, imageWidthFor(libraryPreviewWidth()))} alt={preview.title} />}
       </div>
     </div>
   )

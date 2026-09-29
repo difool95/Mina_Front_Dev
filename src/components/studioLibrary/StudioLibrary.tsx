@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 
+import { ContentCreatorLibrary } from './ContentCreatorLibrary'
 import { SceneLibrary } from './SceneLibrary'
 
 import './StudioLibrary.css'
@@ -11,7 +12,13 @@ import './StudioLibrary.css'
  * in the top layer, so the prompt block's transformed parents cannot pin it
  * inside themselves, and Escape closes it for free.
  */
-export function StudioLibrary({ onClose }: { onClose: () => void }) {
+export function StudioLibrary({
+  library,
+  onClose,
+}: {
+  library: 'scene' | 'content'
+  onClose: () => void
+}) {
   const dialog = useRef<HTMLDialogElement>(null)
 
   useEffect(() => {
@@ -20,7 +27,7 @@ export function StudioLibrary({ onClose }: { onClose: () => void }) {
 
   return (
     <dialog ref={dialog} className="mina-library" onClose={onClose}>
-      <SceneLibrary onClose={onClose} />
+      {library === 'scene' ? <SceneLibrary onClose={onClose} /> : <ContentCreatorLibrary onClose={onClose} />}
     </dialog>
   )
 }
