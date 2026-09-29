@@ -7,6 +7,7 @@ import { MINA_LOGO_URL } from '@/lib/constants'
 import { toRoman } from '@/lib/format'
 import { cfImage, imageWidthFor } from '@/lib/media'
 import {
+  pickRandom,
   SCENE_LIBRARY_FILTERS,
   SCENE_LIBRARY_HIDE_DELAY_MS,
   SCENE_LIBRARY_MAX_VISIBLE,
@@ -50,12 +51,7 @@ export function SceneLibrary({ onClose }: { onClose: () => void }) {
 
   // A fresh, scattered set of visible pictures every time the list itself changes.
   useEffect(() => {
-    setShown(
-      [...matches]
-        .sort(() => Math.random() - 0.5)
-        .slice(0, SCENE_LIBRARY_MAX_VISIBLE)
-        .map((scene) => scene.id),
-    )
+    setShown(pickRandom(matches, SCENE_LIBRARY_MAX_VISIBLE).map((scene) => scene.id))
   }, [matches])
 
   // Shows the picture at once; after the delay, one random other fades out in

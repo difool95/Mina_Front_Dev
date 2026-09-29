@@ -119,6 +119,11 @@
   --pill-i: 4;
 }
 
+/* Animate mode's row runs one pill longer. */
+.mina-block .mina-pills__pill:nth-child(6) {
+  --pill-i: 5;
+}
+
 /* The pills wait for the dip to finish before they replay. */
 .mina-block[data-animation='simple'] {
   --pills-start: 3;

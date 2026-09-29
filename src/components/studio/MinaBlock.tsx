@@ -1,11 +1,19 @@
 import { useImperativeHandle, useLayoutEffect, useRef, useState, type Ref } from 'react'
 
-import { UPLOAD_KINDS } from '@/lib/studio'
-import type { UploadKind } from '@/types'
+import {
+  ANIMATE_UPLOAD_TITLE,
+  BRIEF_PLACEHOLDERS,
+  CONTENT_LIBRARY_PREVIEW_URLS,
+  LIBRARY_PREVIEW_URLS,
+  STUDIO_CTA_LABELS,
+  UPLOAD_KINDS,
+} from '@/lib/studio'
+import type { StudioMode, UploadKind } from '@/types'
 
 import { Rule } from '../builder/Table'
 import { StudioLibrary } from '../studioLibrary/StudioLibrary'
-import { MinaBlockPills } from './MinaBlockPills'
+import { MinaBlockPillsAnimate } from './MinaBlockPillsAnimate'
+import { MinaBlockPillsCreate } from './MinaBlockPillsCreate'
 import { MinaBlockUploadAndLibraries } from './MinaBlockUploadAndLibraries'
 import { MinaBlockUserBrief } from './MinaBlockUserBrief'
 
@@ -19,13 +27,7 @@ import './MinaBlock.css'
  * everything else, with the brief sliding from where it stood alone to its
  * place in the full block. Once open, each `animate()` plays the simple one.
  */
-export function MinaBlock({
-  placeholder,
-  ref,
-}: {
-  placeholder: string
-  ref?: Ref<{ animate: () => void }>
-}) {
+export function MinaBlock({ mode, ref }: { mode: StudioMode; ref?: Ref<{ animate: () => void }> }) {
   const [upload, setUpload] = useState<UploadKind>('scene')
   const [uploadSwitch, setUploadSwitch] = useState<'up' | 'down' | null>(null)
   const [leavingUpload, setLeavingUpload] = useState<UploadKind | null>(null)
@@ -77,41 +79,79 @@ export function MinaBlock({
     animate: () => {
       if (!isOpen) return openLong()
 
+      // A mode switch is not a pill hover: the upload row must not replay its slide.
+      setUploadSwitch(null)
+      setLeavingUpload(null)
       setAnimation('simple')
       setSimpleRuns((runs) => runs + 1)
     },
   }))
 
+  // Animate has one upload row with the content library; create's follows the "+" pills.
+  const uploadRow = (kind: UploadKind) =>
+    mode === 'animate' ? (
+      <MinaBlockUploadAndLibraries
+        title={ANIMATE_UPLOAD_TITLE}
+        addLabel="Add start frame (image)"
+        library={{
+          label: 'Open the Content Library - pick a template to load its whole setup',
+          previewUrls: CONTENT_LIBRARY_PREVIEW_URLS,
+        }}
+      />
+    ) : (
+      <MinaBlockUploadAndLibraries
+        title={UPLOAD_KINDS.find((entry) => entry.kind === kind)!.title}
+        library={
+          kind === 'scene'
+            ? {
+                label: 'Browse scene library',
+                previewUrls: LIBRARY_PREVIEW_URLS,
+                onBrowse: () => setIsLibraryOpen(true),
+              }
+            : undefined
+        }
+      />
+    )
+
   return (
     <div ref={block} className="mina-block" data-animation={animation ?? undefined}>
-      {isOpen && <MinaBlockPills upload={upload} onUpload={pickUpload} />}
+      {isOpen &&
+        (mode === 'animate' ? (
+          <MinaBlockPillsAnimate />
+        ) : (
+          <MinaBlockPillsCreate upload={upload} onUpload={pickUpload} />
+        ))}
       <div ref={brief} className="mina-block__brief" onFocus={openLong}>
-        <MinaBlockUserBrief placeholder={placeholder} />
+        <MinaBlockUserBrief placeholder={BRIEF_PLACEHOLDERS[mode]} />
       </div>
       {isOpen && (
         <>
           {/* Each rule enters with the section under it, so they travel as one group. */}
           <div className="mina-block__group mina-block__group--uploads">
             {/* Keyed by the upload, so every switch remounts it and replays the slide. */}
-            <div key={upload} className="mina-block__switch" data-switch={uploadSwitch ?? undefined}>
+            <div
+              key={mode === 'animate' ? 'animate' : upload}
+              className="mina-block__switch"
+              data-switch={(mode === 'create' && uploadSwitch) || undefined}
+            >
               <Rule />
-              <MinaBlockUploadAndLibraries upload={upload} onBrowseLibrary={() => setIsLibraryOpen(true)} />
+              {uploadRow(upload)}
             </div>
-            {leavingUpload && (
+            {mode === 'create' && leavingUpload && (
               <div
                 key={`leaving-${leavingUpload}`}
                 className="mina-block__switch mina-block__switch--leaving"
                 onAnimationEnd={(event) => event.target === event.currentTarget && setLeavingUpload(null)}
               >
                 <Rule />
-                <MinaBlockUploadAndLibraries upload={leavingUpload} onBrowseLibrary={() => setIsLibraryOpen(true)} />
+                {uploadRow(leavingUpload)}
               </div>
             )}
           </div>
           <div className="mina-block__group mina-block__group--actions">
             <Rule />
             <MinaBlockVisionIntelligence />
-            <MinaBlockCTA />
+            <MinaBlockCTA label={STUDIO_CTA_LABELS[mode]} />
           </div>
         </>
       )}
@@ -130,10 +170,10 @@ function MinaBlockVisionIntelligence() {
   )
 }
 
-function MinaBlockCTA() {
+function MinaBlockCTA({ label }: { label: string }) {
   return (
     <button className="mina-block__cta" type="button">
-      Describe more
+      {label}
     </button>
   )
 }

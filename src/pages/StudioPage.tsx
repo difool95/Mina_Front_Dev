@@ -7,10 +7,9 @@ import { RoleTagCard } from '@/components/RoleTagCard'
 import { useAccountSetup } from '@/hooks/useAccounts'
 import { MINA_LOGO_URL } from '@/lib/constants'
 import { useAuth } from '@/providers/AuthProvider'
+import type { StudioMode } from '@/types'
 
 import './StudioPage.css'
-
-type Mode = 'create' | 'animate'
 
 /**
  * `/` once signed in — the workspace itself.
@@ -19,13 +18,13 @@ type Mode = 'create' | 'animate'
  * yet, so the two panels are laid out and left inert.
  */
 export function StudioPage() {
-  const [mode, setMode] = useState<Mode>('create')
+  const [mode, setMode] = useState<StudioMode>('create')
   const block = useRef<{ animate: () => void }>(null)
   const { session } = useAuth()
 
   // Either mode button also plays the prompt block's entrance: the long one
   // if it has not opened yet, the simple one once it has.
-  const pickMode = (next: Mode) => {
+  const pickMode = (next: StudioMode) => {
     setMode(next)
     block.current?.animate()
   }
@@ -66,14 +65,7 @@ export function StudioPage() {
         </header>
 
         <main className="mina-studio__prompt">
-          <MinaBlock
-            ref={block}
-            placeholder={
-              mode === 'animate'
-                ? 'Describe the motion, the sound and the scene'
-                : 'Describe how you want your image'
-            }
-          />
+          <MinaBlock ref={block} mode={mode} />
         </main>
 
         <AppFooter current="studio" />

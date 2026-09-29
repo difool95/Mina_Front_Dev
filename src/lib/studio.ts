@@ -1,4 +1,46 @@
-import type { Ratio, UploadKind } from '@/types'
+import type { Ratio, StudioMode, UploadKind } from '@/types'
+
+/** The brief's placeholder, per mode. */
+export const BRIEF_PLACEHOLDERS: Record<StudioMode, string> = {
+  create: 'Describe how you want your image',
+  animate: 'Describe the motion, the sound and the scene',
+}
+
+/** The block's call to action, per mode. */
+export const STUDIO_CTA_LABELS: Record<StudioMode, string> = {
+  create: 'Create',
+  animate: 'Animate',
+}
+
+/** The content library card's three pictures, fixed until the library itself exists. */
+export const CONTENT_LIBRARY_PREVIEW_URLS = [
+  'https://assets.faltastudio.com/content-library/poster/1785260127843_0.jpg',
+  'https://assets.faltastudio.com/content-library/poster/1787898109500_0.jpg',
+  'https://assets.faltastudio.com/content-library/poster/1785260080944_0.jpg',
+]
+
+/** Animate mode's single upload row, with the content library beside its "+". */
+export const ANIMATE_UPLOAD_TITLE = 'Add model, product, elements, video, sound or references'
+
+/** The resolution pill toggles between these two. */
+export const ANIMATE_RESOLUTIONS = ['720p', '1080p'] as const
+
+/** The duration pill cycles through these in order. */
+export const ANIMATE_DURATIONS = ['5s', '10s', '15s', '30s'] as const
+
+/** What a Director animation costs in matcha, by resolution and duration. */
+export const ANIMATE_MATCHA_COST: Record<
+  (typeof ANIMATE_RESOLUTIONS)[number],
+  Record<(typeof ANIMATE_DURATIONS)[number], number>
+> = {
+  '720p': { '5s': 5, '10s': 9, '15s': 15, '30s': 24 },
+  '1080p': { '5s': 10, '10s': 18, '15s': 30, '30s': 54 },
+}
+
+/** Up to `count` items of `list`, picked at random. */
+export function pickRandom<T>(list: readonly T[], count: number) {
+  return [...list].sort(() => Math.random() - 0.5).slice(0, count)
+}
 
 /** The three "+" pills, their hover tooltip, and what the upload row asks for under each. */
 export const UPLOAD_KINDS: { kind: UploadKind; label: string; tooltip: string; title: string }[] = [

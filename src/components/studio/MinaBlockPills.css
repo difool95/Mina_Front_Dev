@@ -22,11 +22,20 @@
   transition: background-color var(--mina-anim-fade) ease;
 }
 
+/* The first pill sits on the block's left edge, so its tooltip — the long
+   "Frames & elements" one above all — runs rightwards instead of centring
+   and being cut off by the prompt area's edge. */
+.mina-pills__pill:first-child::after {
+  left: 0;
+  transform: none;
+}
+
 .mina-pills__pill--text {
   padding: var(--mina-filter-pill-pad);
 }
 
-.mina-pills__pill:hover,
+/* Only real buttons darken on hover — a fixed pill like Director is a span. */
+button.mina-pills__pill:hover,
 .mina-pills__pill[aria-pressed='true'] {
   background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.07);
 }

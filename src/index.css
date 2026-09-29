@@ -145,10 +145,10 @@ body {
   opacity: 0;
   border-radius: 3px;
   background: var(--mina-ink);
-  padding: 5px 8px;
+  padding: 6px 10px;
   content: attr(data-tooltip);
   color: var(--mina-bg);
-  font-size: var(--mina-fs-micro);
+  font-size: var(--mina-fs-small);
   font-weight: var(--mina-fw-light);
   letter-spacing: 0;
   white-space: nowrap;
