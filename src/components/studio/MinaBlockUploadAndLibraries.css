@@ -24,16 +24,12 @@
   height: 72px;
 }
 
-/* An added picture, cropped square; it fades on hover since a click removes it. */
+/* An added picture, cropped square. Not clipped and not faded itself: its
+   tooltip hangs outside it and must stay fully opaque — only the picture fades
+   on hover, since a click removes it. */
 .mina-uploads__image {
   position: relative;
-  overflow: hidden;
   padding: 0;
-  transition: opacity var(--mina-anim-fade) ease;
-}
-
-.mina-uploads__image:hover {
-  opacity: 0.6;
 }
 
 .mina-uploads__image img {
@@ -42,6 +38,18 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: opacity var(--mina-anim-fade) ease;
+}
+
+.mina-uploads__image:hover img {
+  opacity: 0.6;
+}
+
+/* Wider than the picture, so it runs rightwards from its left edge instead of
+   centring past the block's edge, where the upload group would clip it. */
+.mina-uploads__cards .mina-uploads__image::after {
+  left: 0;
+  transform: none;
 }
 
 .mina-uploads__add {

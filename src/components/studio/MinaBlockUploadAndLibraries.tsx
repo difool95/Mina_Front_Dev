@@ -39,7 +39,7 @@ export function MinaBlockUploadAndLibraries({
             className="mina-uploads__image"
             type="button"
             aria-label="Remove image"
-            data-tooltip="Remove"
+            data-tooltip="Drag to reorder · Click to delete"
             onClick={() => onRemove?.(url)}
           >
             <img src={cfImage(url, imageWidthFor(72))} alt="" draggable={false} />
