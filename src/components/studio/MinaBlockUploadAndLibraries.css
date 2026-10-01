@@ -30,6 +30,13 @@
 .mina-uploads__image {
   position: relative;
   padding: 0;
+  cursor: grab;
+  /* A drag on a phone moves the picture, not the page. */
+  touch-action: none;
+}
+
+.mina-uploads__image:active {
+  cursor: grabbing;
 }
 
 .mina-uploads__image img {

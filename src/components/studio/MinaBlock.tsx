@@ -77,6 +77,20 @@ export function MinaBlock({
     onUploads((list) => list.filter((entry) => entry.url !== url))
   }
 
+// the move function is used to reorder the uploads in the list, it is passed down to the MinaBlockUploadAndLibraries component, 
+// it takes the url of the upload to move and the url of the target upload to move it before, it updates the list of uploads in 
+// the parent component (StudioPage) through the onUploads prop
+  const move = (url: string, target: string) =>
+    onUploads((list) => {
+      const next = [...list]
+      next.splice(
+        list.findIndex((entry) => entry.url === target),
+        0,
+        ...next.splice(list.findIndex((entry) => entry.url === url), 1),
+      )
+      return next
+    })
+
 
   const [resolutionIndex, setResolutionIndex] = useState(0)
   const [durationIndex, setDurationIndex] = useState(0)
@@ -169,6 +183,7 @@ export function MinaBlock({
         canAdd={roomFor(kind) > 0}
         onOpenFilePicker={() => openFilePicker(kind)}
         onRemove={remove}
+        onMove={move}
         library={
           kind === 'scene'
             ? {
