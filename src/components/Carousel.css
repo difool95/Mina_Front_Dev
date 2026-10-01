@@ -70,5 +70,11 @@
   opacity: var(--dot-opacity);
   transition:
     transform var(--mina-anim-fade) var(--dot-ease),
-    opacity var(--mina-anim-fade) var(--dot-ease);
+    opacity var(--mina-anim-fade) var(--dot-ease),
+    background-color var(--mina-anim-fade) var(--dot-ease);
+}
+
+/* Over a light picture, white dots would vanish. */
+.mina-carousel--light .mina-carousel__dot {
+  background: var(--mina-ink);
 }

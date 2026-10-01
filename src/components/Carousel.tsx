@@ -87,6 +87,8 @@ export function Carousel({
 
   const current = media[index]
   const paged = media.length > 1
+  // A light picture darkens what floats over it — the arrow disc and the dots.
+  const isOverLight = isLight && current?.media_type !== 'video'
   // Nothing to request until there is both a URL and a measured box.
   const url = boxWidth ? current?.media_url : null
   const videoWidth = videoWidthFor(boxWidth)
@@ -98,7 +100,7 @@ export function Carousel({
   return (
     <div
       ref={root}
-      className={`mina-carousel${paged ? ' mina-carousel--paged' : ''}`}
+      className={`mina-carousel${paged ? ' mina-carousel--paged' : ''}${isOverLight ? ' mina-carousel--light' : ''}`}
       onPointerDown={(event) => {
         dragStartX.current = event.clientX
       }}
@@ -145,7 +147,7 @@ export function Carousel({
           y={cursor.y}
           anchor="absolute"
           size={48}
-          tone={isLight && current?.media_type !== 'video' ? 'dark' : 'glass'}
+          tone={isOverLight ? 'dark' : 'glass'}
         >
           <Icon name={cursor.side} />
         </GlassDisc>
