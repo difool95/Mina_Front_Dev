@@ -7,10 +7,10 @@ export type UploadKind = 'scene' | 'logo' | 'product'
 /** What the prompt block can ask of its brief through `ref`. */
 export interface MinaBlockUserBriefHandle {
   /**
-   * Puts `text` in the locked strip, as if it had been selected and locked.
-   * One lock at a time: anything already locked goes back into the brief.
+   * Replaces the whole brief: `locked` goes in the locked strip (an empty one
+   * leaves nothing locked) and `brief` in the editable text above it.
    */
-  lockText: (text: string) => void
+  setupBrief: (locked: string, brief: string) => void
 }
 
 export interface MinaBlockHandle extends MinaBlockUserBriefHandle {

@@ -56,16 +56,14 @@ export function MinaBlockUserBrief({
     setBeforeLock(null)
   }
 
-  // Locking from outside the brief, reached through MinaBlock's handle.
+  // Filling the brief from outside it, reached through MinaBlock's handle.
   useImperativeHandle(ref, () => ({
-    lockText: (text) => {
-      const passage = text.trim()
-      if (!passage) return
-
-      // Unlocked back into the brief first, so the passage it replaces is not lost.
-      if (locked) setBrief(brief ? `${brief} ${locked}` : locked)
-      setLocked(passage)
+    setupBrief: (nextLocked, nextBrief) => {
+      setLocked(nextLocked.trim())
+      setBrief(nextBrief.slice(0, BRIEF_MAX_LENGTH))
+      // Neither Ctrl+Z nor a stale selection should reach back past it.
       setBeforeLock(null)
+      setSelection(null)
     },
   }))
 

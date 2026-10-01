@@ -163,7 +163,7 @@ export function MinaBlock({
       selectUploadKind('scene')
       openFilePicker('scene')
     },
-    lockText: (text) => userBrief.current?.lockText(text),
+    setupBrief: (locked, brief) => userBrief.current?.setupBrief(locked, brief),
   }))
 
 // The upload row is the same for every pill, but the scene pill has a library card too.
