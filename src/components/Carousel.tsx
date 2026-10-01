@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 
-import { cfImageCarousel, cfPoster, cfVideo, imageWidthFor, videoWidthFor } from '@/lib/media'
+import { cfImageCarousel, cfPoster, cfVideo, imageWidthFor, isLightImage, videoWidthFor } from '@/lib/media'
 import type { OnboardContent } from '@/types'
 
 import { GlassDisc } from './GlassDisc'
@@ -58,6 +58,8 @@ export function Carousel({
   const root = useRef<HTMLDivElement>(null)
   // Nothing is requested until the box is measured, so the original never loads.
   const [boxWidth, setBoxWidth] = useState(0)
+  // Measured on each picture's load, so the arrow disc turns dark over a light one.
+  const [isLight, setIsLight] = useState(false)
 
   useEffect(() => {
     setBoxWidth(root.current?.clientWidth ?? 0)
@@ -132,12 +134,19 @@ export function Carousel({
           src={url ? cfImageCarousel(url, imageWidthFor(boxWidth)) : undefined}
           alt={current?.alt_text ?? ''}
           onError={fallBack}
+          onLoad={(event) => setIsLight(isLightImage(event.currentTarget))}
           draggable={false}
         />
       )}
 
       {cursor && paged && (
-        <GlassDisc x={cursor.x} y={cursor.y} anchor="absolute" size={48}>
+        <GlassDisc
+          x={cursor.x}
+          y={cursor.y}
+          anchor="absolute"
+          size={48}
+          tone={isLight && current?.media_type !== 'video' ? 'dark' : 'glass'}
+        >
           <Icon name={cursor.side} />
         </GlassDisc>
       )}

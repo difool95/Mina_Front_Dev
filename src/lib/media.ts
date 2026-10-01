@@ -112,3 +112,32 @@ export function cfPoster(url: string, width: number) {
 
   return `${ASSET_ORIGIN}cdn-cgi/media/mode=frame,time=0s,width=${width},format=jpg/${path}`
 }
+
+/** Brightness (0-255) above which a picture counts as light. */
+const LIGHT_IMAGE_THRESHOLD = 160
+
+//THIS METHOD IS USED TO DETERMINE IF AN IMAGE IS LIGHT OR DARK, IT TAKES AN HTMLIMAGEELEMENT AS PARAMETER AND RETURNS A BOOLEAN
+export function isLightImage(image: HTMLImageElement) {
+  const size = 16
+  const canvas = document.createElement('canvas')
+  canvas.width = canvas.height = size
+  const context = canvas.getContext('2d')
+  if (!context) return false
+
+  context.drawImage(image, 0, 0, size, size)
+
+  let pixels: Uint8ClampedArray
+  try {
+    pixels = context.getImageData(0, 0, size, size).data
+  } catch {
+    return false
+  }
+
+  let total = 0
+  for (let i = 0; i < pixels.length; i += 4) {
+    // Perceived brightness: green counts most, blue least.
+    total += 0.299 * pixels[i]! + 0.587 * pixels[i + 1]! + 0.114 * pixels[i + 2]!
+  }
+
+  return total / (size * size) > LIGHT_IMAGE_THRESHOLD
+}

@@ -25,6 +25,12 @@
   position: absolute;
 }
 
+.mina-glass--dark {
+  border-color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.12);
+  background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.18);
+  color: var(--mina-text);
+}
+
 .mina-glass--accent {
   border-color: var(--mina-accent-green);
   background: var(--mina-accent-green);
