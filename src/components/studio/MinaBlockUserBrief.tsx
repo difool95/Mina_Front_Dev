@@ -56,7 +56,7 @@ export function MinaBlockUserBrief({
     setBeforeLock(null)
   }
 
-  // Filling the brief from outside it, reached through MinaBlock's handle.
+ //THIS METHOD IS EXPOSED TO THE PARENT COMPONENT (MinaBlock) TO SETUP THE BRIEF WHEN A SCENE IS PICKED FROM THE SCENE LIBRARY
   useImperativeHandle(ref, () => ({
     setupBrief: (nextLocked, nextBrief) => {
       setLocked(nextLocked.trim())

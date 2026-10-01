@@ -16,6 +16,7 @@ import {
   CONTENT_LIBRARY_PREVIEW_URLS,
   LIBRARY_PREVIEW_URLS,
   NEED_MATCHA_LABEL,
+  SCENE_LIBRARY_BRIEF,
   STUDIO_CTA_LABELS,
   UPLOAD_KINDS,
   UPLOAD_LIMITS,
@@ -163,7 +164,6 @@ export function MinaBlock({
       selectUploadKind('scene')
       openFilePicker('scene')
     },
-    setupBrief: (locked, brief) => userBrief.current?.setupBrief(locked, brief),
   }))
 
 // The upload row is the same for every pill, but the scene pill has a library card too.
@@ -258,7 +258,11 @@ export function MinaBlock({
         <StudioLibrary
           library={openLibrary}
           onClose={() => setOpenLibrary(null)}
-          onPickScene={(url) => add('scene', [url])}
+          onPickScene={(url) => {
+            add('scene', [url])
+            //Setup the brief with the scene library upload.
+            userBrief.current?.setupBrief(SCENE_LIBRARY_BRIEF.locked, SCENE_LIBRARY_BRIEF.brief)
+          }}
         />
       )}
       {/* The file input is outside the pills so it can be reused for every pill, it can be put anywhere in the component tree */}

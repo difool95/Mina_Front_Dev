@@ -13,7 +13,7 @@ export interface MinaBlockUserBriefHandle {
   setupBrief: (locked: string, brief: string) => void
 }
 
-export interface MinaBlockHandle extends MinaBlockUserBriefHandle {
+export interface MinaBlockHandle {
  // The long animation that brings in the full block, or the simple one once it has opened.
   animate: () => void
  // This is the same as the "+ Scene" pill in the right panel: it opens the file picker and adds the chosen picture to the uploads of the scene.

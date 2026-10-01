@@ -1,5 +1,12 @@
 import type { Ratio, StudioMode, UploadKind } from '@/types'
 
+/** What the brief is set to when a scene is picked from the scene library. */
+export const SCENE_LIBRARY_BRIEF = {
+  brief: 'Replace my product in the scene',
+  locked:
+    'keep my scene composition, tone, aesthetic, highlights vibe, style, colors, exactly the same dont change my logo or designs',
+}
+
 /** The brief's placeholder, per mode. */
 export const BRIEF_PLACEHOLDERS: Record<StudioMode, string> = {
   create: 'Describe how you want your image',
