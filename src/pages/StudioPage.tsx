@@ -36,6 +36,9 @@ export function StudioPage() {
   // if it has not opened yet, the simple one once it has.
   const pickMode = (next: StudioMode) => {
     setMode(next)
+    //This is a method that is called from the parent component (StudioPage) to animate the block at start. It is a default React hook that allows the parent
+    //component to call methods on the child component (MinaBlock) through a ref. This method is exposed to the parent component through the ref, it allows the parent
+    //component to trigger the animation of the MinaBlock from outside.
     block.current?.animate()
   }
 
@@ -87,8 +90,8 @@ export function StudioPage() {
 
         <AppFooter current="studio" onOpenMatcha={() => setMatchaPanel('buy')} />
       </section>
-
-      <RightStudioPanel mode={mode} uploads={uploads} onUpload={() => block.current?.browseScene()} />
+      {/*the right studio panel and the block.current.OpenFilePickerScene() method is defined in the child component(MinaBlock) */}
+      <RightStudioPanel mode={mode} uploads={uploads} onUpload={() => block.current?.OpenFilePickerScene()} />
 
       {matchaPanel === 'buy' && (
         <MatchaPanel

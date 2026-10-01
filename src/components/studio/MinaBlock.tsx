@@ -119,9 +119,8 @@ export function MinaBlock({
     setAnimation('long')
   }
 
-  // Makes `next` the lit pill and slides its upload row in, up or down depending
-  // on where it sits in the stack. Called on hover, on click (touch has no
-  // hover) and from browseScene().
+// this method is used to select the upload kind, it is passed down to the pills component, it is called when the user clicks on a pill,
+//  it sets the upload kind and triggers the animation of the upload row
   const selectUploadKind = (next: UploadKind) => {
     if (next === upload) return
 
@@ -132,7 +131,8 @@ export function MinaBlock({
     setUpload(next)
   }
 
-  //THIS METHOD IS EXPOSED TO THE PARENT COMPONENT THROUGH THE REF, IT ALLOWS THE PARENT COMPONENT TO TRIGGER THE ANIMATION OF THE MINABLOCK FROM OUTSIDE
+  //THESE METHODS animate() and OpenFilePickerScene() ARE CALLED FROM THE PARENT COMPONENT (STUDIO PAGE) TO ANIMATE THE BLOCK AT START AND TO OPEN THE FILE PICKER FOR THE SCENE PILL
+  //THIS IS A DEFAULT REACT HOOK THAT ALLOWS THE PARENT COMPONENT TO CALL METHODS ON THE CHILD COMPONENT (MINABLOCK) THROUGH A REF
   useImperativeHandle(ref, () => ({
     animate: () => {
       if (!isOpen) return openLong()
@@ -143,7 +143,7 @@ export function MinaBlock({
       setAnimation('simple')
       setSimpleRuns((runs) => runs + 1)
     },
-    browseScene: () => {
+    OpenFilePickerScene: () => {
       openLong()
       selectUploadKind('scene')
       openFilePicker('scene')

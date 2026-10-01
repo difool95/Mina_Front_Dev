@@ -7,8 +7,8 @@ export type UploadKind = 'scene' | 'logo' | 'product'
 export interface MinaBlockHandle {
  // The long animation that brings in the full block, or the simple one once it has opened.
   animate: () => void
- // The file picker for the scene pill, which is the only one that can be browsed from the library.
-  browseScene: () => void
+ // This is the same as the "+ Scene" pill in the right panel: it opens the file picker and adds the chosen picture to the uploads of the scene.
+  OpenFilePickerScene: () => void
 }
 
 ///** One picture added under a "+" pill, in the order it was added. */
