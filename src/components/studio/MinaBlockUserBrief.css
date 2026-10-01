@@ -1,9 +1,17 @@
-/* Fixed height, scrolling inside itself; the type steps down from the CTA
-   size to the body size as the brief grows. */
+/* Fixed height: the brief scrolls inside itself, and the locked strip, when
+   there is one, takes its share from the bottom. */
 .mina-brief {
+  display: flex;
+  flex-direction: column;
+  height: 160px;
+}
+
+/* The type steps down from the CTA size to the body size as the brief grows. */
+.mina-brief__input {
+  flex: 1;
   display: block;
   width: 100%;
-  height: 160px;
+  min-height: 0;
   margin: 0;
   padding: 0;
   overflow-y: auto;
@@ -22,10 +30,80 @@
   mask-image: linear-gradient(#000 70%, transparent);
 }
 
-.mina-brief::-webkit-scrollbar {
+.mina-brief__input::-webkit-scrollbar,
+.mina-brief__locked::-webkit-scrollbar {
   display: none;
 }
 
-.mina-brief::placeholder {
+.mina-brief__input::placeholder {
   color: rgba(var(--mina-ink-rgb, 8, 10, 0), var(--mina-muted-o));
+}
+
+/* The locked strip on the left, the lock pill pushed to the right. */
+.mina-brief__bottom {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  /* Hangs a little past the brief's own bottom, into the space above the
+     rule, so the strip sits right against the brief's faded last lines. */
+  margin-bottom: -12px;
+}
+
+/* Two lines tall, small and faded, scrolling with no visible bar. */
+.mina-brief__locked {
+  flex: 1;
+  height: 2.6em;
+  margin: 0;
+  overflow-y: auto;
+  color: rgba(var(--mina-ink-rgb, 8, 10, 0), var(--mina-muted-o));
+  font-size: var(--mina-fs-body);
+  line-height: 1.3;
+  white-space: pre-wrap;
+  scrollbar-width: none;
+  /* The same fade as the brief's: its lines dissolve into the rule below. */
+  mask-image: linear-gradient(#000 70%, transparent);
+}
+
+.mina-brief__lock {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  margin-left: auto;
+  border: 0;
+  border-radius: 2px;
+  background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.05);
+  color: var(--mina-text);
+  cursor: pointer;
+  transition:
+    opacity var(--mina-anim-fade) ease,
+    background-color var(--mina-anim-fade) ease;
+}
+
+.mina-brief__lock:hover {
+  background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.09);
+}
+
+/* Above the pill, since the upload rule right under the brief would cover it,
+   and running leftwards from its right edge, which sits on the block's. Sized
+   to its text: an absolute box anchored on the right only would otherwise
+   shrink to the 32px pill. */
+.mina-brief__bottom .mina-brief__lock::after {
+  top: auto;
+  bottom: calc(100% + 8px);
+  left: auto;
+  right: 0;
+  width: max-content;
+  transform: none;
+}
+
+/* Once something is locked, the pill only comes back while the strip is hovered. */
+.mina-brief__bottom[data-locked] .mina-brief__lock {
+  opacity: 0;
+}
+
+.mina-brief__bottom[data-locked]:hover .mina-brief__lock,
+.mina-brief__lock:focus-visible {
+  opacity: 1;
 }

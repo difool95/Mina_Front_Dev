@@ -34,6 +34,8 @@ export const ICON_PATHS = {
   /* Two arcs meeting at the point. Closed, so `Icon` can fill it once the
      creation is liked. */
   heart: ['M12 19.5c-1.2-.9-7-4.6-7-9.1a3.9 3.9 0 0 1 7-2.4 3.9 3.9 0 0 1 7 2.4c0 4.5-5.8 8.2-7 9.1z'],
+  /* A padlock: the shackle, then the body it drops into — the brief's lock pill. */
+  lock: ['M9 11V8.5a3 3 0 0 1 6 0V11', 'M7 11h10v7.5H7z'],
   /* The matcha cup, as drawn: the foam, the stem, then the cup and its rim. */
   matcha: {
     box: '0 0 128 147',
