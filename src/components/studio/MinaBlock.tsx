@@ -21,7 +21,7 @@ import {
   UPLOAD_LIMITS,
   canAffordGeneration,
 } from '@/lib/studio'
-import type { MinaBlockHandle, StudioMode, StudioUpload, UploadKind } from '@/types'
+import type { MinaBlockHandle, MinaBlockUserBriefHandle, StudioMode, StudioUpload, UploadKind } from '@/types'
 
 import { Rule } from '../builder/Table'
 import { StudioLibrary } from '../studioLibrary/StudioLibrary'
@@ -105,6 +105,7 @@ export function MinaBlock({
   const isOpen = animation !== null
   const block = useRef<HTMLDivElement>(null)
   const brief = useRef<HTMLDivElement>(null)
+  const userBrief = useRef<MinaBlockUserBriefHandle>(null)
   const closedTop = useRef(0)
 
 
@@ -162,6 +163,7 @@ export function MinaBlock({
       selectUploadKind('scene')
       openFilePicker('scene')
     },
+    lockText: (text) => userBrief.current?.lockText(text),
   }))
 
 // The upload row is the same for every pill, but the scene pill has a library card too.
@@ -215,7 +217,7 @@ export function MinaBlock({
           />
         ))}
       <div ref={brief} className="mina-block__brief" onFocus={openLong}>
-        <MinaBlockUserBrief placeholder={BRIEF_PLACEHOLDERS[mode]} />
+        <MinaBlockUserBrief ref={userBrief} placeholder={BRIEF_PLACEHOLDERS[mode]} />
       </div>
       {isOpen && (
         <>

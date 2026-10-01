@@ -1,7 +1,8 @@
-import { useState, type CSSProperties } from 'react'
+import { useImperativeHandle, useState, type CSSProperties, type Ref } from 'react'
 
 import { Icon } from '@/components/Icon'
 import { BRIEF_CHARS_PER_PX, BRIEF_MAX_LENGTH, BRIEF_SHRINK_FROM } from '@/lib/studio'
+import type { MinaBlockUserBriefHandle } from '@/types'
 
 import './MinaBlockUserBrief.css'
 
@@ -15,7 +16,13 @@ import './MinaBlockUserBrief.css'
  * Only one passage is locked at a time, and Ctrl+Z (⌘Z) undoes the last lock
  * as long as nothing has been typed since.
  */
-export function MinaBlockUserBrief({ placeholder }: { placeholder: string }) {
+export function MinaBlockUserBrief({
+  placeholder,
+  ref,
+}: {
+  placeholder: string
+  ref?: Ref<MinaBlockUserBriefHandle>
+}) {
   const [brief, setBrief] = useState('')
   const [locked, setLocked] = useState('')
   // The live selection in the brief, kept only while it holds more than whitespace.
@@ -48,6 +55,19 @@ export function MinaBlockUserBrief({ placeholder }: { placeholder: string }) {
     setLocked('')
     setBeforeLock(null)
   }
+
+  // Locking from outside the brief, reached through MinaBlock's handle.
+  useImperativeHandle(ref, () => ({
+    lockText: (text) => {
+      const passage = text.trim()
+      if (!passage) return
+
+      // Unlocked back into the brief first, so the passage it replaces is not lost.
+      if (locked) setBrief(brief ? `${brief} ${locked}` : locked)
+      setLocked(passage)
+      setBeforeLock(null)
+    },
+  }))
 
   return (
     <div className="mina-brief">
