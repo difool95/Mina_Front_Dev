@@ -24,7 +24,7 @@ import {
  * Hovering a hidden one fades it in straight away; after
  * `LIBRARY_HIDE_DELAY_MS`, one random visible picture fades out for it.
  */
-export function SceneLibrary({ onClose }: { onClose: () => void }) {
+export function SceneLibrary({ onClose, onPick }: { onClose: () => void; onPick: (url: string) => void }) {
   const { data: scenes = NO_LIBRARY_ITEMS } = useSceneLibrary()
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState<string | null>(null)
@@ -136,6 +136,11 @@ export function SceneLibrary({ onClose }: { onClose: () => void }) {
                 data-hidden={!shown.includes(scene.id) || undefined}
                 onMouseEnter={() => reveal(scene.id)}
                 onFocus={() => reveal(scene.id)}
+                //THIS LINE IS ADDING THE FUNCTIONALITY TO PICK A SCENE BROWSE FROM THE LIBRARY AND CLOSE THE LIBRARY PANEL
+                onClick={() => {
+                  onPick(scene.url)
+                  onClose()
+                }}
               >
                 <span className="mina-library__number">{toRoman(scene.sort_order)}.</span>
                 <span className="mina-library__media">

@@ -73,16 +73,29 @@
 /* ── upload side ── */
 
 .mina-studio__panel {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--mina-studio-panel-bg);
 }
 
+/* The uploads cover the whole panel, cropped rather than shown in their own
+   ratio. Pinned to the panel's edges so the picture can never size the box. */
+.mina-studio__panel .mina-carousel {
+  position: absolute;
+  inset: 0;
+}
+
 .mina-studio__upload {
-  color: var(--mina-muted);
+  opacity: 0.45;
+  transition: opacity var(--mina-anim-fade) ease;
   font-size: var(--mina-fs-small);
   font-weight: var(--mina-fw-light);
+}
+
+.mina-studio__upload:hover {
+  opacity: 1;
 }
 
 /* ── shared button reset ──

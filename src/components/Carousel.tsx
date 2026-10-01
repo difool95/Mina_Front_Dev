@@ -45,7 +45,12 @@ function litSlot(i: number, n: number) {
   return i - n + DOT_SLOTS
 }
 
-export function Carousel({ media }: { media: OnboardContent[] }) {
+/** Only what it shows of each item, so the studio's uploads can page through it too. */
+export function Carousel({
+  media,
+}: {
+  media: Pick<OnboardContent, 'id' | 'media_url' | 'media_type' | 'thumbnail' | 'alt_text'>[]
+}) {
   const [index, setIndex] = useState(0)
   // Also doubles as the hover flag: null means the pointer is outside.
   const [cursor, setCursor] = useState<{ x: number; y: number; side: 'prev' | 'next' } | null>(null)

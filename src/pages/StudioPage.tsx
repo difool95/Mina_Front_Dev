@@ -5,12 +5,13 @@ import { AppFooter } from '@/components/AppFooter'
 import { AutoMatchaPanel } from '@/components/AutoMatchaPanel'
 import { MatchaPanel } from '@/components/MatchaPanel'
 import { MinaBlock } from '@/components/studio/MinaBlock'
+import { RightStudioPanel } from '@/components/studio/RightStudioPanel'
 import { RoleTagCard } from '@/components/RoleTagCard'
 import { useAccountSetup } from '@/hooks/useAccounts'
 import { useCustomerCredits } from '@/hooks/useCustomerCredits'
 import { MINA_LOGO_URL } from '@/lib/constants'
 import { useAuth } from '@/providers/AuthProvider'
-import type { StudioMode } from '@/types'
+import type { MinaBlockHandle, StudioMode, StudioUpload } from '@/types'
 
 import './StudioPage.css'
 
@@ -22,7 +23,9 @@ import './StudioPage.css'
  */
 export function StudioPage() {
   const [mode, setMode] = useState<StudioMode>('create')
-  const block = useRef<{ animate: () => void }>(null)
+  const block = useRef<MinaBlockHandle>(null)
+  // Held here rather than in the block: the panel beside it shows them too.
+  const [uploads, setUploads] = useState<StudioUpload[]>([])
   // Same single slot as the profile: "Back" in the auto panel returns to the buy panel.
   const [matchaPanel, setMatchaPanel] = useState<'buy' | 'auto' | null>(null)
   const { session } = useAuth()
@@ -77,17 +80,15 @@ export function StudioPage() {
             mode={mode}
             credits={hasCredits ? (credits?.mg_credits ?? 0) : undefined}
             onNeedMatcha={() => setMatchaPanel('buy')}
+            uploads={uploads}
+            onUploads={setUploads}
           />
         </main>
 
         <AppFooter current="studio" onOpenMatcha={() => setMatchaPanel('buy')} />
       </section>
 
-      <section className="mina-studio__panel">
-        <button className="mina-studio__upload" type="button">
-          + Upload image or video
-        </button>
-      </section>
+      <RightStudioPanel mode={mode} uploads={uploads} onUpload={() => block.current?.browseScene()} />
 
       {matchaPanel === 'buy' && (
         <MatchaPanel

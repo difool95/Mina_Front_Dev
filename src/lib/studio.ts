@@ -6,6 +6,12 @@ export const BRIEF_PLACEHOLDERS: Record<StudioMode, string> = {
   animate: 'Describe the motion, the sound and the scene',
 }
 
+/** The right panel's button while it has nothing to show, per mode. */
+export const PANEL_UPLOAD_LABELS: Record<StudioMode, string> = {
+  create: '+ Upload image to edit',
+  animate: '+ Upload image or video',
+}
+
 /** The block's call to action, per mode. */
 export const STUDIO_CTA_LABELS: Record<StudioMode, string> = {
   create: 'Create',
@@ -80,6 +86,9 @@ export const UPLOAD_KINDS: { kind: UploadKind; label: string; tooltip: string; t
     title: 'Add product, logo, elements, video, sound or references',
   },
 ]
+
+/** How many pictures each "+" pill holds; its "+" card goes once that many are in. */
+export const UPLOAD_LIMITS: Record<UploadKind, number> = { scene: 1, logo: 4, product: 8 }
 
 /**
  * The ratio pill cycles through these in order, starting on the first. Held,

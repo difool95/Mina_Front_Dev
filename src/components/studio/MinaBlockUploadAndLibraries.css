@@ -6,6 +6,7 @@
 
 .mina-uploads__cards {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
@@ -17,9 +18,30 @@
 }
 
 .mina-uploads__add,
-.mina-uploads__library {
+.mina-uploads__library,
+.mina-uploads__image {
   width: 72px;
   height: 72px;
+}
+
+/* An added picture, cropped square; it fades on hover since a click removes it. */
+.mina-uploads__image {
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+  transition: opacity var(--mina-anim-fade) ease;
+}
+
+.mina-uploads__image:hover {
+  opacity: 0.6;
+}
+
+.mina-uploads__image img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .mina-uploads__add {

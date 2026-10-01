@@ -15,9 +15,11 @@ import './StudioLibrary.css'
 export function StudioLibrary({
   library,
   onClose,
+  onPickScene,
 }: {
   library: 'scene' | 'content'
   onClose: () => void
+  onPickScene: (url: string) => void
 }) {
   const dialog = useRef<HTMLDialogElement>(null)
 
@@ -27,7 +29,7 @@ export function StudioLibrary({
 
   return (
     <dialog ref={dialog} className="mina-library" onClose={onClose}>
-      {library === 'scene' ? <SceneLibrary onClose={onClose} /> : <ContentCreatorLibrary onClose={onClose} />}
+      {library === 'scene' ? <SceneLibrary onClose={onClose} onPick={onPickScene} /> : <ContentCreatorLibrary onClose={onClose} />}
     </dialog>
   )
 }

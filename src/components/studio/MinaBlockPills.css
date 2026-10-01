@@ -42,12 +42,23 @@ button.mina-pills__pill:hover,
 
 /* A square of its own for the "+" or the ratio frame, not just a space before the label. */
 .mina-pills__icon {
+  position: relative;
   display: grid;
   place-items: center;
   width: 22px;
   height: 22px;
   font-size: var(--mina-fs-body);
   font-weight: var(--mina-fw-light);
+}
+
+/* The pill's first picture, cropped to the square the "+" stood in. Pinned
+   out of the grid's flow, so its own ratio can never size the track. */
+.mina-pills__icon img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 /* The ratio drawn as its own outline: tall for 9:16, square for 1:1. */

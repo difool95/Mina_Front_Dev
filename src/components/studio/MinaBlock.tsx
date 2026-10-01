@@ -1,4 +1,12 @@
-import { useImperativeHandle, useLayoutEffect, useRef, useState, type Ref } from 'react'
+import {
+  useImperativeHandle,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type Dispatch,
+  type Ref,
+  type SetStateAction,
+} from 'react'
 
 import {
   ANIMATE_DURATIONS,
@@ -10,9 +18,10 @@ import {
   NEED_MATCHA_LABEL,
   STUDIO_CTA_LABELS,
   UPLOAD_KINDS,
+  UPLOAD_LIMITS,
   canAffordGeneration,
 } from '@/lib/studio'
-import type { StudioMode, UploadKind } from '@/types'
+import type { MinaBlockHandle, StudioMode, StudioUpload, UploadKind } from '@/types'
 
 import { Rule } from '../builder/Table'
 import { StudioLibrary } from '../studioLibrary/StudioLibrary'
@@ -38,14 +47,37 @@ export function MinaBlock({
   mode,
   credits,
   onNeedMatcha,
+  uploads,
+  onUploads,
   ref,
 }: {
   mode: StudioMode
   credits: number | undefined
   onNeedMatcha: () => void
-  ref?: Ref<{ animate: () => void }>
+  uploads: StudioUpload[]
+  onUploads: Dispatch<SetStateAction<StudioUpload[]>>
+  ref?: Ref<MinaBlockHandle>
 }) {
   const [upload, setUpload] = useState<UploadKind>('scene')
+  // The file input is outside the pills so it can be reused for every pill, the ref is used to trigger the file picker when the user clicks on the "+" button of a pill
+  const fileInput = useRef<HTMLInputElement>(null)
+  // Opens the computer's file dialog for that pill, unless it is already full.
+  // Nothing is uploaded here: the chosen files become blob URLs in the input's onChange.
+  const openFilePicker = (kind: UploadKind) => roomFor(kind) > 0 && fileInput.current?.click()
+
+  const urlsOf = (kind: UploadKind) => uploads.filter((entry) => entry.kind === kind).map((entry) => entry.url)
+  //this is a method that checks if there is room for more uploads of a certain kind, it returns the number of remaining uploads allowed for that kind
+  const roomFor = (kind: UploadKind) => UPLOAD_LIMITS[kind] - urlsOf(kind).length
+  // the add function is used to add an upload to the list of uploads, it is passed down to the upload row component
+  const add = (kind: UploadKind, urls: string[]) =>
+    onUploads((list) => [...list, ...urls.map((url) => ({ kind, url }))])
+  // the remove function is used to remove an upload from the list of uploads, it is passed down to the upload row component
+  const remove = (url: string) => {
+    URL.revokeObjectURL(url)
+    onUploads((list) => list.filter((entry) => entry.url !== url))
+  }
+
+
   const [resolutionIndex, setResolutionIndex] = useState(0)
   const [durationIndex, setDurationIndex] = useState(0)
   const resolution = ANIMATE_RESOLUTIONS[resolutionIndex]!
@@ -87,7 +119,10 @@ export function MinaBlock({
     setAnimation('long')
   }
 
-  const pickUpload = (next: UploadKind) => {
+  // Makes `next` the lit pill and slides its upload row in, up or down depending
+  // on where it sits in the stack. Called on hover, on click (touch has no
+  // hover) and from browseScene().
+  const selectUploadKind = (next: UploadKind) => {
     if (next === upload) return
 
     const stack = UPLOAD_KINDS.map((entry) => entry.kind)
@@ -97,6 +132,7 @@ export function MinaBlock({
     setUpload(next)
   }
 
+  //THIS METHOD IS EXPOSED TO THE PARENT COMPONENT THROUGH THE REF, IT ALLOWS THE PARENT COMPONENT TO TRIGGER THE ANIMATION OF THE MINABLOCK FROM OUTSIDE
   useImperativeHandle(ref, () => ({
     animate: () => {
       if (!isOpen) return openLong()
@@ -107,9 +143,14 @@ export function MinaBlock({
       setAnimation('simple')
       setSimpleRuns((runs) => runs + 1)
     },
+    browseScene: () => {
+      openLong()
+      selectUploadKind('scene')
+      openFilePicker('scene')
+    },
   }))
 
-  // Animate has one upload row with the content library; create's follows the "+" pills.
+// The upload row is the same for every pill, but the scene pill has a library card too.
   const uploadRow = (kind: UploadKind) =>
     mode === 'animate' ? (
       <MinaBlockUploadAndLibraries
@@ -124,6 +165,10 @@ export function MinaBlock({
     ) : (
       <MinaBlockUploadAndLibraries
         title={UPLOAD_KINDS.find((entry) => entry.kind === kind)!.title}
+        images={urlsOf(kind)}
+        canAdd={roomFor(kind) > 0}
+        onOpenFilePicker={() => openFilePicker(kind)}
+        onRemove={remove}
         library={
           kind === 'scene'
             ? {
@@ -147,7 +192,12 @@ export function MinaBlock({
             onNextDuration={() => setDurationIndex((index) => (index + 1) % ANIMATE_DURATIONS.length)}
           />
         ) : (
-          <MinaBlockPillsCreate upload={upload} onUpload={pickUpload} />
+          <MinaBlockPillsCreate
+            upload={upload}
+            uploads={uploads}
+            onSelectUploadKind={selectUploadKind}
+            onOpenFilePicker={openFilePicker}
+          />
         ))}
       <div ref={brief} className="mina-block__brief" onFocus={openLong}>
         <MinaBlockUserBrief placeholder={BRIEF_PLACEHOLDERS[mode]} />
@@ -187,7 +237,28 @@ export function MinaBlock({
           </div>
         </>
       )}
-      {openLibrary && <StudioLibrary library={openLibrary} onClose={() => setOpenLibrary(null)} />}
+      {openLibrary && (
+        <StudioLibrary
+          library={openLibrary}
+          onClose={() => setOpenLibrary(null)}
+          onPickScene={(url) => add('scene', [url])}
+        />
+      )}
+      {/* The file input is outside the pills so it can be reused for every pill, it can be put anywhere in the component tree */}
+      <input
+        ref={fileInput}
+        type="file"
+        accept="image/*"
+        multiple={UPLOAD_LIMITS[upload] > 1}
+        hidden
+        onChange={(event) => {
+          // Past the pill's limit, the extra files are dropped rather than refused.
+          const files = [...(event.target.files ?? [])].slice(0, roomFor(upload))
+          add(upload, files.map((file) => URL.createObjectURL(file)))
+          // Cleared so picking the same file again still fires a change.
+          event.target.value = ''
+        }}
+      />
     </div>
   )
 }
