@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { cfImage, imageWidthFor } from '@/lib/media'
 import { UPLOAD_KINDS } from '@/lib/studio'
+import { studioSession } from '@/lib/sessionStorage/studioSession'
 import type { StudioUpload, UploadKind } from '@/types'
 
 import { MinaBlockRatioPill } from './MinaBlockRatioPill'
@@ -20,7 +21,8 @@ export function MinaBlockPillsCreate({
   /** Opens the file picker for that pill — the same as the "+" card under it. */
   onOpenFilePicker: (kind: UploadKind) => void
 }) {
-  const [isCreative, setIsCreative] = useState(false)
+  const [isCreative, setIsCreative] = useState(() => studioSession.read().isCreative ?? false)
+  useEffect(() => studioSession.save({ isCreative }), [isCreative])
 
   return (
     <div className="mina-pills">

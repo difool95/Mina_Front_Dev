@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { AppFooter } from '@/components/AppFooter'
@@ -10,6 +10,7 @@ import { RoleTagCard } from '@/components/RoleTagCard'
 import { useAccountSetup } from '@/hooks/useAccounts'
 import { useCustomerCredits } from '@/hooks/useCustomerCredits'
 import { MINA_LOGO_URL } from '@/lib/constants'
+import { studioSession } from '@/lib/sessionStorage/studioSession'
 import { useAuth } from '@/providers/AuthProvider'
 import type { MinaBlockHandle, StudioMode, StudioUpload } from '@/types'
 
@@ -25,7 +26,9 @@ export function StudioPage() {
   const [mode, setMode] = useState<StudioMode>('create')
   const block = useRef<MinaBlockHandle>(null)
   // Held here rather than in the block: the panel beside it shows them too.
-  const [uploads, setUploads] = useState<StudioUpload[]>([])
+  const [uploads, setUploads] = useState<StudioUpload[]>(() => studioSession.read().uploads ?? [])
+  //This line of code is a React hook that saves the uploads state to the studioSession whenever the uploads state changes.
+  useEffect(() => studioSession.save({ uploads }), [uploads])
   // Same single slot as the profile: "Back" in the auto panel returns to the buy panel.
   const [matchaPanel, setMatchaPanel] = useState<'buy' | 'auto' | null>(null)
   const { session } = useAuth()

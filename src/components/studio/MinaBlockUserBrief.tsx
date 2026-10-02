@@ -1,7 +1,8 @@
-import { useImperativeHandle, useState, type CSSProperties, type Ref } from 'react'
+import { useEffect, useImperativeHandle, useState, type CSSProperties, type Ref } from 'react'
 
 import { Icon } from '@/components/Icon'
 import { BRIEF_CHARS_PER_PX, BRIEF_MAX_LENGTH, BRIEF_SHRINK_FROM } from '@/lib/studio'
+import { studioSession } from '@/lib/sessionStorage/studioSession'
 import type { MinaBlockUserBriefHandle } from '@/types'
 
 import './MinaBlockUserBrief.css'
@@ -23,8 +24,9 @@ export function MinaBlockUserBrief({
   placeholder: string
   ref?: Ref<MinaBlockUserBriefHandle>
 }) {
-  const [brief, setBrief] = useState('')
-  const [locked, setLocked] = useState('')
+  const [brief, setBrief] = useState(() => studioSession.read().brief ?? '')
+  const [locked, setLocked] = useState(() => studioSession.read().locked ?? '')
+  useEffect(() => studioSession.save({ brief, locked }), [brief, locked])
   // The live selection in the brief, kept only while it holds more than whitespace.
   const [selection, setSelection] = useState<{ start: number; end: number } | null>(null)
   // The brief as it stood before the last lock, until the next keystroke. The

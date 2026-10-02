@@ -22,6 +22,8 @@ import {
   UPLOAD_LIMITS,
   canAffordGeneration,
 } from '@/lib/studio'
+import { readAsDataUrl } from '@/lib/media'
+import { studioSession } from '@/lib/sessionStorage/studioSession'
 import type { MinaBlockHandle, MinaBlockUserBriefHandle, StudioMode, StudioUpload, UploadKind } from '@/types'
 
 import { Rule } from '../builder/Table'
@@ -69,14 +71,15 @@ export function MinaBlock({
   const urlsOf = (kind: UploadKind) => uploads.filter((entry) => entry.kind === kind).map((entry) => entry.url)
   //this is a method that checks if there is room for more uploads of a certain kind, it returns the number of remaining uploads allowed for that kind
   const roomFor = (kind: UploadKind) => UPLOAD_LIMITS[kind] - urlsOf(kind).length
-  // the add function is used to add an upload to the list of uploads, it is passed down to the upload row component
+
+// the add function is used to add an upload to the list of uploads, it is passed down to the upload row component
   const add = (kind: UploadKind, urls: string[]) =>
-    onUploads((list) => [...list, ...urls.map((url) => ({ kind, url }))])
+    onUploads((list) => [
+      ...list,
+      ...urls.filter((url) => !list.some((entry) => entry.url === url)).map((url) => ({ kind, url })),
+    ])
   // the remove function is used to remove an upload from the list of uploads, it is passed down to the upload row component
-  const remove = (url: string) => {
-    URL.revokeObjectURL(url)
-    onUploads((list) => list.filter((entry) => entry.url !== url))
-  }
+  const remove = (url: string) => onUploads((list) => list.filter((entry) => entry.url !== url))
 
 // the move function is used to reorder the uploads in the list, it is passed down to the MinaBlockUploadAndLibraries component, 
 // it takes the url of the upload to move and the url of the target upload to move it before, it updates the list of uploads in 
@@ -100,7 +103,13 @@ export function MinaBlock({
   const canAfford = credits === undefined || canAffordGeneration(credits, mode, resolution, duration)
   const [uploadSwitch, setUploadSwitch] = useState<'up' | 'down' | null>(null)
   const [leavingUpload, setLeavingUpload] = useState<UploadKind | null>(null)
-  const [animation, setAnimation] = useState<'long' | 'simple' | null>(null)
+
+//the animation is simple if the block is already open, or if we refresh the page and the brief is already filled, otherwise it is long,
+//  this is used to determine which animation to play when the block opens
+  const [animation, setAnimation] = useState<'long' | 'simple' | null>(() => {
+    const { brief, locked } = studioSession.read()
+    return brief || locked || uploads.length ? 'simple' : null
+  })
   const [simpleRuns, setSimpleRuns] = useState(0)
   const [openLibrary, setOpenLibrary] = useState<'scene' | 'content' | null>(null)
   const isOpen = animation !== null
@@ -272,10 +281,10 @@ export function MinaBlock({
         accept="image/*"
         multiple={UPLOAD_LIMITS[upload] > 1}
         hidden
-        onChange={(event) => {
+        onChange={async (event) => {
           // Past the pill's limit, the extra files are dropped rather than refused.
           const files = [...(event.target.files ?? [])].slice(0, roomFor(upload))
-          add(upload, files.map((file) => URL.createObjectURL(file)))
+          add(upload, await Promise.all(files.map(readAsDataUrl)))
           // Cleared so picking the same file again still fires a change.
           event.target.value = ''
         }}

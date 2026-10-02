@@ -141,3 +141,14 @@ export function isLightImage(image: HTMLImageElement) {
 
   return total / (size * size) > LIGHT_IMAGE_THRESHOLD
 }
+
+//We get the data url of the file,so that when we refresh the page we can still see the image or video that was uploaded,
+//  this is used in the studio component to display the uploaded media
+export function readAsDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result as string)
+    reader.onerror = () => reject(reader.error)
+    reader.readAsDataURL(file)
+  })
+}

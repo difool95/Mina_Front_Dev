@@ -26,3 +26,13 @@ export interface StudioUpload {
   // The URL of the picture, which is either a temporary one from the file picker or a permanent one from the library.
   url: string
 }
+
+/** Create mode's settings, kept in sessionStorage so a refresh does not lose them. */
+export interface StudioSession {
+  brief: string
+  locked: string
+  uploads: StudioUpload[]
+  isCreative: boolean
+  ratioIndex: number
+  isLandscape: boolean
+}

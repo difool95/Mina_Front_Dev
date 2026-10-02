@@ -1,13 +1,15 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { RATIO_HOLD_MS, STUDIO_RATIOS } from '@/lib/studio'
+import { studioSession } from '@/lib/sessionStorage/studioSession'
 
 import './MinaBlockPills.css'
 
 /** The ratio pill both modes end on: a tap cycles the ratio, a hold flips it to landscape and back. */
 export function MinaBlockRatioPill() {
-  const [ratioIndex, setRatioIndex] = useState(0)
-  const [isLandscape, setIsLandscape] = useState(false)
+  const [ratioIndex, setRatioIndex] = useState(() => studioSession.read().ratioIndex ?? 0)
+  const [isLandscape, setIsLandscape] = useState(() => studioSession.read().isLandscape ?? false)
+  useEffect(() => studioSession.save({ ratioIndex, isLandscape }), [ratioIndex, isLandscape])
   const holdTimer = useRef<number | undefined>(undefined)
   // A hold that flipped the orientation must not also cycle on the click its release fires.
   const wasHeld = useRef(false)
