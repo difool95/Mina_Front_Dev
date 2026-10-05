@@ -1,7 +1,17 @@
 import { isMotion } from '@/lib/generations'
+import type { MmaPlatform, StillGenerationResult } from '@/types'
 import type { MegaGeneration } from '@/types/generation.types'
 
+import { apiPost } from './api.client'
 import { supabase } from './supabase.client'
+
+/** Asks the API to start a Create generation: it writes the rows and charges the matcha. */
+export function startStillGeneration(
+  token: string,
+  body: { studioSessionId: string; platform: MmaPlatform; isCreative: boolean },
+) {
+  return apiPost<StillGenerationResult>('/api/mma/still', token, body)
+}
 
 /** The columns the archive renders. `mega_generations` holds far more. */
 const COLUMNS =

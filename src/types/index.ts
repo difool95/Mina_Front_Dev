@@ -4,7 +4,16 @@ export type { OnboardContent } from './onboardContent.types'
 export type { CreditLot, CustomerRole, MegaCustomer, MmaPreferences } from './customer.types'
 export type { SignupBonusResult } from './credit.types'
 export type { CreateCheckoutSessionResult } from './checkout.types'
-export type { MinaBlockHandle, MinaBlockUserBriefHandle, StudioMode, StudioSession, StudioUpload, UploadKind } from './studio.types'
+export type {
+  MinaBlockHandle,
+  MinaBlockUserBriefHandle,
+  MmaPlatform,
+  StillGenerationResult,
+  StudioMode,
+  StudioSession,
+  StudioUpload,
+  UploadKind,
+} from './studio.types'
 export type { SceneLibraryItem } from './sceneLibrary.types'
 export type { ContentLibraryItem, ContentLibraryRecreate } from './contentLibrary.types'
 export type { CreatorLibraryItem } from './creatorLibrary.types'

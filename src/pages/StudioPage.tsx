@@ -9,8 +9,10 @@ import { RightStudioPanel } from '@/components/studio/RightStudioPanel'
 import { RoleTagCard } from '@/components/RoleTagCard'
 import { useAccountSetup } from '@/hooks/useAccounts'
 import { useCustomerCredits } from '@/hooks/useCustomerCredits'
+import { useStartStillGeneration } from '@/hooks/useGenerations'
 import { MINA_LOGO_URL } from '@/lib/constants'
 import { studioSession } from '@/lib/sessionStorage/studioSession'
+import { STUDIO_RATIOS } from '@/lib/studio'
 import { useAuth } from '@/providers/AuthProvider'
 import type { MinaBlockHandle, StudioMode, StudioUpload } from '@/types'
 
@@ -33,6 +35,21 @@ export function StudioPage() {
   const [matchaPanel, setMatchaPanel] = useState<'buy' | 'auto' | null>(null)
   const { session } = useAuth()
   const { data: credits, isSuccess: hasCredits } = useCustomerCredits(session?.user.id)
+  const startGeneration = useStartStillGeneration(session?.user.id)
+
+  // The settings are read from the studio session, where every pill already saves its own.
+  const create = () => {
+    if (!session || startGeneration.isPending) return
+
+    const { studioSessionId = crypto.randomUUID(), ratioIndex = 0, isCreative = false } = studioSession.read()
+    studioSession.save({ studioSessionId })
+    startGeneration.mutate({
+      token: session.access_token,
+      studioSessionId,
+      platform: STUDIO_RATIOS[ratioIndex]!.platform,
+      isCreative,
+    })
+  }
   const autoRefill = credits?.mg_mma_preferences?.autoRefill
 
   // Either mode button also plays the prompt block's entrance: the long one
@@ -86,6 +103,7 @@ export function StudioPage() {
             mode={mode}
             credits={hasCredits ? (credits?.mg_credits ?? 0) : undefined}
             onNeedMatcha={() => setMatchaPanel('buy')}
+            onCreate={create}
             uploads={uploads}
             onUploads={setUploads}
           />

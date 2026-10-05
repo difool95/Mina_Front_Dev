@@ -35,4 +35,15 @@ export interface StudioSession {
   isCreative: boolean
   ratioIndex: number
   isLandscape: boolean
+  /** This tab's studio session. Gone with the tab, so a reopened one starts a new session row. */
+  studioSessionId: string
+}
+
+/** Where the output is meant to go, read off the ratio picked in the studio. Same as the API's. */
+export type MmaPlatform = 'tiktok' | 'instagram-post' | 'print' | 'square'
+
+/** `POST /api/mma/still`: the generation it started and the balance after its charge. */
+export interface StillGenerationResult {
+  generationId: string
+  credits: number
 }

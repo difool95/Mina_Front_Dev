@@ -50,6 +50,7 @@ export function MinaBlock({
   mode,
   credits,
   onNeedMatcha,
+  onCreate,
   uploads,
   onUploads,
   ref,
@@ -57,6 +58,8 @@ export function MinaBlock({
   mode: StudioMode
   credits: number | undefined
   onNeedMatcha: () => void
+  /** Create mode's call to action; Animate's is not wired yet. */
+  onCreate: () => void
   uploads: StudioUpload[]
   onUploads: Dispatch<SetStateAction<StudioUpload[]>>
   ref?: Ref<MinaBlockHandle>
@@ -256,7 +259,7 @@ export function MinaBlock({
             <Rule />
             <MinaBlockVisionIntelligence />
             {canAfford ? (
-              <MinaBlockCTA label={STUDIO_CTA_LABELS[mode]} />
+              <MinaBlockCTA label={STUDIO_CTA_LABELS[mode]} onClick={mode === 'create' ? onCreate : undefined} />
             ) : (
               <MinaBlockCTA label={NEED_MATCHA_LABEL} onClick={onNeedMatcha} />
             )}

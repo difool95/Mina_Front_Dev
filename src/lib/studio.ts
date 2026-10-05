@@ -1,4 +1,4 @@
-import type { Ratio, StudioMode, UploadKind } from '@/types'
+import type { MmaPlatform, Ratio, StudioMode, UploadKind } from '@/types'
 
 /** What the brief is set to when a scene is picked from the scene library. */
 export const SCENE_LIBRARY_BRIEF = {
@@ -102,11 +102,11 @@ export const UPLOAD_LIMITS: Record<UploadKind, number> = { scene: 1, logo: 4, pr
  * it flips to landscape: the same ratio turned on its side (9:16 → 16:9),
  * under `landscapeLabel`.
  */
-export const STUDIO_RATIOS: { value: Ratio; label: string; landscapeLabel: string }[] = [
-  { value: '9:16', label: 'Tiktok/Reel', landscapeLabel: 'Banner' },
-  { value: '3:4', label: 'Post', landscapeLabel: 'Post' },
-  { value: '2:3', label: 'Printing', landscapeLabel: 'Printing' },
-  { value: '1:1', label: 'Square', landscapeLabel: 'Square' },
+export const STUDIO_RATIOS: { value: Ratio; label: string; landscapeLabel: string; platform: MmaPlatform }[] = [
+  { value: '9:16', label: 'Tiktok/Reel', landscapeLabel: 'Banner', platform: 'tiktok' },
+  { value: '3:4', label: 'Post', landscapeLabel: 'Post', platform: 'instagram-post' },
+  { value: '2:3', label: 'Printing', landscapeLabel: 'Printing', platform: 'print' },
+  { value: '1:1', label: 'Square', landscapeLabel: 'Square', platform: 'square' },
 ]
 
 /** How long the ratio pill must be held to flip between portrait and landscape. */

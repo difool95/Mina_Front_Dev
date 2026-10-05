@@ -9,6 +9,7 @@ import {
   getGenerations,
   getLikedGenerationIds,
   likeGeneration,
+  startStillGeneration,
   unlikeGeneration,
 } from '@/services/generations.service'
 import type { MegaGeneration } from '@/types/generation.types'
@@ -19,6 +20,19 @@ export function useGenerations(userId: string | undefined) {
     queryKey: queryKeys.generations(userId ?? ''),
     queryFn: () => getGenerations(userId!),
     enabled: Boolean(userId),
+  })
+}
+
+export function useStartStillGeneration(userId: string | undefined) {
+  const client = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ token, ...body }: Parameters<typeof startStillGeneration>[1] & { token: string }) =>
+      startStillGeneration(token, body),
+    onSuccess: () => {
+      void client.invalidateQueries({ queryKey: queryKeys.customer(userId ?? '') })
+      void client.invalidateQueries({ queryKey: queryKeys.generations(userId ?? '') })
+    },
   })
 }
 
