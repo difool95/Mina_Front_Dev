@@ -41,13 +41,22 @@ export function StudioPage() {
   const create = () => {
     if (!session || startGeneration.isPending) return
 
-    const { studioSessionId = crypto.randomUUID(), ratioIndex = 0, isCreative = false } = studioSession.read()
+    const {
+      studioSessionId = crypto.randomUUID(),
+      ratioIndex = 0,
+      isCreative = false,
+      brief = '',
+      locked = '',
+    } = studioSession.read()
     studioSession.save({ studioSessionId })
     startGeneration.mutate({
       token: session.access_token,
       studioSessionId,
       platform: STUDIO_RATIOS[ratioIndex]!.platform,
       isCreative,
+      // MMA reads the locked strip as the brief's last line.
+      brief: [brief, locked].filter(Boolean).join('\n'),
+      uploads,
     })
   }
   const autoRefill = credits?.mg_mma_preferences?.autoRefill

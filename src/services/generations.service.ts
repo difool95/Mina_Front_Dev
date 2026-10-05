@@ -1,14 +1,23 @@
 import { isMotion } from '@/lib/generations'
-import type { MmaPlatform, StillGenerationResult } from '@/types'
+import type { MmaPlatform, StillGenerationResult, StudioUpload } from '@/types'
 import type { MegaGeneration } from '@/types/generation.types'
 
 import { apiPost } from './api.client'
 import { supabase } from './supabase.client'
 
-/** Asks the API to start a Create generation: it writes the rows and charges the matcha. */
+/**
+ * Asks the API to start a Create generation: it writes the rows, charges the
+ * matcha and starts MMA, which stores the uploads on R2 itself.
+ */
 export function startStillGeneration(
   token: string,
-  body: { studioSessionId: string; platform: MmaPlatform; isCreative: boolean },
+  body: {
+    studioSessionId: string
+    platform: MmaPlatform
+    isCreative: boolean
+    brief: string
+    uploads: StudioUpload[]
+  },
 ) {
   return apiPost<StillGenerationResult>('/api/mma/still', token, body)
 }
