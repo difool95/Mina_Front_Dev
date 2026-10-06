@@ -1,4 +1,5 @@
 import {
+  useEffect,
   useImperativeHandle,
   useLayoutEffect,
   useRef,
@@ -18,12 +19,16 @@ import {
   NEED_MATCHA_LABEL,
   SCENE_LIBRARY_BRIEF,
   STUDIO_CTA_LABELS,
+  UPLOADING_LABEL,
+  UPLOAD_ERRORS,
   UPLOAD_KINDS,
   UPLOAD_LIMITS,
   canAffordGeneration,
 } from '@/lib/studio'
-import { readAsDataUrl } from '@/lib/media'
+import { useDeleteStudioImage, useUploadStudioImage } from '@/hooks/useStudioUploads'
+import { prepareStudioImage } from '@/lib/media'
 import { studioSession } from '@/lib/sessionStorage/studioSession'
+import { useAuth } from '@/providers/AuthProvider'
 import type { MinaBlockHandle, MinaBlockUserBriefHandle, StudioMode, StudioUpload, UploadKind } from '@/types'
 
 import { Rule } from '../builder/Table'
@@ -68,21 +73,73 @@ export function MinaBlock({
   // The file input is outside the pills so it can be reused for every pill, the ref is used to trigger the file picker when the user clicks on the "+" button of a pill
   const fileInput = useRef<HTMLInputElement>(null)
   // Opens the computer's file dialog for that pill, unless it is already full.
-  // Nothing is uploaded here: the chosen files become blob URLs in the input's onChange.
+  // The chosen files are uploaded in the input's onChange.
   const openFilePicker = (kind: UploadKind) => roomFor(kind) > 0 && fileInput.current?.click()
 
-  const urlsOf = (kind: UploadKind) => uploads.filter((entry) => entry.kind === kind).map((entry) => entry.url)
+  const uploadsOf = (kind: UploadKind) => uploads.filter((entry) => entry.kind === kind)
   //this is a method that checks if there is room for more uploads of a certain kind, it returns the number of remaining uploads allowed for that kind
-  const roomFor = (kind: UploadKind) => UPLOAD_LIMITS[kind] - urlsOf(kind).length
+  const roomFor = (kind: UploadKind) => UPLOAD_LIMITS[kind] - uploadsOf(kind).length
 
-// the add function is used to add an upload to the list of uploads, it is passed down to the upload row component
-  const add = (kind: UploadKind, urls: string[]) =>
-    onUploads((list) => [
-      ...list,
-      ...urls.filter((url) => !list.some((entry) => entry.url === url)).map((url) => ({ kind, url })),
-    ])
-  // the remove function is used to remove an upload from the list of uploads, it is passed down to the upload row component
-  const remove = (url: string) => onUploads((list) => list.filter((entry) => entry.url !== url))
+  const { session } = useAuth()
+  const uploadImage = useUploadStudioImage()
+  const deleteImage = useDeleteStudioImage()
+  const [uploadError, setUploadError] = useState<string | null>(null)
+  // The list as it stands now, for an upload that lands after the render that started it.
+  const latestUploads = useRef(uploads)
+  useEffect(() => {
+    latestUploads.current = uploads
+  })
+
+// This method is called when the user uses the file picker to upload a file to the server, it takes the kind of upload and the file to be uploaded as parameters
+  const uploadFile = async (kind: UploadKind, file: File) => {
+    if (!session) return
+
+    let image: Blob
+    try {
+      image = await prepareStudioImage(file)
+    } catch (error) {
+      setUploadError((error as Error).message)
+      return
+    }
+
+    const preview = URL.createObjectURL(image)
+    //this line adds the new upload to the list of uploads in the parent component (StudioPage) through the onUploads prop,
+    //it sets the kind, url, origin and isUploading properties of the new upload
+    onUploads((list) => [...list, { kind, url: preview, origin: 'upload', isUploading: true }])
+
+    try {
+      //This line uploads the image to the server using the useUploadStudioImage hook, it passes the access token and the image to be uploaded as parameters
+      const { url } = await uploadImage.mutateAsync({ token: session.access_token, image })
+
+      //this line checks if the upload that just finished is still in the list of uploads, if it is not,
+      //it means that the user has removed it before it finished uploading, so it deletes the image from the server
+      if (!latestUploads.current.some((entry) => entry.url === preview)) {
+        deleteImage.mutate({ token: session.access_token, url })
+        return
+      }
+      //this line updates the list of uploads in the parent component (StudioPage) through the onUploads prop, it sets the kind, url and origin 
+      //properties of the upload that just finished uploading
+      onUploads((list) => list.map((entry) => (entry.url === preview ? { kind, url, origin: 'upload' } : entry)))
+    } catch {
+      //this line removes the upload that failed from the list of uploads in the parent component (StudioPage) through the onUploads prop
+      onUploads((list) => list.filter((entry) => entry.url !== preview))
+      setUploadError(UPLOAD_ERRORS.failed(file.name))
+    } finally {
+      URL.revokeObjectURL(preview)
+    }
+  }
+
+  // the remove function is used to remove an upload from the MinaBlockUploadAndLibraries component.
+  const remove = (url: string) => {
+    const entry = uploads.find((upload) => upload.url === url)
+    onUploads((list) => list.filter((upload) => upload.url !== url))
+
+    //This line checks if the upload that is being removed is an upload that was uploaded by the user, and if it is not still uploading and has not been sent to the server yet,
+    //if all these conditions are met, it calls the deleteImage.mutate function to delete the image from the server
+    if (session && entry?.origin === 'upload' && !entry.isUploading && !entry.isSent) {
+      deleteImage.mutate({ token: session.access_token, url })
+    }
+  }
 
 // the move function is used to reorder the uploads in the list, it is passed down to the MinaBlockUploadAndLibraries component, 
 // it takes the url of the upload to move and the url of the target upload to move it before, it updates the list of uploads in 
@@ -103,6 +160,8 @@ export function MinaBlock({
   const [durationIndex, setDurationIndex] = useState(0)
   const resolution = ANIMATE_RESOLUTIONS[resolutionIndex]!
   const duration = ANIMATE_DURATIONS[durationIndex]!
+  //If the image is in the process of being uploaded, the create button is disabled / changes the text to uploading... to prevent the user from starting a generation with incomplete or missing uploads.
+  const isUploading = mode === 'create' && uploads.some((entry) => entry.isUploading)
   const canAfford = credits === undefined || canAffordGeneration(credits, mode, resolution, duration)
   const [uploadSwitch, setUploadSwitch] = useState<'up' | 'down' | null>(null)
   const [leavingUpload, setLeavingUpload] = useState<UploadKind | null>(null)
@@ -178,7 +237,8 @@ export function MinaBlock({
     },
   }))
 
-// The upload row is the same for every pill, but the scene pill has a library card too.
+//This shows the upload row depending on the mode and the kind of upload selected, if the mode is animate it shows the animate upload row,
+//if the mode is create it shows the create upload row with the selected kind
   const uploadRow = (kind: UploadKind) =>
     mode === 'animate' ? (
       <MinaBlockUploadAndLibraries
@@ -193,7 +253,8 @@ export function MinaBlock({
     ) : (
       <MinaBlockUploadAndLibraries
         title={UPLOAD_KINDS.find((entry) => entry.kind === kind)!.title}
-        images={urlsOf(kind)}
+        images={uploadsOf(kind)}
+        error={uploadError}
         canAdd={roomFor(kind) > 0}
         onOpenFilePicker={() => openFilePicker(kind)}
         onRemove={remove}
@@ -259,7 +320,11 @@ export function MinaBlock({
             <Rule />
             <MinaBlockVisionIntelligence />
             {canAfford ? (
-              <MinaBlockCTA label={STUDIO_CTA_LABELS[mode]} onClick={mode === 'create' ? onCreate : undefined} />
+              <MinaBlockCTA
+                label={isUploading ? UPLOADING_LABEL : STUDIO_CTA_LABELS[mode]}
+                isDisabled={isUploading}
+                onClick={mode === 'create' ? onCreate : undefined}
+              />
             ) : (
               <MinaBlockCTA label={NEED_MATCHA_LABEL} onClick={onNeedMatcha} />
             )}
@@ -271,7 +336,7 @@ export function MinaBlock({
           library={openLibrary}
           onClose={() => setOpenLibrary(null)}
           onPickScene={(url) => {
-            add('scene', [url])
+            onUploads((list) => [...list, { kind: 'scene', url, origin: 'scene_library' }])
             //Setup the brief with the scene library upload.
             userBrief.current?.setupBrief(SCENE_LIBRARY_BRIEF.locked, SCENE_LIBRARY_BRIEF.brief)
           }}
@@ -284,10 +349,10 @@ export function MinaBlock({
         accept="image/*"
         multiple={UPLOAD_LIMITS[upload] > 1}
         hidden
-        onChange={async (event) => {
+        onChange={(event) => {
+          setUploadError(null)
           // Past the pill's limit, the extra files are dropped rather than refused.
-          const files = [...(event.target.files ?? [])].slice(0, roomFor(upload))
-          add(upload, await Promise.all(files.map(readAsDataUrl)))
+          for (const file of [...(event.target.files ?? [])].slice(0, roomFor(upload))) void uploadFile(upload, file)
           // Cleared so picking the same file again still fires a change.
           event.target.value = ''
         }}
@@ -306,9 +371,9 @@ function MinaBlockVisionIntelligence() {
   )
 }
 
-function MinaBlockCTA({ label, onClick }: { label: string; onClick?: () => void }) {
+function MinaBlockCTA({ label, isDisabled, onClick }: { label: string; isDisabled?: boolean; onClick?: () => void }) {
   return (
-    <button className="mina-block__cta" type="button" onClick={onClick}>
+    <button className="mina-block__cta" type="button" disabled={isDisabled} onClick={onClick}>
       {label}
     </button>
   )

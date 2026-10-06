@@ -29,17 +29,20 @@ export function StudioPage() {
   const block = useRef<MinaBlockHandle>(null)
   // Held here rather than in the block: the panel beside it shows them too.
   const [uploads, setUploads] = useState<StudioUpload[]>(() => studioSession.read().uploads ?? [])
-  //This line of code is a React hook that saves the uploads state to the studioSession whenever the uploads state changes.
-  useEffect(() => studioSession.save({ uploads }), [uploads])
+//this line saves the uploads to the session storage whenever the uploads state changes. It filters out any uploads that are still
+//uploading and only saves the completed uploads to the session storage. This ensures that the uploads are persisted across page refreshes
+//and tab closures, while also preventing incomplete uploads from being saved.
+  useEffect(() => studioSession.save({ uploads: uploads.filter((entry) => !entry.isUploading) }), [uploads])
   // Same single slot as the profile: "Back" in the auto panel returns to the buy panel.
   const [matchaPanel, setMatchaPanel] = useState<'buy' | 'auto' | null>(null)
   const { session } = useAuth()
   const { data: credits, isSuccess: hasCredits } = useCustomerCredits(session?.user.id)
   const startGeneration = useStartStillGeneration(session?.user.id)
 
-  // The settings are read from the studio session, where every pill already saves its own.
+  // The "Create" button is disabled while any upload is in progress, so the user cannot start a generation until all uploads are complete.
+  // This prevents the user from starting a generation with incomplete or missing uploads, which could lead to errors or unexpected behavior.
   const create = () => {
-    if (!session || startGeneration.isPending) return
+    if (!session || startGeneration.isPending || uploads.some((entry) => entry.isUploading)) return
 
     const {
       studioSessionId = crypto.randomUUID(),
@@ -49,15 +52,23 @@ export function StudioPage() {
       locked = '',
     } = studioSession.read()
     studioSession.save({ studioSessionId })
-    startGeneration.mutate({
-      token: session.access_token,
-      studioSessionId,
-      platform: STUDIO_RATIOS[ratioIndex]!.platform,
-      isCreative,
-      // MMA reads the locked strip as the brief's last line.
-      brief: [brief, locked].filter(Boolean).join('\n'),
-      uploads,
-    })
+    startGeneration.mutate(
+      {
+        token: session.access_token,
+        studioSessionId,
+        platform: STUDIO_RATIOS[ratioIndex]!.platform,
+        isCreative,
+        // MMA reads the locked strip as the brief's last line.
+        brief: [brief, locked].filter(Boolean).join('\n'),
+        //this line maps the uploads array to a new array of objects that only contain the kind, url, and origin properties. This is done to ensure that only
+        //the necessary data is sent to the API for generation, and any additional properties that may be present in the uploads array are not included in the request body.
+        uploads: uploads.map(({ kind, url, origin }) => ({ kind, url, origin })),
+      },
+      //This line updates the upload isSent state to true, this is done to indicate that the upload has been sent to the API for generation
+      //and is no longer in the process of being uploaded. This is important for the user interface, as it allows the user to see which uploads
+      //have been successfully uploaded in R2 cloudflare and which are still in progress.
+      { onSuccess: () => setUploads((list) => list.map((entry) => ({ ...entry, isSent: true }))) },
+    )
   }
   const autoRefill = credits?.mg_mma_preferences?.autoRefill
 

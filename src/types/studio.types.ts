@@ -23,8 +23,12 @@ export interface MinaBlockHandle {
 ///** One picture added under a "+" pill, in the order it was added. */
 export interface StudioUpload {
   kind: UploadKind
-  // The URL of the picture, which is either a temporary one from the file picker or a permanent one from the library.
+  /** Its R2 URL — or, while `isUploading`, the browser's local preview of the picked file. */
   url: string
+  origin: 'upload' | 'scene_library'
+  isUploading?: boolean
+  /** Sent in a Create: removing it leaves it on R2, where that generation still reads it. */
+  isSent?: boolean
 }
 
 /** Create mode's settings, kept in sessionStorage so a refresh does not lose them. */

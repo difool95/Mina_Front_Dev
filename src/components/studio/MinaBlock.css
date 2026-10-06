@@ -36,6 +36,13 @@
   color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.6);
 }
 
+/* "Uploading...": faded, and no hover to suggest it can be pressed. */
+.mina-block__cta:disabled {
+  opacity: var(--mina-muted-o);
+  color: inherit;
+  cursor: default;
+}
+
 /* ── entrance ──
    Two of them, both timed in steps of --mina-anim-block-step (100ms).
 

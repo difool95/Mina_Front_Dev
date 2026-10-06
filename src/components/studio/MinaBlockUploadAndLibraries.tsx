@@ -1,11 +1,12 @@
 import { useRef } from 'react'
 
 import { cfImage, imageWidthFor } from '@/lib/media'
+import type { StudioUpload } from '@/types'
 
 import './MinaBlockUploadAndLibraries.css'
 
 //This constant is used to determine the distance in pixels that the user must drag an image before it is considered a drag instead of a click.
-//  If the user drags an image less than this distance, it will be considered a click and the image will be removed from the list of uploads.
+//If the user drags an image less than this distance, it will be considered a click and the image will be removed from the list of uploads.
 const DRAG_SLOP = 4
 
 /**
@@ -15,12 +16,13 @@ const DRAG_SLOP = 4
  * Added pictures come first, each removed by clicking it and reordered by
  * dragging it over another, which swaps live under the pointer. The "+" stays after
  * them until `canAdd` runs out, and the library card only shows while the row
- * is still empty.
+ * is still empty. A picture still uploading flashes until it is on R2.
  */
 export function MinaBlockUploadAndLibraries({
   title,
   addLabel = 'Add image',
   images = [],
+  error,
   canAdd = true,
   onOpenFilePicker,
   onRemove,
@@ -30,7 +32,9 @@ export function MinaBlockUploadAndLibraries({
   title: string
   /** The "+" card's tooltip. */
   addLabel?: string
-  images?: string[]
+  images?: Pick<StudioUpload, 'url' | 'isUploading'>[]
+  /** Why the last picked picture was refused. */
+  error?: string | null
   canAdd?: boolean
   onOpenFilePicker?: () => void
   onRemove?: (url: string) => void
@@ -45,16 +49,18 @@ export function MinaBlockUploadAndLibraries({
   return (
     <div className="mina-uploads">
       <p className="mina-uploads__title">{title}</p>
+      {error && <p className="mina-uploads__error">{error}</p>}
 
       <div className="mina-uploads__cards">
-        {images.map((url) => (
+        {images.map(({ url, isUploading }) => (
           <button
             key={url}
             className="mina-uploads__image"
             type="button"
             aria-label="Remove image"
-            data-tooltip="Drag to reorder · Click to delete"
+            data-tooltip={isUploading ? 'Uploading · Click to cancel' : 'Drag to reorder · Click to delete'}
             data-url={url}
+            data-uploading={isUploading || undefined}
             //THIS HANDLES THE POINTER DOWN EVENT, IT SETS THE DRAG REFERENCE TO THE URL OF THE IMAGE AND THE X AND Y COORDINATES OF THE POINTER
             onPointerDown={(event) => {
               drag.current = { url, x: event.clientX, y: event.clientY, isDragging: false }

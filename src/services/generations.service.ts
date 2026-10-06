@@ -7,7 +7,7 @@ import { supabase } from './supabase.client'
 
 /**
  * Asks the API to start a Create generation: it writes the rows, charges the
- * matcha and starts MMA, which stores the uploads on R2 itself.
+ * matcha and starts MMA. The pictures go as their R2 URLs, uploaded when picked.
  */
 export function startStillGeneration(
   token: string,
@@ -16,7 +16,7 @@ export function startStillGeneration(
     platform: MmaPlatform
     isCreative: boolean
     brief: string
-    uploads: StudioUpload[]
+    uploads: Pick<StudioUpload, 'kind' | 'url' | 'origin'>[]
   },
 ) {
   return apiPost<StillGenerationResult>('/api/mma/still', token, body)

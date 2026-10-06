@@ -1,4 +1,6 @@
 //THIS SCRIPT IS RELATED TO ANY HELPERS CONSTANTS RELATED TO THE GENERATIONS MEDIA, LIKE IMAGE OR VIDEO IN PROFILE.
+import { UPLOAD_ERRORS, UPLOAD_PREP } from '@/lib/studio'
+
 /**
  * Cloudflare delivery URLs for the creations on `assets.faltastudio.com`.
  *
@@ -142,13 +144,55 @@ export function isLightImage(image: HTMLImageElement) {
   return total / (size * size) > LIGHT_IMAGE_THRESHOLD
 }
 
-//We get the data url of the file,so that when we refresh the page we can still see the image or video that was uploaded,
-//  this is used in the studio component to display the uploaded media
-export function readAsDataUrl(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = () => resolve(reader.result as string)
-    reader.onerror = () => reject(reader.error)
-    reader.readAsDataURL(file)
+//Check if the image has transparency by checking the alpha channel of each pixel. If any pixel has an alpha value less than 255, the image is considered to have transparency.
+function hasTransparency(context: CanvasRenderingContext2D) {
+  const { data } = context.getImageData(0, 0, context.canvas.width, context.canvas.height)
+
+  for (let i = 3; i < data.length; i += 4) {
+    if (data[i]! < 255) return true
+  }
+
+  return false
+}
+
+/**
+ * The picture to upload for a file picked in the studio, by the rules in
+ * `UPLOAD_PREP`. Throws a message for the user when the file is refused.
+ *
+ * Decoded by the browser, so a format it cannot read — HEIC outside Safari —
+ * is refused rather than converted.
+ */
+export async function prepareStudioImage(file: File): Promise<Blob> {
+  if (file.size > UPLOAD_PREP.maxBytes) throw new Error(UPLOAD_ERRORS.tooHeavy(file.name))
+
+  const bitmap = await createImageBitmap(file).catch(() => {
+    throw new Error(UPLOAD_ERRORS.unreadable(file.name))
+  })
+  const longest = Math.max(bitmap.width, bitmap.height)
+
+  if (longest > UPLOAD_PREP.maxSide) throw new Error(UPLOAD_ERRORS.tooLarge(file.name))
+
+  const isTooSmall = longest < UPLOAD_PREP.minSide
+  // If the file is small enough to be uploaded as-is, and it is not too small, and it is of a type that we want to keep,
+  // then return the file as-is. Otherwise, we need to resize or re-encode the image.
+  if (!isTooSmall && file.size <= UPLOAD_PREP.reduceAbove && UPLOAD_PREP.keptTypes.includes(file.type)) return file
+
+  const scale = isTooSmall ? UPLOAD_PREP.upscaleSide / longest : Math.min(1, UPLOAD_PREP.targetSide / longest)
+  const canvas = document.createElement('canvas')
+  canvas.width = Math.round(bitmap.width * scale)
+  canvas.height = Math.round(bitmap.height * scale)
+
+  const context = canvas.getContext('2d', { willReadFrequently: true })!
+  context.drawImage(bitmap, 0, 0, canvas.width, canvas.height)
+  bitmap.close()
+
+  const type = hasTransparency(context) ? 'image/webp' : 'image/jpeg'
+
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => (blob ? resolve(blob) : reject(new Error(UPLOAD_ERRORS.unreadable(file.name)))),
+      type,
+      UPLOAD_PREP.quality,
+    )
   })
 }

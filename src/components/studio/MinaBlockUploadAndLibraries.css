@@ -57,6 +57,25 @@
   opacity: 0.6;
 }
 
+/* Still on its way to R2: the local preview flashes until it lands. */
+.mina-uploads__image[data-uploading] img {
+  animation: mina-uploads-uploading var(--mina-anim-slide) ease-in-out infinite alternate;
+}
+
+@keyframes mina-uploads-uploading {
+  to {
+    opacity: var(--mina-muted-o);
+  }
+}
+
+/* The same red as the login panel's errors. */
+.mina-uploads__error {
+  margin: -6px 0 12px;
+  color: var(--mina-like-red);
+  font-size: var(--mina-fs-body);
+  font-weight: var(--mina-fw-light);
+}
+
 .mina-uploads__add {
   background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.05);
   font-size: var(--mina-fs-h6);

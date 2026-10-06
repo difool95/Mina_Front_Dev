@@ -20,7 +20,8 @@ export function RightStudioPanel({
   onUpload: () => void
 }) {
   // Animate's uploads are not wired yet, so create's stay out of its panel.
-  const shown = mode === 'create' ? uploads : []
+  // A picture only joins the carousel once it is uploaded in cloudflare R2.
+  const shown = mode === 'create' ? uploads.filter((entry) => !entry.isUploading) : []
 
   return (
     <section className="mina-studio__panel">

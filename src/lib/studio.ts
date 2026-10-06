@@ -98,6 +98,36 @@ export const UPLOAD_KINDS: { kind: UploadKind; label: string; tooltip: string; t
 export const UPLOAD_LIMITS: Record<UploadKind, number> = { scene: 1, logo: 4, product: 8 }
 
 /**
+ * How a picked picture is prepared before it is uploaded. Past the hard
+ * limits it is refused; past `reduceAbove` it is re-encoded (WebP when it has
+ * transparency, JPEG otherwise) and shrunk to `targetSide`; under `minSide`
+ * it is stretched to `upscaleSide` so the AI can read it. Sides are the
+ * longest side, in pixels.
+ */
+export const UPLOAD_PREP = {
+  maxBytes: 48 * 1024 * 1024,
+  maxSide: 4096,
+  reduceAbove: 2 * 1024 * 1024,
+  targetSide: 2160,
+  minSide: 300,
+  upscaleSide: 512,
+  quality: 0.9,
+  /** Uploaded as they are when small enough; anything else (HEIC, AVIF, GIF…) is converted. */
+  keptTypes: ['image/jpeg', 'image/png', 'image/webp'],
+}
+
+/** Why a picked picture was refused, shown under its upload row. */
+export const UPLOAD_ERRORS = {
+  tooHeavy: (name: string) => `${name} is over 48 MB — pick a lighter image.`,
+  tooLarge: (name: string) => `${name} is over 4096 px — pick a smaller image.`,
+  unreadable: (name: string) => `${name} can't be read — try a JPEG, PNG or WebP.`,
+  failed: (name: string) => `${name} could not be uploaded — try again.`,
+}
+
+/** The Create call to action while pictures are still uploading. */
+export const UPLOADING_LABEL = 'Uploading...'
+
+/**
  * The ratio pill cycles through these in order, starting on the first. Held,
  * it flips to landscape: the same ratio turned on its side (9:16 → 16:9),
  * under `landscapeLabel`.
