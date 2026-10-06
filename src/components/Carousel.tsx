@@ -134,6 +134,9 @@ export function Carousel({
         <img
           className="mina-carousel__media"
           src={url ? cfImageCarousel(url, imageWidthFor(boxWidth)) : undefined}
+          // Fetched with CORS so isLightImage may read its pixels; without it
+          // the canvas is tainted and every picture reads as dark.
+          crossOrigin="anonymous"
           alt={current?.alt_text ?? ''}
           onError={fallBack}
           onLoad={(event) => setIsLight(isLightImage(event.currentTarget))}

@@ -9,10 +9,9 @@ import { UPLOAD_ERRORS, UPLOAD_PREP } from '@/lib/studio'
  * separate `/cdn-cgi/media` pipeline, and both are asked for at the size the
  * tile actually occupies.
  *
- * The transformed URLs carry **no** `Access-Control-Allow-Origin` header, while
- * the originals do. Display never needs it; `fetch` always does. So anything
- * that reads bytes — download, clipboard, canvas — must keep the original URL,
- * and these builders exist only for `src`, `poster` and `background-image`.
+ * Both the originals and the transformed URLs answer with
+ * `Access-Control-Allow-Origin: *` (checked 2026-10-06), so a canvas can read
+ * a transformed image as long as its `<img>` asks with `crossOrigin`.
  */
 
 const ASSET_ORIGIN = 'https://assets.faltastudio.com/'
