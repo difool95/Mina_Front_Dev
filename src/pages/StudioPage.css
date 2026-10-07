@@ -77,7 +77,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--mina-studio-panel-bg);
+  background: var(--mina-surface);
 }
 
 /* The uploads cover the whole panel, cropped rather than shown in their own
