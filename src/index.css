@@ -124,6 +124,19 @@
   --mina-grid-gap: 	var(--mina-space-2xl);
   --mina-anim-fade: 0.3s;
   --mina-anim-slide: 0.45s;
+
+  --mina-text-13: 13px;
+  --mina-weight-medium: 500;
+  --mina-tracking-tight: -0.01em;   /* must be em: the spec computes -0.11px at 11px and -0.2px at 20px */
+  --mina-space-2xs: 4px;
+  --mina-space-9xl: 96px;
+  --mina-space-100: 100px;
+  --mina-white: #FFFFFF;
+  --mina-black-20: rgba(0, 0, 0, 0.2);
+  --mina-ink-6: 	rgba(8, 10, 0, 0.06);
+  --mina-ink-8: 	rgba(8, 10, 0, 0.08);
+  --mina-ink-75:   rgba(8, 10, 0, 0.75);
+  --mina-ink-60:   rgba(8, 10, 0, 0.60);
 }
 
 /* Safari / iOS friendly viewport */

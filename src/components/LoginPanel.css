@@ -1,22 +1,30 @@
 /* Both login steps share one cell, so switching never reflows the block. */
 .mina-login {
   display: grid;
+  padding: var(--mina-space-3xl);
 }
 
 .mina-login > * {
   grid-area: 1 / 1;
   display: flex;
   flex-direction: column;
-  align-self: center;
+  align-self: start;
   align-items: flex-start;
 }
 
 .mina-login__choice {
-  gap: 6px;
+  gap: var(--mina-space-m);
 }
 
 .mina-login__email {
-  gap: 24px;
+  position: relative;
+}
+
+/* Out of flow, above the field, so it cannot push the field down. */
+.mina-login__back {
+  position: absolute;
+  bottom: 100%;
+  margin-bottom: var(--mina-space-4xl);
 }
 
 /* ── step transition ──
@@ -68,7 +76,8 @@
 /* ── controls ── */
 
 .mina-login__back {
-  color: var(--mina-muted);
+  opacity: 0.3;
+  color: var(--mina-text);
   font-size: var(--mina-fs-h3);
   font-weight: var(--mina-fw-light);
   line-height: 1;
@@ -78,6 +87,7 @@
   color: inherit;
   font-size: var(--mina-fs-h4);
   font-weight: var(--mina-fw-med);
+  letter-spacing: var(--mina-tracking-tight);
   text-align: left;
   text-decoration: underline;
   text-underline-offset: var(--mina-btn-underline-offset);
@@ -93,31 +103,29 @@
 }
 
 .mina-login__alt {
+  margin-top: var(--mina-space-2xs);
   color: var(--mina-muted);
-  font-size: var(--mina-fs-body);
-  font-weight: var(--mina-fw-light);
+  font-size: var(--mina-text-13);
+  font-weight: var(--mina-weight-regular);
 }
 
 .mina-login__input {
   width: 100%;
   padding: 0;
   border: 0;
-  background: none;
+  outline: none;
+  background: transparent;
   color: var(--mina-text);
   font-family: inherit;
   font-size: var(--mina-fs-h4);
   font-weight: var(--mina-fw-med);
-  letter-spacing: inherit;
+  letter-spacing: var(--mina-tracking-tight);
 }
 
 .mina-login__input::placeholder {
   /* Firefox dims placeholders by default — pin it so the token decides. */
-  color: var(--mina-muted);
-  opacity: 1;
-}
-
-.mina-login__input:focus {
-  outline: none;
+  color: rgba(var(--mina-ink-rgb), var(--mina-quiet-o));
+  opacity: 0.6;
 }
 
 /* ── below the field ── */
@@ -150,7 +158,7 @@
 .mina-login__note {
   margin: 0;
   max-width: 42ch;
-  color: var(--mina-muted);
+  color:  rgba(var(--mina-ink-rgb), var(--mina-muted-o, .3));
   font-size: var(--mina-fs-body);
   font-weight: var(--mina-fw-light);
   line-height: 1.5;
@@ -165,11 +173,18 @@
   font-size: var(--mina-fs-micro);
 }
 
-/* "Sign in" and its note are one step down from the primary actions and share
-   a single declaration, so the two can never drift apart. Must stay after
-   __cta and __note — equal specificity, so source order decides. */
+/* "Sign in" sits one step down from the primary actions. Must stay after
+   __cta — equal specificity, so source order decides. */
 .mina-login__reveal-text {
   font-size: var(--mina-fs-label);
+}
+
+/* The one-time-link explainer under "Sign in". */
+.mina-login__hint {
+  margin: var(--mina-space-s) 0 0;
+  max-width: 340px;
+  color: rgba(var(--mina-ink-rgb), var(--mina-muted-o));
+  font-size: var(--mina-fs-small);
 }
 
 .mina-login__error {

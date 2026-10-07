@@ -137,7 +137,7 @@ export function LoginPanel() {
                 >
                   {status === 'sending' ? 'Sending link…' : 'Sign in'}
                 </button>
-                <p className="mina-login__note mina-login__reveal-text">
+                <p className="mina-login__hint">
                   We&rsquo;ll email you a one-time link. If this address is new, that email will{' '}
                   also confirm your account.
                 </p>

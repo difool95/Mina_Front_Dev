@@ -1,7 +1,4 @@
 .mina-home {
-  /* Indent of the centre block — deeper than the header/footer inset. */
-  --mina-home-inset: 120px;
-
   display: grid;
   grid-template-areas:
     'bar    media'
@@ -12,6 +9,8 @@
   /* Locked to the viewport — this page never scrolls, on any breakpoint. */
   height: 100dvh;
   overflow: hidden;
+  background: var(--mina-paper);
+  color: var(--mina-ink);
 }
 
 /* ── header ── */
@@ -22,6 +21,7 @@
   align-items: flex-start;
   justify-content: space-between;
   padding: var(--mina-header-top) var(--mina-header-x) 0;
+  font-size: var(--mina-text-13);
 }
 
 .mina-home__logo {
@@ -36,8 +36,11 @@
 
 .mina-home__tutorial,
 .mina-home__logout {
-  font-size: var(--mina-fs-label);
-  font-weight: var(--mina-fw-strong);
+  padding: var(--mina-space-m) var(--mina-space-l);
+  color: var(--mina-ink);
+  font-size: var(--mina-text-11);
+  font-weight: var(--mina-weight-bold);
+  letter-spacing: var(--mina-tracking-tight);
 }
 
 /* ── centre ── */
@@ -48,7 +51,8 @@
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  padding: 0 var(--mina-home-inset);
+  /* The login block's own padding adds to the left inset (100 + 20). */
+  padding: 0 var(--mina-space-8xl) 0 var(--mina-space-100);
 }
 
 /* ── footer ── */
@@ -56,21 +60,26 @@
 .mina-home__footer {
   grid-area: footer;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
-  padding: 0 var(--mina-header-x) var(--mina-header-top);
+  gap: var(--mina-space-s) var(--mina-space-l);
+  padding: var(--mina-space-s) var(--mina-header-x) var(--mina-header-top);
+  font-size: var(--mina-text-10);
+  font-weight: var(--mina-weight-medium);
 }
 
 .mina-home__footer-link,
 .mina-home__curators {
-  font-size: var(--mina-fs-small);
-  font-weight: var(--mina-fw-light);
+  font-size: var(--mina-fs-small, 10px);
+  font-weight: var(--mina-weight-medium);
+  color: var(--mina-ink-75);
 }
 
-/* The "|" separators between footer items, including before the curator count. */
+/* The "|" separators between footer items, including before the curator count.
+   Its margin matches the footer gap, so the bar sits centred between items. */
 .mina-home__footer-link::after {
-  margin-left: 10px;
-  color: var(--mina-border-strong);
+  margin-left: var(--mina-space-l);
+  color: var(--mina-black-20);
   content: '|';
 }
 
@@ -83,6 +92,11 @@
 .mina-home__media {
   grid-area: media;
   overflow: hidden;
+}
+
+/* Scoped here: the studio shares the carousel and keeps its own backdrop. */
+.mina-home__media .mina-carousel {
+  background: var(--mina-surface);
 }
 
 /* ── shared button reset ── */
@@ -115,31 +129,65 @@
   }
 
   .mina-home__bar {
+    /* Lifted so its hairline shadow paints over the carousel below. */
+    position: relative;
+    z-index: 1;
     align-items: center;
-    padding: var(--mina-header-top) var(--mina-footer-pad-x);
+    background: var(--mina-paper);
+    box-shadow: 0 1px var(--mina-ink-6);
+    padding: var(--mina-header-pad-mobile);
   }
 
   .mina-home__media {
-    height: 58dvh;
+    height: 48dvh;
+  }
+
+  .mina-home__media .mina-carousel__dots {
+    bottom: var(--mina-space-xl);
   }
 
   .mina-home__center {
-    padding: 0 var(--mina-header-x);
+    padding: var(--mina-space-xl) var(--mina-space-3xl);
   }
 
   .mina-home__footer {
-    justify-content: space-between;
+    flex-wrap: nowrap;
     gap: 0;
     /* Full-bleed separator above the footer. */
-    border-top: 1px solid var(--mina-hairline);
-    padding: var(--mina-footer-pad-y) var(--mina-footer-pad-x);
+    border-top: 1px solid var(--mina-ink-8);
+    background: var(--mina-paper);
+    padding: var(--mina-footer-pad-y, 12px) var(--mina-footer-pad-x, 20px)
+      calc(var(--mina-footer-pad-y, 12px) + env(safe-area-inset-bottom, 0px));
   }
 
-  /* Breathing room and a bigger tap target on touch. */
+  /* Every item grows by the same amount and centres its text, while its "|"
+     is pinned to its right edge — so each label sits midway between bars.
+     The two end items grow by half and hug the footer's edges instead, which
+     keeps every bar centred between its neighbours. */
   .mina-home__footer-link,
   .mina-home__curators {
-    padding: 6px 0;
-    font-size: var(--mina-fs-label);
+    position: relative;
+    flex: 2 1 auto;
+    color: var(--mina-ink-60);
+    font-size: var(--mina-fs-small);
+    font-weight: var(--mina-weight-semibold);
+    text-align: center;
+  }
+
+  .mina-home__footer > :first-child {
+    flex-grow: 1;
+    text-align: left;
+  }
+
+  .mina-home__footer > :last-child {
+    flex-grow: 1;
+    text-align: right;
+  }
+
+  .mina-home__footer-link::after {
+    position: absolute;
+    right: 0;
+    margin-left: 0;
   }
 }
 
