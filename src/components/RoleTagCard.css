@@ -1,10 +1,14 @@
 .mina-role-tag {
   margin-left: 10px;
   border-radius: 2px;
-  background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.02);
-  padding: 6px 12px;
-  color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.4);
-  font-size: var(--mina-fs-small);
-  white-space: nowrap;
+  background: rgba(var(--mina-ink-rgb), 0.04);
+  padding: var(--mina-space-xs) var(--mina-space-l);
+  color: inherit;
+  opacity: 0.55;
+  font-size: var(--mina-fs-label);
   font-weight: var(--mina-fw-med);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  user-select: none;
+  transform: translateY(1px);
 }

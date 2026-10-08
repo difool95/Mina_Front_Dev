@@ -75,6 +75,25 @@
   color: var(--mina-ink-75);
 }
 
+.mina-home__tutorial,
+.mina-home__footer-link {
+  transition: opacity var(--mina-anim-fade) ease;
+}
+
+/* Outranks the desktop resting opacity below, so hover wins at every width. */
+.mina-home .mina-home__tutorial:hover,
+.mina-home .mina-home__footer-link:hover {
+  opacity: 0.8;
+}
+
+/* Desktop only: the phone footer sets its own ink in the mobile query. */
+@media (width >= 768px) {
+  .mina-home__footer-link {
+    opacity: 0.75;
+    color: inherit;
+  }
+}
+
 /* The "|" separators between footer items, including before the curator count.
    Its margin matches the footer gap, so the bar sits centred between items. */
 .mina-home__footer-link::after {

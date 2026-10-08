@@ -63,7 +63,7 @@ export function AccountMenu({
         <div className="mina-account__menu">
           <p className="mina-account__current">
             {email}
-            <span aria-hidden="true">✓</span>
+            <span className="mina-account__check" aria-hidden="true">✓</span>
           </p>
           {others.map((account) => (
             <button

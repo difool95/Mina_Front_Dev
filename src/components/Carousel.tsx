@@ -9,7 +9,7 @@ import { Icon } from './Icon'
 import './Carousel.css'
 
 const DRAG_THRESHOLD = 50
-const DOT_SLOTS = 7
+const DOT_SLOTS = 6
 /**
  * Width of one dot cell in px — the dot plus its gap, and the distance the
  * strip slides per media.
@@ -30,10 +30,10 @@ const DOT_STEPS = [
 ]
 
 /**
- * Which of the 7 slots is lit for media `i` of `n`.
+ * Which of the 6 slots is lit for media `i` of `n`.
  *
  * The lit slot walks 1 → 2 → 3, parks on 3 for the rest of the first half,
- * jumps to 5 once past halfway and parks there, then finishes 6 → 7 on the
+ * steps to 4 once past halfway and parks there, then finishes 5 → 6 on the
  * last two. While it is parked the strip keeps sliding underneath, so dots
  * still stream in from the edges on every swipe.
  */
@@ -41,7 +41,7 @@ function litSlot(i: number, n: number) {
   if (n <= DOT_SLOTS) return i
   if (i <= 2) return i
   if (i < n / 2) return 2
-  if (i < n - 2) return 4
+  if (i < n - 2) return DOT_SLOTS - 3
   return i - n + DOT_SLOTS
 }
 

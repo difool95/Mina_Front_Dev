@@ -85,12 +85,26 @@
 
 .mina-login__cta {
   color: inherit;
+  opacity: 0.9;
   font-size: var(--mina-fs-h4);
   font-weight: var(--mina-fw-med);
   letter-spacing: var(--mina-tracking-tight);
   text-align: left;
   text-decoration: underline;
   text-underline-offset: var(--mina-btn-underline-offset);
+}
+
+.mina-login__cta,
+.mina-login__alt {
+  transition: opacity var(--mina-anim-fade) ease;
+}
+
+.mina-login__cta:hover:not(:disabled) {
+  opacity: 0.8;
+}
+
+.mina-login__alt:hover {
+  opacity: 0.9;
 }
 
 .mina-login__cta:disabled {
@@ -104,7 +118,7 @@
 
 .mina-login__alt {
   margin-top: var(--mina-space-2xs);
-  color: var(--mina-muted);
+  color: var(--mina-ink-75);
   font-size: var(--mina-text-13);
   font-weight: var(--mina-weight-regular);
 }

@@ -55,10 +55,15 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
 }
 
 .mina-profile__matcha {
-  font-size: var(--mina-fs-h5);
+  transition: opacity var(--mina-anim-fade) ease;
+  font-size: var(--mina-link-fs);
   font-weight: var(--mina-link-fw);
   text-decoration: underline;
   text-underline-offset: var(--mina-btn-underline-offset);
+}
+
+.mina-profile__matcha:hover {
+  opacity: 0.8;
 }
 
 /* ── account row ── */
@@ -71,8 +76,8 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  min-height: var(--table-row-h);
-  gap: var(--mina-stack-row-gap) calc(var(--mina-stack-col-gap) * 1.75);
+  min-height: 54px;
+  gap: var(--mina-stack-row-gap) 26px;
 }
 
 .mina-profile__line .mina-table__row,
@@ -99,6 +104,7 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
 }
 
 .mina-profile__back {
+  color: var(--mina-ink);
   font-size: var(--mina-fs-label);
   font-weight: var(--mina-fw-strong);
   text-decoration: underline;
@@ -110,6 +116,7 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
 }
 
 .mina-profile__label {
+  color: var(--mina-ink);
   font-size: var(--mina-fs-label);
   font-weight: var(--mina-fw-strong);
 }
@@ -120,13 +127,14 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
 }
 
 .mina-profile__toggle {
+  color: var(--mina-ink);
   font-weight: var(--mina-fw-strong);
   text-decoration: underline;
   text-underline-offset: var(--mina-btn-underline-offset);
 }
 
 .mina-profile__value {
-  color: var(--mina-muted);
+  color: rgba(var(--mina-ink-rgb), 0.4);
   font-weight: var(--mina-fw-light);
 }
 
@@ -136,11 +144,20 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
   font-weight: var(--mina-fw-strong);
 }
 
+/* The email address keeps its own tighter tracking (AccountMenu.css). */
+.mina-profile__field--email .mina-profile__label,
+.mina-profile__field--matcha,
+.mina-profile__field--expiry,
+.mina-profile__logout {
+  letter-spacing: -0.02em;
+}
+
 /* Ahead of Logout in the markup for the phone row; on the one desktop line it
    is sent to the far end instead. */
 .mina-profile__invoices {
   order: 1;
   margin-left: auto;
+  color: var(--mina-ink);
   font-size: var(--mina-fs-label);
   font-weight: var(--mina-fw-strong);
   text-decoration: underline;
@@ -148,28 +165,26 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
 }
 
 /* ── hover ──
-   Every text action fades a little; the pills also darken their ground. */
+   Every text action fades a little; the pills also darken their ground. The
+   email address fades the same way (AccountMenu.css). */
 .mina-profile__back,
-.mina-profile__matcha,
 .mina-profile__toggle,
 .mina-profile__invoices,
-.mina-profile__logout,
-.mina-profile__filter {
-  transition:
-    color var(--mina-anim-fade) ease,
-    background-color var(--mina-anim-fade) ease;
+.mina-profile__logout {
+  transition: opacity var(--mina-anim-fade) ease;
 }
 
 .mina-profile__back:hover,
-.mina-profile__matcha:hover,
 .mina-profile__toggle:hover,
 .mina-profile__invoices:hover,
-.mina-profile__filter:hover {
-  color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.6);
+.mina-profile__logout:hover:not(:disabled) {
+  opacity: 0.8;
 }
 
-.mina-profile__logout:hover {
-  color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.3);
+.mina-profile__filter {
+  transition:
+    opacity var(--mina-anim-fade) ease,
+    background-color var(--mina-anim-fade) ease;
 }
 
 /* ── archive header ── */
@@ -186,13 +201,15 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
   margin: 0;
   font-size: var(--mina-fs-h1);
   font-weight: var(--mina-fw-title);
+  letter-spacing: var(--mina-tracking-tight);
 }
 
 .mina-profile__count {
-  margin: 4px 0 0;
-  color: var(--mina-muted);
+  margin: var(--mina-space-2xs) 0 0;
+  color: rgba(var(--mina-ink-rgb), 0.45);
   font-size: var(--mina-fs-small);
   font-weight: var(--mina-fw-light);
+  letter-spacing: -0.02em;
 }
 
 .mina-profile__filters {
@@ -202,30 +219,26 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
 }
 
 .mina-profile__filter {
-  border-radius: 2px;
-  background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.02);
-  padding: var(--mina-filter-pill-pad);
-  font-size: var(--mina-fs-small);
-  font-weight: var(--mina-fw-pill);
-}
-
-.mina-profile__filter:hover {
-  background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.12);
-}
-
-/* Latched on, so it holds the ground hovering would have given it. Scoped to
-   this one pill: the layout toggle carries `aria-pressed` too, and keeps its
-   own heavier ground. */
-.mina-profile__filter--liked[aria-pressed='true'] {
-  background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.12);
-  color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.6);
-}
-
-/* Keeps the heavier ground, so it reads as a control rather than a text filter. */
-.mina-profile__filter--layout {
   display: inline-flex;
   align-items: center;
-  background: var(--mina-hairline);
+  gap: var(--mina-pill-gap);
+  height: 30px;
+  min-height: 30px;
+  border-radius: 2px;
+  background: rgba(var(--mina-ink-rgb), 0.02);
+  padding: var(--mina-filter-pill-pad);
+  font-size: var(--mina-fs-label);
+  font-weight: var(--mina-fw-med);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+/* Latched on, Liked holds the look hovering gives every pill. Scoped to this
+   one pill: the layout toggle carries `aria-pressed` too. */
+.mina-profile__filter:hover,
+.mina-profile__filter--liked[aria-pressed='true'] {
+  opacity: 0.8;
+  background: rgba(var(--mina-ink-rgb), 0.05);
 }
 
 .mina-profile__layout-icon {

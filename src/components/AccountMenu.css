@@ -5,20 +5,21 @@
 .mina-account {
   position: relative;
   display: inline-block;
-  font-size: var(--mina-fs-label);
+  font-size: var(--mina-fs-body);
 }
 
 /* Left as an inline button rather than a flex box, so its text baseline is the
    element's baseline and the address lines up with the "Email" label. */
 .mina-account__trigger {
-  transition: color var(--mina-anim-fade) ease;
-  color: var(--mina-muted);
-  font-size: var(--mina-fs-label);
-  font-weight: var(--mina-fw-med);
+  transition: opacity var(--mina-anim-fade) ease;
+  color: rgba(var(--mina-ink-rgb), 0.6);
+  font-size: var(--mina-fs-body);
+  font-weight: var(--mina-weight-regular);
+  letter-spacing: var(--mina-tracking-tight);
 }
 
 .mina-account__trigger:hover {
-  color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.6);
+  opacity: 0.8;
 }
 
 .mina-account__caret {
@@ -53,9 +54,22 @@
   text-align: left;
 }
 
-.mina-account__current {
-  background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.12);
+/* Both addresses and "Add another account…" share one ink; "Add" and the
+   tick then fade on top of it. */
+.mina-account__current,
+.mina-account__other,
+.mina-account__add {
+  color: rgba(var(--mina-ink-rgb), 0.85);
   font-weight: var(--mina-fw-med);
+  letter-spacing: -0.02em;
+}
+
+.mina-account__current {
+  background: rgba(var(--mina-ink-rgb), 0.06);
+}
+
+.mina-account__check {
+  opacity: 0.6;
 }
 
 .mina-account__other,
@@ -63,16 +77,10 @@
   transition: background var(--mina-anim-fade) ease;
 }
 
-.mina-account__other {
-  font-weight: var(--mina-fw-med);
-}
-
 .mina-account__add {
   margin-top: 4px;
   border-top: 1px solid var(--mina-hairline);
-  padding-top: calc(6px + 4px);
-  color: var(--mina-muted);
-  font-weight: var(--mina-fw-med);
+  opacity: 0.7;
 }
 
 .mina-account__other:hover,

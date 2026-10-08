@@ -113,7 +113,7 @@
   --mina-red:			#E90909;
   --mina-liked-red-transparent: #8104041f;
   --mina-liked-red-transparent-border: #8d0d0dc2;
-  --mina-delete-red: var(--mina-error); /* the delete button */
+  --mina-delete-red: #c0392b; /* the delete button */
   --mina-error: 	#B00020;
   --mina-grid-cols: 7;
   --mina-grid-cols-tablet: 6;
@@ -137,6 +137,8 @@
   --mina-ink-8: 	rgba(8, 10, 0, 0.08);
   --mina-ink-75:   rgba(8, 10, 0, 0.75);
   --mina-ink-60:   rgba(8, 10, 0, 0.60);
+  --pcd-fs: var(--mina-fs-micro);  /* 9px — creation panel rows */
+  --pcd-ink: var(--mina-ink);      /* creation panel ink */
 }
 
 /* Safari / iOS friendly viewport */
@@ -171,7 +173,6 @@ body {
      glyphs, so the browser renders Arabic characters in Tajawal per-glyph
      while keeping Latin text in the system font (--mina-font). */
   font-family: var(--mina-font, "Schibsted Grotesk", system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif), "Tajawal", sans-serif;
-  letter-spacing: -0.02em;
 }
 
 /* ── tooltips ──
