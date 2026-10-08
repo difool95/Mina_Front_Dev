@@ -1,15 +1,16 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 
 import { isMotion, promptOf, ratioOf } from '@/lib/generations'
-import type { IconName } from '@/lib/icons'
 import { cfImage, FULLSCREEN_WIDTH } from '@/lib/media'
 import type { MegaGeneration } from '@/types/generation.types'
 
 import { GlassDisc } from './GlassDisc'
-import { Icon } from './Icon'
 import { VideoPlayer } from './VideoPlayer'
 
 import './CreationFullScreen.css'
+
+/** What the glass disc can show — each one a file in `public/assets/icons`. */
+type DiscIcon = 'download' | 'prev' | 'next' | 'expand' | 'reduce' | 'copy' | 'link'
 
 interface CreationFullScreenProps {
   generation: MegaGeneration
@@ -86,13 +87,13 @@ export function CreationFullScreen({
     x: number
     y: number
     save: boolean
-    side: Extract<IconName, 'prev' | 'next'>
+    side: Extract<DiscIcon, 'prev' | 'next'>
   } | null>(null)
   const [pressing, setPressing] = useState(false)
   /** Set once the right button has been held long enough to mean "link". */
-  const [armed, setArmed] = useState<IconName | null>(null)
+  const [armed, setArmed] = useState<DiscIcon | null>(null)
   /** The copy that just happened, held briefly so the disc can confirm it. */
-  const [copied, setCopied] = useState<IconName | null>(null)
+  const [copied, setCopied] = useState<DiscIcon | null>(null)
 
   useEffect(() => {
     ref.current?.showModal()
@@ -121,7 +122,7 @@ export function CreationFullScreen({
   // left-button reading of where the pointer is. Null means the disc has
   // nothing to offer and stands down — over a clip, which has no zoom of its
   // own, that is anywhere outside the save zone.
-  const discMode = (): IconName | null => {
+  const discMode = (): DiscIcon | null => {
     if (copied) return copied
     if (armed) return armed
     if (!pointer) return null
@@ -219,7 +220,7 @@ export function CreationFullScreen({
 
     // Held long enough to have armed the link; otherwise it was a quick press,
     // which copies the creation itself.
-    const action: IconName = armed ?? 'copy'
+    const action: DiscIcon = armed ?? 'copy'
 
     setArmed(null)
     setCopied(action)
@@ -265,7 +266,7 @@ export function CreationFullScreen({
         aria-label="Close"
         onClick={onClose}
       >
-        <span className="mina-fullscreen__close-bar" aria-hidden="true" />
+        <span className="mina-fullscreen__close-icon" aria-hidden="true" />
       </button>
 
       {/* A clip gets the shared video player, and the same gestures as a
@@ -306,9 +307,10 @@ export function CreationFullScreen({
         <GlassDisc
           x={pointer.x}
           y={pointer.y}
+          size={44 * 1.1}
           tone={copied || (pressing && pointer.save) ? 'accent' : 'glass'}
         >
-          <Icon name={shown} />
+          <span className={`mina-fullscreen__icon mina-fullscreen__icon--${shown}`} />
         </GlassDisc>
       )}
     </dialog>

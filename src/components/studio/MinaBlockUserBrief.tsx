@@ -1,6 +1,5 @@
 import { useEffect, useImperativeHandle, useState, type CSSProperties, type Ref } from 'react'
 
-import { Icon } from '@/components/Icon'
 import { BRIEF_CHARS_PER_PX, BRIEF_MAX_LENGTH, BRIEF_SHRINK_FROM } from '@/lib/studio'
 import { studioSession } from '@/lib/sessionStorage/studioSession'
 import type { MinaBlockUserBriefHandle } from '@/types'
@@ -113,7 +112,7 @@ export function MinaBlockUserBrief({
             onMouseDown={(event) => event.preventDefault()}
             onClick={locked ? unlock : lock}
           >
-            <Icon name="lock" size={18} />
+            <span className="mina-brief__lock-icon" aria-hidden="true" />
           </button>
         </div>
       )}

@@ -1,11 +1,15 @@
 .mina-slider {
-  --slider-dot: 11px;
+  --slider-dot: 13px;
   --slider-rail: 2px;
   /* What a length of rail leaves clear of the dot at each of its ends. */
   --slider-clear: 5px;
+  /* Stops not yet reached and the rail between them. */
+  --slider-off: #bdbdbd;
 
   position: relative;
-  height: 62px;
+  /* The labels sit at the very top and bottom, so the height is what sets
+     their distance from the dots. */
+  height: 85px;
 }
 
 /* Each length runs between two stops and is held off both dots by its own
@@ -16,7 +20,7 @@
   height: var(--slider-rail);
   margin: 0 calc(var(--slider-dot) / 2 + var(--slider-clear));
   transform: translateY(-50%);
-  background: var(--mina-hairline);
+  background: var(--slider-off);
 }
 
 /* The outer two dots hold the ends of the track rather than centring on
@@ -49,10 +53,11 @@
   padding: 0;
   border: 0;
   background: none;
-  color: var(--mina-muted);
+  color: var(--slider-off);
   font-family: inherit;
-  font-size: var(--mina-fs-small);
+  font-size: var(--mina-fs-label);
   font-weight: var(--mina-fw-strong);
+  letter-spacing: var(--mina-tracking-tight);
   cursor: pointer;
 }
 
@@ -90,7 +95,7 @@
    other; the track grows to take the second line. */
 @media (width < 768px) {
   .mina-slider {
-    height: 76px;
+    height: 86px;
   }
 
   /* Narrow enough that a price with a currency code in it has to break —

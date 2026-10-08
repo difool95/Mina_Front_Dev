@@ -12,7 +12,6 @@ import { currencyForClient, formatMoney } from '@/lib/currency'
 import { useAuth } from '@/providers/AuthProvider'
 
 import { Group, Row, Rule, Table } from './builder/Table'
-import { Icon } from './Icon'
 import { MatchaSlider } from './builder/MatchaSlider'
 
 import './MatchaPanel.css'
@@ -84,7 +83,7 @@ export function MatchaPanel({
         <Row className="mina-matcha__lead" valign="bottom">
           <h2 className="mina-matcha__title">Airpot of Matcha Lattes</h2>
           <button className="mina-matcha__close" type="button" aria-label="Close" onClick={onClose}>
-            <span className="mina-matcha__close-bar" aria-hidden="true" />
+            <span className="mina-matcha__close-icon" aria-hidden="true" />
           </button>
         </Row>
 
@@ -117,7 +116,7 @@ export function MatchaPanel({
                 <Group className="mina-matcha__cups">
                   {/* One cup per matcha the generation costs. */}
                   {Array.from({ length: rate.matchas }, (_, index) => (
-                    <Icon name="matcha" size={12} key={index} />
+                    <span className="mina-matcha__cup" key={index} />
                   ))}
                   <span className="mina-matcha__cost">{rate.matchas} Matcha</span>
                 </Group>

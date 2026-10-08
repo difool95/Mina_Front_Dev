@@ -32,8 +32,8 @@
 }
 
 .mina-glass--accent {
-  border-color: var(--mina-accent-green);
-  background: var(--mina-accent-green);
+  border-color: var(--mina-success-60);
+  background: var(--mina-success-60);
 }
 
 /* Touch devices have no hover, so the disc would only flash mid-drag. */

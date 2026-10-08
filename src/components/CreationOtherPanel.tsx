@@ -11,7 +11,6 @@ import { detailsOf, promptOf, viewerLinkFor } from '@/lib/generations'
 import { useAuth } from '@/providers/AuthProvider'
 import type { MegaGeneration } from '@/types/generation.types'
 
-import { Icon } from './Icon'
 import { Row, Rule, Table } from './builder/Table'
 
 /** The studio actions the panel offers. None of them are wired to anything yet. */
@@ -116,7 +115,7 @@ export function CreationOtherPanel({ generation, isOpen, onToggle }: CreationOth
               onClick={() => (isLiked ? unlike.mutate(generationId) : like.mutate(generation))}
             >
               {isLiked ? 'Dislike' : 'Like'}
-              <Icon name="heart" size={13} isFilled={isLiked} />
+              <span className={`mina-other__icon mina-other__icon--${isLiked ? 'liked' : 'like'}`} />
             </button>
           </Row>
 
@@ -126,7 +125,7 @@ export function CreationOtherPanel({ generation, isOpen, onToggle }: CreationOth
             <span className="mina-other__label">Share</span>
             <button className="mina-other__action" type="button">
               Prompt file
-              <Icon name="download" size={12} />
+              <span className="mina-other__icon mina-other__icon--download" />
             </button>
             <button
               className="mina-other__action"
@@ -142,7 +141,7 @@ export function CreationOtherPanel({ generation, isOpen, onToggle }: CreationOth
               }
             >
               {isCopied ? 'Copied' : 'Copy link'}
-              <Icon name="link" size={12} />
+              <span className="mina-other__icon mina-other__icon--link" />
             </button>
           </Row>
         </>

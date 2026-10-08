@@ -12,7 +12,7 @@ interface GlassDiscProps {
   anchor?: 'fixed' | 'absolute'
   size?: number
   /**
-   * `accent` fills it green — for a moment of confirmation. `dark` tints it
+   * `accent` fills it success green — for a moment of confirmation. `dark` tints it
    * and its icon so it still reads over a light picture.
    */
   tone?: 'glass' | 'dark' | 'accent'

@@ -37,11 +37,6 @@
   padding: 0 6px;
 }
 
-/* The title stands clear of the pricing below it, and the purchase row clear
-   of the slider above it. */
-.mina-matcha__lead {
-  margin-bottom: 20px;
-}
 
 .mina-matcha__foot {
   margin-top: 12px;
@@ -56,11 +51,13 @@
 
 .mina-matcha__title {
   margin: 0;
-  font-size: var(--mina-fs-h4);
+  color: var(--mina-ink);
+  font-size: var(--mina-fs-h5);
   font-weight: var(--mina-fw-title);
+  letter-spacing: var(--mina-tracking-tight);
 }
 
-/* Same bar as the full-screen view's close, and the only way out of here. */
+/* Same icon as the full-screen view's close, and the only way out of here. */
 .mina-matcha__close {
   display: flex;
   align-items: center;
@@ -69,11 +66,26 @@
   color: var(--mina-text);
 }
 
-.mina-matcha__close-bar {
+/* The svg files draw in `currentColor`, which an <img> cannot pick up, so
+   each icon here is a mask filled with the colour around it. */
+.mina-matcha__close-icon,
+.mina-matcha__cup {
   display: block;
-  width: 10px;
-  height: 1.5px;
+  flex: none;
   background: currentColor;
+  mask: var(--icon) center / contain no-repeat;
+}
+
+.mina-matcha__close-icon {
+  --icon: url('/assets/icons/remove.svg');
+  width: 10px;
+  height: 10px;
+}
+
+.mina-matcha__cup {
+  --icon: url('/assets/icons/auto-refill.svg');
+  width: 14px;
+  height: 14px;
 }
 
 /* The cups sit close to the count they explain, closer than the row's own
@@ -90,50 +102,70 @@
   flex: 1;
   min-width: 0;
   margin: 0;
-  color: var(--mina-muted);
-  font-size: var(--mina-fs-small);
-  font-weight: var(--mina-fw-med);
   white-space: normal;
 }
 
-.mina-matcha__kind,
-.mina-matcha__breakdown {
-  color: var(--mina-muted);
-  font-size: var(--mina-fs-small);
+/* The blurb and the generation kinds of each rate. */
+.mina-matcha__blurb,
+.mina-matcha__kind {
+  opacity: var(--mina-quiet-o);
+  color: var(--mina-ink);
+  font-size: var(--mina-fs-body);
   font-weight: var(--mina-fw-med);
+  letter-spacing: -0.02em;
 }
 
 .mina-matcha__cost {
-  font-size: var(--mina-fs-small);
+  color: var(--mina-ink);
+  font-size: var(--mina-fs-body);
   font-weight: var(--mina-fw-strong);
+  letter-spacing: -0.02em;
+}
+
+/* "Price Transparency" and the breakdown it reveals. */
+.mina-matcha__transparency,
+.mina-matcha__breakdown {
+  opacity: var(--mina-muted-o);
+  color: var(--mina-ink);
+  font-size: var(--mina-fs-label);
+  font-weight: var(--mina-fw-med);
+}
+
+.mina-matcha__breakdown {
+  letter-spacing: -0.02em;
+}
+
+/* Auto-Matcha. */
+.mina-matcha__action {
+  font-size: var(--mina-fs-label);
+  font-weight: var(--mina-fw-med);
+  letter-spacing: var(--mina-tracking-tight);
+  text-decoration: underline;
+  /* A touch closer than the shared offset. */
+  text-underline-offset: calc(var(--mina-btn-underline-offset) - 1px);
+}
+
+/* "Close Pricing" shows and hides the pricing rather than leaving the panel,
+   so it is not dressed as a link. */
+.mina-matcha__action--plain {
+  color: var(--mina-ink);
+  font-size: var(--mina-fs-body);
+  font-weight: var(--mina-fw-strong);
+  letter-spacing: inherit;
+  text-decoration: none;
 }
 
 .mina-matcha__action,
-.mina-matcha__transparency {
-  transition: color var(--mina-anim-fade) ease;
-  color: var(--mina-text);
-  font-size: var(--mina-fs-small);
-  font-weight: var(--mina-fw-strong);
-  text-decoration: underline;
-  text-underline-offset: var(--mina-btn-underline-offset);
+.mina-matcha__transparency,
+.mina-matcha__purchase {
+  transition: opacity var(--mina-anim-fade) ease;
 }
 
-/* Reads as a label until it is asked for, then the answer appears beside it. */
-.mina-matcha__transparency {
-  color: var(--mina-muted);
-  font-weight: var(--mina-fw-light);
-  text-decoration: none;
-}
-
-/* Shows and hides the pricing rather than leaving the panel, so it is not
-   dressed as a link. */
-.mina-matcha__action--plain {
-  text-decoration: none;
-}
-
+/* "Price Transparency" rests fainter than this, so it darkens on hover. */
 .mina-matcha__action:hover,
-.mina-matcha__transparency:hover {
-  color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.6);
+.mina-matcha__transparency:hover,
+.mina-matcha__purchase:hover:not(:disabled) {
+  opacity: 0.8;
 }
 
 /* The slider brings its own height, and wants more room at its ends than the
@@ -149,16 +181,12 @@
 }
 
 .mina-matcha__purchase {
-  transition: color var(--mina-anim-fade) ease;
   color: var(--mina-text);
-  font-size: var(--mina-fs-h5);
-  font-weight: var(--mina-fw-title);
+  font-size: var(--mina-text-21);
+  font-weight: var(--mina-fw-med);
+  line-height: 1;
   text-decoration: underline;
   text-underline-offset: var(--mina-btn-underline-offset);
-}
-
-.mina-matcha__purchase:hover {
-  color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.6);
 }
 
 /* The dialog holds real controls, so they keep the pointer and the reset the

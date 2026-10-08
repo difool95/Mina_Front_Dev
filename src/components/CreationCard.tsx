@@ -88,8 +88,7 @@ export function CreationCard({
             aria-label="Creation options"
             onClick={() => setConfirming(true)}
           >
-            {/* Drawn rather than a glyph, so its size is ours to set. */}
-            <span className="mina-creation__menu-bar" aria-hidden="true" />
+            <span className="mina-creation__menu-icon" aria-hidden="true" />
           </button>
         )}
       </header>

@@ -46,8 +46,7 @@
   gap: 10px;
 }
 
-/* The font settings size the button's line box, which the drawn bar then sits
-   in the middle of. */
+/* The font settings size the button's line box, which the icon then fills. */
 .mina-creation__menu {
   padding: 2px 6px;
   opacity: 0.85;
@@ -57,12 +56,15 @@
   line-height: 1;
 }
 
-.mina-creation__menu-bar {
+/* The svg draws in `currentColor`, which an <img> cannot pick up, so it is a
+   mask filled with the button's own colour. */
+.mina-creation__menu-icon {
   display: inline-block;
-  width: 10px;
-  height: 2px;
+  width: calc(1em / 1.5);
+  height: calc(1em / 1.5);
   vertical-align: middle;
   background: currentColor;
+  mask: url('/assets/icons/remove.svg') center / contain no-repeat;
 }
 
 .mina-creation__media {
@@ -201,10 +203,32 @@
   color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.8);
 }
 
-/* Liked: only the heart turns, not the word beside it. `Icon` draws itself in
-   `currentColor`, so colouring the svg is what fills it red. */
-.mina-other__like--on svg {
-  color: var(--mina-like-red);
+/* The svg files draw in `currentColor`, which an <img> cannot pick up, so
+   each is a mask filled with the text colour beside it. */
+.mina-other__icon {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  background: currentColor;
+  mask: var(--icon) center / contain no-repeat;
+}
+
+.mina-other__icon--like {
+  --icon: url('/assets/icons/like-state-off.svg');
+}
+
+/* Liked: only the heart turns red, not the word beside it. */
+.mina-other__icon--liked {
+  --icon: url('/assets/icons/like-state-on-liked.svg');
+  background: var(--mina-like-red);
+}
+
+.mina-other__icon--download {
+  --icon: url('/assets/icons/download.svg');
+}
+
+.mina-other__icon--link {
+  --icon: url('/assets/icons/copy-link.svg');
 }
 
 @media (width < 768px) {

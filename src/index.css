@@ -37,6 +37,7 @@
   /* ── Type scale (display sizes) ── */
   --mina-fs-h1: 	var(--mina-text-20); /* the "Archive" title on the profile */
   --mina-text-20: 20px; /* the "Archive" title on the profile */
+  --mina-text-21: 21px;
   --mina-fs-h2: 	var(--mina-text-28); /* editorial accent line */
   --mina-text-28: 28px; /* editorial accent line */
   --mina-fs-h3: 	var(--mina-text-28); /* onboarding talking text, landing intro */
@@ -139,6 +140,7 @@
   --mina-ink-60:   rgba(8, 10, 0, 0.60);
   --pcd-fs: var(--mina-fs-micro);  /* 9px — creation panel rows */
   --pcd-ink: var(--mina-ink);      /* creation panel ink */
+  --mina-success-60:	rgba(40, 160, 60, 0.6);
 }
 
 /* Safari / iOS friendly viewport */

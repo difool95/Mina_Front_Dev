@@ -62,11 +62,53 @@
   cursor: pointer;
 }
 
-.mina-fullscreen__close-bar {
+/* The svg files draw in `currentColor`, which an <img> cannot pick up, so
+   each icon here is a mask filled with its element's own colour. */
+.mina-fullscreen__close-icon,
+.mina-fullscreen__icon {
   display: block;
-  width: 16px;
-  height: 2px;
   background: currentColor;
+  mask: var(--icon) center / contain no-repeat;
+}
+
+.mina-fullscreen__close-icon {
+  --icon: url('/assets/icons/remove.svg');
+  width: 16px;
+  height: 16px;
+}
+
+/* Inside the glass disc — the same size as the carousel's arrows. */
+.mina-fullscreen__icon {
+  width: calc(22px / 1.5);
+  height: calc(22px / 1.5);
+}
+
+.mina-fullscreen__icon--download {
+  --icon: url('/assets/icons/download.svg');
+}
+
+.mina-fullscreen__icon--prev {
+  --icon: url('/assets/icons/left-toggle.svg');
+}
+
+.mina-fullscreen__icon--next {
+  --icon: url('/assets/icons/right-toggle.svg');
+}
+
+.mina-fullscreen__icon--expand {
+  --icon: url('/assets/icons/fill-view.svg');
+}
+
+.mina-fullscreen__icon--reduce {
+  --icon: url('/assets/icons/fit-view.svg');
+}
+
+.mina-fullscreen__icon--copy {
+  --icon: url('/assets/icons/copy.svg');
+}
+
+.mina-fullscreen__icon--link {
+  --icon: url('/assets/icons/copy-link.svg');
 }
 
 /* The disc below stands in for the pointer, so the real one goes away.

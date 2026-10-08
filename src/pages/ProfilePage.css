@@ -194,7 +194,7 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
   align-items: flex-start;
   justify-content: space-between;
   gap: 20px;
-  padding: 20px 0 18px;
+  padding: 10px 0 18px;
 }
 
 .mina-profile__title {
@@ -212,9 +212,11 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
   letter-spacing: -0.02em;
 }
 
+/* Sits on the bottom of the header, level with the creation count. */
 .mina-profile__filters {
   display: flex;
   flex-wrap: wrap;
+  align-self: flex-end;
   gap: 8px;
 }
 
