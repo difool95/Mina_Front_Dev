@@ -23,6 +23,24 @@
   object-fit: cover;
 }
 
+/* The arrow inside the glass disc. The svg files draw in `currentColor`, which
+   an <img> cannot pick up, so each is a mask filled with the disc's own colour
+   — white on glass, ink over a light picture. */
+.mina-carousel__arrow {
+  width: calc(22px / 1.5);
+  height: calc(22px / 1.5);
+  background: currentColor;
+  mask: var(--arrow) center / contain no-repeat;
+}
+
+.mina-carousel__arrow--prev {
+  --arrow: url('/assets/icons/left-toggle.svg');
+}
+
+.mina-carousel__arrow--next {
+  --arrow: url('/assets/icons/right-toggle.svg');
+}
+
 /* ── dots ── */
 
 /* Fixed width — exactly `--dot-slots` cells — so the strip is genuinely

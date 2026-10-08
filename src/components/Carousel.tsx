@@ -4,7 +4,6 @@ import { cfImageCarousel, cfPoster, cfVideo, imageWidthFor, isLightImage, videoW
 import type { OnboardContent } from '@/types'
 
 import { GlassDisc } from './GlassDisc'
-import { Icon } from './Icon'
 
 import './Carousel.css'
 
@@ -152,7 +151,7 @@ export function Carousel({
           size={48}
           tone={isOverLight ? 'dark' : 'glass'}
         >
-          <Icon name={cursor.side} />
+          <span className={`mina-carousel__arrow mina-carousel__arrow--${cursor.side}`} />
         </GlassDisc>
       )}
 
