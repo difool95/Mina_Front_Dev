@@ -70,15 +70,7 @@ export function VideoPlayer({ src }: { src: string }) {
             else el.pause()
           }}
         >
-          {playing ? (
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-              <path d="M6 5h4v14H6zM14 5h4v14h-4z" />
-            </svg>
-          ) : (
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-              <path d="M8 5l11 7-11 7z" />
-            </svg>
-          )}
+          <span className={`mina-video__icon mina-video__icon--${playing ? 'pause' : 'play'}`} />
         </button>
 
         <input
@@ -110,18 +102,8 @@ export function VideoPlayer({ src }: { src: string }) {
             setMuted(el.muted)
           }}
         >
-          {muted ? (
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-              <path d="M4 9h3l5-4v14l-5-4H4z" />
-              <path d="M15.2 10l1.1-1.1 4.6 4.6-1.1 1.1z" />
-              <path d="M19.8 8.9l1.1 1.1-4.6 4.6-1.1-1.1z" />
-            </svg>
-          ) : (
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-              <path d="M4 9h3l5-4v14l-5-4H4z" />
-              <path d="M15.5 8.6a4.5 4.5 0 010 6.8v-1.7a3 3 0 000-3.4zM18 6.4a7.5 7.5 0 010 11.2v-1.7a5.8 5.8 0 000-7.8z" />
-            </svg>
-          )}
+          {/* Each file is named for what a click does: muted shows "unmute". */}
+          <span className={`mina-video__icon mina-video__icon--${muted ? 'unmute' : 'mute'}`} />
         </button>
       </div>
     </div>

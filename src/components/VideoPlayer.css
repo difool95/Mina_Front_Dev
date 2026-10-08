@@ -45,9 +45,29 @@
   cursor: pointer;
 }
 
-.mina-video__button svg {
-  width: 18px;
-  height: 18px;
+/* The svg files draw in `currentColor`, which an <img> cannot pick up, so
+   each is a mask filled with the button's own white. */
+.mina-video__icon {
+  width: calc(18px / 1.5);
+  height: calc(18px / 1.5);
+  background: currentColor;
+  mask: var(--icon) center / contain no-repeat;
+}
+
+.mina-video__icon--play {
+  --icon: url('/assets/icons/playback.svg');
+}
+
+.mina-video__icon--pause {
+  --icon: url('/assets/icons/pause.svg');
+}
+
+.mina-video__icon--mute {
+  --icon: url('/assets/icons/mute.svg');
+}
+
+.mina-video__icon--unmute {
+  --icon: url('/assets/icons/unmute.svg');
 }
 
 .mina-video__time {
