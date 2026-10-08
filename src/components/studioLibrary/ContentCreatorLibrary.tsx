@@ -127,7 +127,7 @@ export function ContentCreatorLibrary({ onClose }: { onClose: () => void }) {
             Creator
           </button>
           <button className="mina-library__close" type="button" aria-label="Close library" onClick={onClose}>
-            —
+            <span className="mina-library__close-icon" aria-hidden="true" />
           </button>
         </div>
       </header>

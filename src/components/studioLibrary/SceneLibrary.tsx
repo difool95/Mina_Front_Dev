@@ -120,7 +120,7 @@ export function SceneLibrary({ onClose, onPick }: { onClose: () => void; onPick:
             </button>
           ))}
           <button className="mina-library__close" type="button" aria-label="Close scene library" onClick={onClose}>
-            —
+            <span className="mina-library__close-icon" aria-hidden="true" />
           </button>
         </div>
       </header>

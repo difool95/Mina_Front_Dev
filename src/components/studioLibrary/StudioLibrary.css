@@ -50,6 +50,7 @@
   margin: 0;
   font-size: var(--mina-fs-body);
   font-weight: var(--mina-fw-med);
+  letter-spacing: var(--mina-tracking-tight);
   white-space: nowrap;
 }
 
@@ -76,10 +77,10 @@
 }
 
 .mina-library__filter {
-  border: 1px solid var(--mina-border-soft);
+  border: 1px solid rgba(var(--mina-ink-rgb), 0.15);
   border-radius: 999px;
-  padding: 5px 10px;
-  font-size: 9px;
+  padding: 4px 10px;
+  font-size: var(--mina-fs-micro);
   font-weight: var(--mina-fw-med);
   white-space: nowrap;
   transition: background-color var(--mina-anim-fade) ease;
@@ -96,8 +97,17 @@
 }
 
 .mina-library__close {
+  display: flex;
   margin-left: 16px;
-  font-size: var(--mina-fs-body);
+}
+
+/* The svg draws in `currentColor`, which an <img> cannot pick up, so it is a
+   mask filled with the button's own colour. */
+.mina-library__close-icon {
+  width: 10px;
+  height: 10px;
+  background: currentColor;
+  mask: url('/assets/icons/remove.svg') center / contain no-repeat;
 }
 
 /* ── grid ── */
@@ -130,10 +140,11 @@
 .mina-library__number {
   display: block;
   margin-bottom: 8px;
-  color: var(--mina-muted);
+  color: rgba(var(--mina-ink-rgb), 0.4);
   font-family: var(--mina-font);
-  font-size: var(--mina-fs-micro);
+  font-size: 8px;
   font-weight: var(--mina-fw-med);
+  letter-spacing: 0.02em;
 }
 
 .mina-library__media {
