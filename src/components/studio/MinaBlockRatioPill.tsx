@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 
-import { RATIO_HOLD_MS, STUDIO_RATIOS } from '@/lib/studio'
+import { RATIO_HOLD_MS, RATIO_ICONS, STUDIO_RATIOS } from '@/lib/studio'
 import { studioSession } from '@/lib/sessionStorage/studioSession'
 
 import './MinaBlockPills.css'
@@ -28,7 +28,7 @@ export function MinaBlockRatioPill() {
 
   return (
     <button
-      className="mina-pills__pill"
+      className="mina-pills__pill mina-pills__pill--ratio"
       type="button"
       data-tooltip="Tap to cycle · Hold to flip landscape"
       onPointerDown={startHold}
@@ -46,8 +46,8 @@ export function MinaBlockRatioPill() {
     >
       <span className="mina-pills__icon" aria-hidden="true">
         <span
-          className={`mina-pills__frame${isLandscape ? ' mina-pills__frame--landscape' : ''}`}
-          style={{ aspectRatio: ratioValue.replace(':', ' / ') }}
+          className="mina-pills__ratio-icon"
+          style={{ '--icon': `url('${RATIO_ICONS[ratioValue]}')` } as CSSProperties}
         />
       </span>
       {ratioValue}

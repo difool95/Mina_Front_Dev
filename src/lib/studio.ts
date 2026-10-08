@@ -139,6 +139,21 @@ export const STUDIO_RATIOS: { value: Ratio; label: string; landscapeLabel: strin
   { value: '1:1', label: 'Square', landscapeLabel: 'Square', platform: 'square' },
 ]
 
+/**
+ * The ratio pill's icon for each ratio it can show, portrait and landscape.
+ * Matched on the shape each file draws, which is not always the ratio in its
+ * name (`ratio-3-2-printing.svg` draws a 3:4 portrait, for one).
+ */
+export const RATIO_ICONS: Record<string, string> = {
+  '9:16': '/assets/icons/ratio-9-16-tiktok-instagram.svg',
+  '16:9': '/assets/icons/ratio-9-16-youtube.svg',
+  '3:4': '/assets/icons/ratio-3-2-printing.svg',
+  '4:3': '/assets/icons/ratio-2-3-billboard.svg',
+  '2:3': '/assets/icons/ratio-4-3-post.svg',
+  '3:2': '/assets/icons/ratio-3-4-banner.svg',
+  '1:1': '/assets/icons/ratio-1-1-square.svg',
+}
+
 /** How long the ratio pill must be held to flip between portrait and landscape. */
 export const RATIO_HOLD_MS = 500
 

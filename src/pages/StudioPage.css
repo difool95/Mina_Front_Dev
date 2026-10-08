@@ -44,7 +44,7 @@
 .mina-studio__modes {
   display: flex;
   align-self: flex-end;
-  gap: 22px;
+  gap: 24px;
 }
 
 .mina-studio__mode {

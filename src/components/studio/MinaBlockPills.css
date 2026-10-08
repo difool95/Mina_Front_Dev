@@ -9,12 +9,16 @@
   display: inline-flex;
   align-items: center;
   gap: var(--mina-pill-gap);
+  height: 34px;
   min-height: 34px;
-  border-radius: 2px;
-  background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.03);
+  max-height: 34px;
+  border-radius: 0;
+  background: rgba(var(--mina-ink-rgb), 0.02);
   padding: var(--mina-pill-pad);
-  font-size: var(--mina-fs-small);
-  font-weight: var(--mina-fw-pill);
+  font-size: var(--mina-fs-micro);
+  font-weight: var(--mina-fw-med);
+  letter-spacing: 0;
+  line-height: 1.1;
   white-space: nowrap;
   /* Holding the ratio pill must not start selecting its text. */
   user-select: none;
@@ -37,7 +41,17 @@
 /* Only real buttons darken on hover — a fixed pill like Director is a span. */
 button.mina-pills__pill:hover,
 .mina-pills__pill[aria-pressed='true'] {
-  background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.07);
+  background: rgba(var(--mina-ink-rgb), 0.05);
+}
+
+/* The ratio pill keeps its own look: the shared pill style above leaves it out. */
+.mina-pills__pill--ratio {
+  height: auto;
+  max-height: none;
+  border-radius: 2px;
+  background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.03);
+  letter-spacing: inherit;
+  line-height: normal;
 }
 
 /* A square of its own for the "+" or the ratio frame, not just a space before the label. */
@@ -47,8 +61,9 @@ button.mina-pills__pill:hover,
   place-items: center;
   width: 22px;
   height: 22px;
-  font-size: var(--mina-fs-body);
-  font-weight: var(--mina-fw-light);
+  /* Sizes the "+"; the ratio icon and thumbnails ignore it. */
+  font-size: var(--mina-fs-micro);
+  font-weight: var(--mina-fw-strong);
 }
 
 /* The pill's first picture, cropped to the square the "+" stood in. Pinned
@@ -61,23 +76,23 @@ button.mina-pills__pill:hover,
   object-fit: cover;
 }
 
-/* The ratio drawn as its own outline: tall for 9:16, square for 1:1. */
-.mina-pills__frame {
-  height: 12px;
-  border: 1.5px solid currentColor;
-  border-radius: 1px;
+/* The ratio's own outline, from its svg — tall for 9:16, square for 1:1. The
+   files draw in `currentColor`, which an <img> cannot pick up, so the icon is
+   a mask filled with the pill's colour. `--icon` is set inline per ratio. */
+.mina-pills__ratio-icon {
+  width: 14px;
+  height: 14px;
+  background: currentColor;
+  mask: var(--icon) center / contain no-repeat;
 }
 
-/* Landscape frames are sized by their width instead, so they mirror the
-   portrait ones rather than growing wider than them. */
-.mina-pills__frame--landscape {
-  width: 12px;
-  height: auto;
-}
-
+/* The ratio's name beside its value — Tiktok/Reel, Post… */
 .mina-pills__muted {
-  color: var(--mina-muted);
+  opacity: 0.6;
+  font-size: var(--mina-fs-small);
   font-weight: var(--mina-fw-med);
+  letter-spacing: 0;
+  line-height: 1;
 }
 
 /* One line that swipes sideways instead of wrapping onto a second. */
