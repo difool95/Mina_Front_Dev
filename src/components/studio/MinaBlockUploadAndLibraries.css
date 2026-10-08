@@ -78,12 +78,19 @@
 
 .mina-uploads__add {
   background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.05);
-  font-size: var(--mina-fs-h6);
-  transition: background-color var(--mina-anim-fade) ease;
+  font-size: 16px;
+  font-weight: var(--mina-fw-med);
 }
 
-.mina-uploads__add:hover {
-  background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.09);
+/* Both "+" cards — the upload one and the library one — fade a little on hover. */
+.mina-uploads__add,
+.mina-uploads__library {
+  transition: opacity var(--mina-anim-fade) ease;
+}
+
+.mina-uploads__add:hover,
+.mina-uploads__library:hover {
+  opacity: 0.8;
 }
 
 /* Three pictures from the library and a "+" as the fourth tile. `minmax(0, …)`
@@ -108,10 +115,6 @@
   place-items: center;
   background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.04);
   color: var(--mina-muted);
-  font-size: var(--mina-fs-body);
-  transition: background-color var(--mina-anim-fade) ease;
-}
-
-.mina-uploads__library:hover .mina-uploads__more {
-  background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.09);
+  font-size: 16px;
+  font-weight: var(--mina-fw-med);
 }

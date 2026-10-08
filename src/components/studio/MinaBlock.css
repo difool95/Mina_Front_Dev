@@ -15,7 +15,7 @@
 .mina-block__vision,
 .mina-block__cta {
   align-self: flex-start;
-  transition: color var(--mina-anim-fade) ease;
+  transition: opacity var(--mina-anim-fade) ease;
 }
 
 .mina-block__vision {
@@ -32,8 +32,8 @@
 }
 
 .mina-block__vision:hover,
-.mina-block__cta:hover {
-  color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.6);
+.mina-block__cta:hover:not(:disabled) {
+  opacity: 0.8;
 }
 
 /* "Uploading...": faded, and no hover to suggest it can be pressed. */

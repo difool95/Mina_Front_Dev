@@ -96,14 +96,14 @@
 }
 
 .mina-studio__upload {
-  opacity: 0.45;
-  transition: opacity var(--mina-anim-fade) ease;
+  transition: color var(--mina-anim-fade) ease;
+  color: #0003;
   font-size: var(--mina-fs-small);
   font-weight: var(--mina-fw-light);
 }
 
 .mina-studio__upload:hover {
-  opacity: 1;
+  color: #0006;
 }
 
 /* ── shared button reset ──
