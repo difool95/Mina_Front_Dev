@@ -1,12 +1,13 @@
 /* Fixed height: the brief scrolls inside itself, and the locked strip, when
    there is one, takes its share from the bottom. */
 .mina-brief {
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 160px;
 }
 
-/* The type steps down from the CTA size to the body size as the brief grows. */
+/* The type steps down from 32px to the body size as the brief grows. */
 .mina-brief__input {
   flex: 1;
   display: block;
@@ -20,9 +21,9 @@
   background: none;
   color: var(--mina-text);
   font-family: inherit;
-  font-size: max(var(--mina-fs-body), calc(var(--mina-cta-fs) - var(--brief-shrink, 0) * 1px));
-  font-weight: var(--mina-cta-fw);
-  letter-spacing: inherit;
+  font-size: max(var(--mina-fs-body), calc(var(--mina-text-32) - var(--brief-shrink, 0) * 1px));
+  font-weight: var(--mina-fw-med);
+  letter-spacing: -0.02em;
   line-height: 1.15;
   resize: none;
   scrollbar-width: none;
@@ -36,10 +37,10 @@
 }
 
 .mina-brief__input::placeholder {
-  color: rgba(var(--mina-ink-rgb, 8, 10, 0), var(--mina-muted-o));
+  color: rgba(var(--mina-ink-rgb), 0.2);
 }
 
-/* The locked strip on the left, the lock pill pushed to the right. */
+/* The locked strip; the lock pill sits over its right end. */
 .mina-brief__bottom {
   display: flex;
   align-items: flex-end;
@@ -55,9 +56,14 @@
   height: 2.6em;
   margin: 0;
   overflow-y: auto;
-  color: rgba(var(--mina-ink-rgb, 8, 10, 0), var(--mina-muted-o));
-  font-size: var(--mina-fs-body);
+  opacity: 0.1;
+  color: var(--mina-text);
+  font-size: var(--mina-text-14);
+  font-weight: var(--mina-fw-med);
+  letter-spacing: var(--mina-tracking-tight);
   line-height: 1.3;
+  /* Clear of the lock pill pinned over its right end. */
+  padding-right: calc(32px + 8px);
   white-space: pre-wrap;
   scrollbar-width: none;
   /* The same fade as the brief's: its lines dissolve into the rule below. */
@@ -67,10 +73,8 @@
 .mina-brief__lock {
   display: grid;
   place-items: center;
-  flex: none;
   width: 32px;
   height: 32px;
-  margin-left: auto;
   border: 0;
   border-radius: 2px;
   background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.05);
@@ -79,6 +83,15 @@
   transition:
     opacity var(--mina-anim-fade) ease,
     background-color var(--mina-anim-fade) ease;
+}
+
+/* Pinned to the brief's own bottom-right corner, not the strip's, which hangs
+   below the brief. Qualified by the brief: index.css loads after this file and
+   its `[data-tooltip] { position: relative }` would otherwise win the tie. */
+.mina-brief .mina-brief__lock {
+  position: absolute;
+  right: 0;
+  bottom: 0;
 }
 
 .mina-brief__lock:hover {

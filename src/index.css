@@ -127,6 +127,8 @@
   --mina-anim-slide: 0.45s;
 
   --mina-text-13: 13px;
+  --mina-text-32: 32px;
+  --mina-text-14: 14px;
   --mina-weight-medium: 500;
   --mina-tracking-tight: -0.01em;   /* must be em: the spec computes -0.11px at 11px and -0.2px at 20px */
   --mina-space-2xs: 4px;
