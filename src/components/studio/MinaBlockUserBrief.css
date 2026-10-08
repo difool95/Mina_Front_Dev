@@ -111,8 +111,8 @@
 /* The svg draws in `currentColor`, which an <img> cannot pick up, so it is a
    mask filled with the pill's own colour. */
 .mina-brief__lock-icon {
-  width: 18px;
-  height: 18px;
+  width: calc(18px / 1.8);
+  height: calc(18px / 1.8);
   background: currentColor;
   mask: url('/assets/icons/lockprompt-toggle.svg') center / contain no-repeat;
 }

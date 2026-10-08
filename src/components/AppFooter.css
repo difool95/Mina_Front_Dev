@@ -17,15 +17,38 @@
   font-weight: var(--mina-fw-med);
 }
 
-/* Held back from the full ink, so the footer sits behind the workspace.
-   The phone bar sets its own, stronger fade in the media query below. */
-.mina-appfooter__link {
-  color: rgba(var(--mina-ink-rgb, 8, 10, 0), var(--mina-quiet-o));
-}
-
 .mina-appfooter__curators {
   color: var(--mina-muted);
   font-weight: var(--mina-fw-light);
+}
+
+/* Must follow the base curator rule above, which matches with equal weight.
+   Held back from the full ink, so the footer sits behind the workspace.
+   Desktop only: the phone bar sets its own fade in the media query below. */
+@media (width >= 768px) {
+  .mina-appfooter__link {
+    opacity: 0.75;
+    font-size: var(--mina-fs-small);
+    font-weight: var(--mina-weight-medium);
+    letter-spacing: -.02em;
+  }
+
+  .mina-appfooter__curators {
+    opacity: 0.2;
+    color: inherit;
+    font-size: var(--mina-fs-small);
+    font-weight: var(--mina-weight-medium);
+    letter-spacing: -0.02em;
+  }
+}
+
+.mina-appfooter__link {
+  transition: opacity var(--mina-anim-fade) ease;
+}
+
+/* Outranks the selected phone link's full opacity, so hover reads everywhere. */
+.mina-appfooter .mina-appfooter__link:hover {
+  opacity: 0.8;
 }
 
 /* The "|" between entries, matching the signed-out footer. */
@@ -63,7 +86,7 @@
     gap: 0;
     border-top: 1px solid var(--mina-hairline);
     background: var(--mina-bg);
-    padding: calc(var(--mina-footer-pad-y) * 1.5) calc(var(--mina-footer-pad-x) * 0.7);
+    padding: calc(var(--mina-footer-pad-y) * 1) calc(var(--mina-footer-pad-x) * 1);
   }
 
   /* Each link takes an equal share and centres its text, with the rule pinned
@@ -72,12 +95,14 @@
     position: relative;
     flex: 1;
     /* Faded until it is the page you are on. */
-    color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.45);
+    opacity: 0.75;
+    font-weight: var(--mina-weight-medium);
     text-align: center;
   }
 
   .mina-appfooter__link[aria-current='page'] {
-    color: var(--mina-text);
+    opacity: 0.8;
+    color: var(--mina-ink);
     font-weight: var(--mina-fw-strong);
   }
 
@@ -101,13 +126,14 @@
      Studio takes a 1.5× narrower share, since left-aligned text left too much
      room between it and its rule. */
   .mina-appfooter__link--mobile {
-    flex: 0.7 ;
-    text-align: center;
+    flex: 0.6 ;
+    text-align: left;
   }
 
   .mina-appfooter__link,
   .mina-appfooter__curators {
     font-size: var(--mina-fs-small);
+    letter-spacing: -0.02em;
   }
 
   .mina-appfooter__link--mobile {

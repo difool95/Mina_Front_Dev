@@ -40,19 +40,27 @@
   height: auto;
 }
 
+/* Anchored to the bottom of the header row, beside the logo. */
 .mina-studio__modes {
   display: flex;
-  gap: 16px;
+  align-self: flex-end;
+  gap: 22px;
 }
 
 .mina-studio__mode {
-  color: var(--mina-muted);
+  transition: opacity var(--mina-anim-fade) ease;
+  opacity: 0.4;
   font-size: var(--mina-header-toggle-fs);
   font-weight: var(--mina-header-toggle-fw);
 }
 
 .mina-studio__mode[aria-current='true'] {
-  color: var(--mina-text);
+  opacity: 1;
+}
+
+/* Must follow the selected rule, which matches with equal weight. */
+.mina-studio__mode:hover {
+  opacity: 0.8;
 }
 
 /* Inset past the logo and footer. Scrolls on a short window, and the block is
@@ -133,6 +141,10 @@
     align-items: center;
     border-bottom: 1px solid var(--mina-hairline);
     padding: 16px var(--mina-footer-pad-x) 18px;
+  }
+
+  .mina-studio__modes {
+    align-self: center;
   }
 
   .mina-studio__prompt {
