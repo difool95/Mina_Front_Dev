@@ -32,35 +32,43 @@
 
 .mina-panel__bar {
   display: flex;
-  flex: none;
+  flex-shrink: 0;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  border-bottom: 1px solid var(--mina-hairline);
-  padding: var(--mina-panel-pad);
+  border-bottom: 1px solid rgba(var(--mina-ink-rgb), 0.08);
+  padding: var(--mina-space-xl) var(--mina-space-xl);
 }
 
 .mina-panel__title {
   margin: 0;
-  font-size: var(--mina-fs-body);
-  font-weight: var(--mina-fw-strong);
+  color: var(--mina-text);
+  font-size: var(--mina-text-13);
+  font-weight: var(--mina-weight-bold);
+  letter-spacing: var(--mina-tracking-tight);
 }
 
 .mina-panel__close {
+  display: flex;
   padding: 0;
   border: 0;
   background: none;
   color: inherit;
-  font-family: inherit;
-  font-size: var(--mina-fs-body);
-  font-weight: var(--mina-fw-strong);
-  line-height: 1;
   cursor: pointer;
+}
+
+/* The svg draws in `currentColor`, which an <img> cannot pick up, so it is a
+   mask filled with the button's own colour. */
+.mina-panel__close-icon {
+  width: 10px;
+  height: 10px;
+  background: currentColor;
+  mask: url('/assets/icons/remove.svg') center / contain no-repeat;
 }
 
 .mina-panel__body {
   flex: 1;
-  padding: var(--mina-panel-pad);
+  padding: var(--mina-space-3xl) var(--mina-space-4xl) 32px;
   overflow-y: auto;
   overscroll-behavior: contain;
   /* Scrolls, but the bar itself is hidden. */

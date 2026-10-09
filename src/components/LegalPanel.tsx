@@ -47,7 +47,7 @@ export function LegalPanel({
       <header className="mina-panel__bar">
         <h2 className="mina-panel__title">{title}</h2>
         <button className="mina-panel__close" type="button" aria-label="Close" onClick={onClose}>
-          —
+          <span className="mina-panel__close-icon" aria-hidden="true" />
         </button>
       </header>
 
