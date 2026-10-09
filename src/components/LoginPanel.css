@@ -76,11 +76,18 @@
 /* ── controls ── */
 
 .mina-login__back {
+  display: flex;
   opacity: 0.3;
   color: var(--mina-text);
-  font-size: var(--mina-fs-h3);
-  font-weight: var(--mina-fw-light);
-  line-height: 1;
+}
+
+/* The svg draws in `currentColor`, which an <img> cannot pick up, so it is a
+   mask filled with the button's own colour. Sized like the carousel's arrows. */
+.mina-login__back-icon {
+  width: calc(22px / 1.5);
+  height: calc(22px / 1.5);
+  background: currentColor;
+  mask: url('/assets/icons/left-toggle.svg') center / contain no-repeat;
 }
 
 .mina-login__cta {

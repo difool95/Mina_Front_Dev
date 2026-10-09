@@ -78,7 +78,7 @@ export function LoginPanel() {
           aria-label="Back"
           onClick={() => setEmailStep(false)}
         >
-          ‹
+          <span className="mina-login__back-icon" aria-hidden="true" />
         </button>
 
         {status === 'sent' ? (

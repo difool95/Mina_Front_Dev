@@ -24,9 +24,8 @@ export function HomePage() {
   const [legal, setLegal] = useState<string | null>(null)
   const { data } = useOnboardContent()
 
-  // `cta_label` holds two rows; `title` is the key that picks the right one.
+  // `cta_label` holds more than one row; `title` is the key that picks this one.
   const tutorial = pickRow(data, 'cta_label', 'tutorial_button')
-  const signUp = pickRow(data, 'cta_label', 'login_button')
   const legalRow = legal === null ? undefined : pickRow(data, legal)
 
   return (
@@ -86,10 +85,7 @@ export function HomePage() {
       </footer>
 
       {tutorialOpen && (
-        <TutorialPanel
-          signUpLabel={signUp?.body ?? 'Sign up'}
-          onClose={() => setTutorialOpen(false)}
-        />
+        <TutorialPanel onClose={() => setTutorialOpen(false)} />
       )}
 
       {legalRow && (

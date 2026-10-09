@@ -4,11 +4,15 @@
   z-index: 10;
   inset: 0;
   display: grid;
+  grid-template-areas:
+    'bar'
+    'stage';
   grid-template-rows: auto 1fr;
   background: var(--mina-bg);
 }
 
 .mina-tutorial__bar {
+  grid-area: bar;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -22,32 +26,46 @@
   font-weight: var(--mina-fw-strong);
 }
 
-.mina-tutorial__actions {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.mina-tutorial__signup,
+.mina-tutorial__signin,
 .mina-tutorial__skip {
   padding: 0;
   border: 0;
   background: none;
   color: inherit;
   font-family: inherit;
-  font-size: var(--mina-fs-body);
-  font-weight: var(--mina-fw-strong);
   letter-spacing: inherit;
   cursor: pointer;
 }
 
-.mina-tutorial__signup {
+.mina-tutorial__skip {
+  display: none;
+  font-size: var(--mina-fs-body);
+  font-weight: var(--mina-fw-strong);
+}
+
+/* Styled as the login panel's "Login with Google" (LoginPanel.css __cta).
+   Last in the markup; on desktop the grid lays it over the header's right end. */
+.mina-tutorial__signin {
+  grid-area: bar;
+  align-self: center;
+  justify-self: end;
+  margin-right: var(--mina-footer-pad-x);
+  transition: opacity var(--mina-anim-fade) ease;
+  opacity: 0.9;
+  font-size: var(--mina-fs-h4);
+  font-weight: var(--mina-fw-med);
+  letter-spacing: var(--mina-tracking-tight);
   text-decoration: underline;
   text-underline-offset: var(--mina-btn-underline-offset);
 }
 
+.mina-tutorial__signin:hover {
+  opacity: 0.8;
+}
+
 /* Faint tint so the square video reads as a framed stage against the paper. */
 .mina-tutorial__stage {
+  grid-area: stage;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -65,6 +83,26 @@
 }
 
 @media (width < 768px) {
+  .mina-tutorial {
+    grid-template-areas:
+      'bar'
+      'stage'
+      'foot';
+    grid-template-rows: auto 1fr auto;
+  }
+
+  .mina-tutorial__skip {
+    display: inline;
+  }
+
+  /* Its own row under the video, centred. */
+  .mina-tutorial__signin {
+    grid-area: foot;
+    justify-self: center;
+    margin: 0;
+    padding: var(--mina-footer-pad-y) 0;
+  }
+
   .mina-tutorial__stage {
     padding: 0;
   }
