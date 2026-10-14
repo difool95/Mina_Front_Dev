@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 
-import { RATIO_HOLD_MS, RATIO_ICONS, STUDIO_RATIOS } from '@/lib/studio'
+import { RATIO_HOLD_MS, RATIO_ICONS, STUDIO_RATIOS, studioRatio } from '@/lib/studio'
 import { studioSession } from '@/lib/sessionStorage/studioSession'
 
 import './MinaBlockPills.css'
@@ -14,7 +14,7 @@ export function MinaBlockRatioPill() {
   // A hold that flipped the orientation must not also cycle on the click its release fires.
   const wasHeld = useRef(false)
   const ratio = STUDIO_RATIOS[ratioIndex]!
-  const ratioValue = isLandscape ? ratio.value.split(':').reverse().join(':') : ratio.value
+  const ratioValue = studioRatio(ratioIndex, isLandscape)
 
   const startHold = () => {
     wasHeld.current = false

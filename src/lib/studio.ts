@@ -1,4 +1,4 @@
-import type { MmaPlatform, Ratio, StudioMode, UploadKind } from '@/types'
+import type { AspectRatio, MmaPlatform, Ratio, StudioMode, UploadKind } from '@/types'
 
 /** What the brief is set to when a scene is picked from the scene library. */
 export const SCENE_LIBRARY_BRIEF = {
@@ -138,6 +138,13 @@ export const STUDIO_RATIOS: { value: Ratio; label: string; landscapeLabel: strin
   { value: '2:3', label: 'Printing', landscapeLabel: 'Printing', platform: 'print' },
   { value: '1:1', label: 'Square', landscapeLabel: 'Square', platform: 'square' },
 ]
+
+/** The ratio the pill shows: the picked one, turned on its side when flipped to landscape. */
+export function studioRatio(ratioIndex: number, isLandscape: boolean) {
+  const { value } = STUDIO_RATIOS[ratioIndex]!
+
+  return (isLandscape ? value.split(':').reverse().join(':') : value) as AspectRatio
+}
 
 /**
  * The ratio pill's icon for each ratio it can show, portrait and landscape.

@@ -12,7 +12,7 @@ import { useCustomerCredits } from '@/hooks/useCustomerCredits'
 import { useStartStillGeneration } from '@/hooks/useGenerations'
 import { MINA_LOGO_URL } from '@/lib/constants'
 import { studioSession } from '@/lib/sessionStorage/studioSession'
-import { STUDIO_RATIOS } from '@/lib/studio'
+import { STUDIO_RATIOS, studioRatio } from '@/lib/studio'
 import { useAuth } from '@/providers/AuthProvider'
 import type { MinaBlockHandle, StudioMode, StudioUpload } from '@/types'
 
@@ -47,6 +47,7 @@ export function StudioPage() {
     const {
       studioSessionId = crypto.randomUUID(),
       ratioIndex = 0,
+      isLandscape = false,
       isCreative = false,
       brief = '',
       locked = '',
@@ -57,6 +58,8 @@ export function StudioPage() {
         token: session.access_token,
         studioSessionId,
         platform: STUDIO_RATIOS[ratioIndex]!.platform,
+        // The image engine renders this ratio, landscape flip included.
+        aspectRatio: studioRatio(ratioIndex, isLandscape),
         isCreative,
         // MMA reads the locked strip as the brief's last line.
         brief: [brief, locked].filter(Boolean).join('\n'),

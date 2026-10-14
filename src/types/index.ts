@@ -5,6 +5,7 @@ export type { CreditLot, CustomerRole, MegaCustomer, MmaPreferences } from './cu
 export type { SignupBonusResult } from './credit.types'
 export type { CreateCheckoutSessionResult } from './checkout.types'
 export type {
+  AspectRatio,
   MinaBlockHandle,
   MinaBlockUserBriefHandle,
   MmaPlatform,

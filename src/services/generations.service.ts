@@ -1,5 +1,5 @@
 import { isMotion } from '@/lib/generations'
-import type { MmaPlatform, StillGenerationResult, StudioUpload } from '@/types'
+import type { AspectRatio, MmaPlatform, StillGenerationResult, StudioUpload } from '@/types'
 import type { MegaGeneration } from '@/types/generation.types'
 
 import { apiPost } from './api.client'
@@ -14,6 +14,7 @@ export function startStillGeneration(
   body: {
     studioSessionId: string
     platform: MmaPlatform
+    aspectRatio: AspectRatio
     isCreative: boolean
     brief: string
     uploads: Pick<StudioUpload, 'kind' | 'url' | 'origin'>[]

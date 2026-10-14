@@ -46,6 +46,9 @@ export interface StudioSession {
 /** Where the output is meant to go, read off the ratio picked in the studio. Same as the API's. */
 export type MmaPlatform = 'tiktok' | 'instagram-post' | 'print' | 'square'
 
+/** The ratio on the studio's ratio pill, landscape flip included. Same as the API's. */
+export type AspectRatio = '9:16' | '16:9' | '3:4' | '4:3' | '2:3' | '3:2' | '1:1'
+
 /** `POST /api/mma/still`: the generation it started and the balance after its charge. */
 export interface StillGenerationResult {
   generationId: string
