@@ -41,7 +41,23 @@ export function StudioPage() {
   const generationId = startGeneration.data?.generationId
   //this line starts polling the generation status for the current generationId and userId. It uses a custom hook useGenerationStatus that takes in the generationId and 
   // userId as parameters and returns the current status of the generation. The status is updated every few seconds until the generation has ended. 
-  const generationStatus = useGenerationStatus(generationId, session?.user.id)
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  const generation = useGenerationStatus(generationId, session?.user.id)
+  const generationStatus = generation?.status
+//We get the generations from the studio session storage and set them to the state variable generations. 
+  const [generations, setGenerations] = useState<string[]>(() => studioSession.read().generations ?? [])
+  //We save the generations to the session storage whenever the generations state changes. This ensures that the generations are persisted across page
+  //refreshes and tab closures.
+  useEffect(() => studioSession.save({ generations }), [generations])
+  // A done picture shows the moment it is ready, and joins `generations` for good once Mina has finished talking.
+  const doneUrl = generationStatus === 'done' ? generation?.outputUrl : undefined
+  //This line creates a new array of generations that includes the doneUrl if it exists, otherwise it just uses the existing generations array.
+  const shownGenerations = doneUrl ? [...generations, doneUrl] : generations
+  const endMina = () => {
+    if (doneUrl) setGenerations(shownGenerations)
+    startGeneration.reset()
+  }
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Mina types in the brief from the click until the generation has ended and she has said so;
   // `progressing` covers the Create request itself, before there is a status to read.
   const minaStatus = startGeneration.isPending || generationId ? (generationStatus ?? 'progressing') : undefined
@@ -137,14 +153,19 @@ export function StudioPage() {
             uploads={uploads}
             onUploads={setUploads}
             minaStatus={minaStatus}
-            onMinaEnd={startGeneration.reset}
+            onMinaEnd={endMina}
           />
         </main>
 
         <AppFooter current="studio" onOpenMatcha={() => setMatchaPanel('buy')} />
       </section>
       {/*the right studio panel and the block.current.OpenFilePickerScene() method is defined in the child component(MinaBlock) */}
-      <RightStudioPanel mode={mode} uploads={uploads} onUpload={() => block.current?.OpenFilePickerScene()} />
+      <RightStudioPanel
+        mode={mode}
+        uploads={uploads}
+        generations={shownGenerations}
+        onUpload={() => block.current?.OpenFilePickerScene()}
+      />
 
       {matchaPanel === 'buy' && (
         <MatchaPanel

@@ -1,5 +1,12 @@
 import { isMotion } from '@/lib/generations'
-import type { AspectRatio, MmaPlatform, MmaStatus, StillGenerationResult, StudioUpload } from '@/types'
+import type {
+  AspectRatio,
+  GenerationProgress,
+  MmaPlatform,
+  MmaStatus,
+  StillGenerationResult,
+  StudioUpload,
+} from '@/types'
 import type { MegaGeneration } from '@/types/generation.types'
 
 import { apiPost } from './api.client'
@@ -23,17 +30,17 @@ export function startStillGeneration(
   return apiPost<StillGenerationResult>('/api/mma/still', token, body)
 }
 
-/** The step a generation's MMA pipeline is on. */
-export async function getGenerationStatus(generationId: string) {
+/** The step a generation's MMA pipeline is on, and its picture once it is done. */
+export async function getGenerationStatus(generationId: string): Promise<GenerationProgress> {
   const { data, error } = await supabase
     .from('mega_generations')
-    .select('mg_mma_status')
+    .select('mg_mma_status, mg_output_url')
     .eq('mg_id', `generation:${generationId}`)
     .single()
 
   if (error) throw new Error(error.message)
 
-  return data.mg_mma_status as MmaStatus
+  return { status: data.mg_mma_status as MmaStatus, outputUrl: data.mg_output_url ?? '' }
 }
 
 /** The columns the archive renders. `mega_generations` holds far more. */

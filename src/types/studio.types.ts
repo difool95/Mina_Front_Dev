@@ -41,6 +41,8 @@ export interface StudioSession {
   isLandscape: boolean
   /** This tab's studio session. Gone with the tab, so a reopened one starts a new session row. */
   studioSessionId: string
+  /** The R2 URLs of the pictures this tab's Creates made, oldest first. */
+  generations: string[]
 }
 
 /** Where the output is meant to go, read off the ratio picked in the studio. Same as the API's. */
@@ -60,3 +62,10 @@ export interface StillGenerationResult {
  * Mina types in the brief meanwhile. Same as the API's.
  */
 export type MmaStatus = 'progressing' | 'scanning' | 'prompting' | 'generating' | 'done' | 'error'
+
+/** A running generation as the studio polls it: its step, and its picture once done. */
+export interface GenerationProgress {
+  status: MmaStatus
+  /** Empty until the generation is done. */
+  outputUrl: string
+}

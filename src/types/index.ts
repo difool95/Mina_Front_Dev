@@ -6,6 +6,7 @@ export type { SignupBonusResult } from './credit.types'
 export type { CreateCheckoutSessionResult } from './checkout.types'
 export type {
   AspectRatio,
+  GenerationProgress,
   MinaBlockHandle,
   MinaBlockUserBriefHandle,
   MmaPlatform,

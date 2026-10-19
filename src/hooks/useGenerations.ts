@@ -39,15 +39,20 @@ export function useStartStillGeneration(userId: string | undefined) {
   })
 }
 
-/** The step a generation is on, asked again every couple of seconds until it ends. Skipped without an id. */
+/**
+ * The step a generation is on and its picture once done, asked again every
+ * couple of seconds until it ends. Skipped without an id.
+ */
 export function useGenerationStatus(generationId: string | undefined, userId: string | undefined) {
   const client = useQueryClient()
-  const { data: status } = useQuery({
+  const { data: progress } = useQuery({
     queryKey: queryKeys.generationStatus(generationId ?? ''),
     queryFn: () => getGenerationStatus(generationId!),
     enabled: Boolean(generationId),
-    refetchInterval: ({ state }) => (hasEnded(state.data) ? false : GENERATION_POLL_MS),
+    //The refresh stops when the generation is done or errored, so the last status is always shown.
+    refetchInterval: ({ state }) => (hasEnded(state.data?.status) ? false : GENERATION_POLL_MS),
   })
+  const status = progress?.status
 
   // A failed generation has refunded its matcha; a done one has its picture for the archive.
   useEffect(() => {
@@ -55,7 +60,7 @@ export function useGenerationStatus(generationId: string | undefined, userId: st
     if (status === 'done') void client.invalidateQueries({ queryKey: queryKeys.generations(userId ?? '') })
   }, [client, status, userId])
 
-  return status
+  return progress
 }
 
 export function useDeleteGeneration(userId: string | undefined) {

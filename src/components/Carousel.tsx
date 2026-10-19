@@ -47,10 +47,13 @@ function litSlot(i: number, n: number) {
 /** Only what it shows of each item, so the studio's uploads can page through it too. */
 export function Carousel({
   media,
+  startIndex = 0,
 }: {
   media: Pick<OnboardContent, 'id' | 'media_url' | 'media_type' | 'thumbnail' | 'alt_text'>[]
+  /** The media it opens on. */
+  startIndex?: number
 }) {
-  const [index, setIndex] = useState(0)
+  const [index, setIndex] = useState(startIndex)
   // Also doubles as the hover flag: null means the pointer is outside.
   const [cursor, setCursor] = useState<{ x: number; y: number; side: 'prev' | 'next' } | null>(null)
   const dragStartX = useRef<number | null>(null)
@@ -60,8 +63,14 @@ export function Carousel({
   // Measured on each picture's load, so the arrow disc turns dark over a light one.
   const [isLight, setIsLight] = useState(false)
 
+  // Measured again whenever the box resizes with the screen; the width ladder in
+  // lib/media keeps that from asking for a new picture on every pixel.
   useEffect(() => {
-    setBoxWidth(root.current?.clientWidth ?? 0)
+    const box = root.current!
+    const observer = new ResizeObserver(() => setBoxWidth(box.clientWidth))
+    observer.observe(box)
+
+    return () => observer.disconnect()
   }, [])
 
   const go = (delta: number) => {

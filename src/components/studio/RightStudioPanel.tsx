@@ -12,16 +12,22 @@ import { Carousel } from '../Carousel'
 export function RightStudioPanel({
   mode,
   uploads,
+  generations,
   onUpload,
 }: {
   mode: StudioMode
   uploads: StudioUpload[]
+  /** The R2 URLs of the pictures Create made, oldest first: they page after the uploads. */
+  generations: string[]
   /** Create's button: picks the scene, as the "+ Scene" pill does. */
   onUpload: () => void
 }) {
-  // Animate's uploads are not wired yet, so create's stay out of its panel.
-  // A picture only joins the carousel once it is uploaded in cloudflare R2.
-  const shown = mode === 'create' ? uploads.filter((entry) => !entry.isUploading) : []
+//This line creates a new array of shown uploads and generations based on the current mode. If the mode is 'create', it filters out any uploads that are still uploading
+// and maps the remaining uploads to their URLs, then concatenates that with the generations array. If the mode is not 'create', it returns an empty array.
+  const shown =
+    mode === 'create'
+      ? [...uploads.filter((entry) => !entry.isUploading).map(({ url }) => url), ...generations]
+      : []
 
   return (
     <section className="mina-studio__panel">
@@ -29,7 +35,9 @@ export function RightStudioPanel({
         // Remounted whenever a picture comes or goes, so the page never points past the end.
         <Carousel
           key={shown.length}
-          media={shown.map(({ url }) => ({
+          // Opens on the newest creation, which is the last picture.
+          startIndex={mode === 'create' && generations.length ? shown.length - 1 : 0}
+          media={shown.map((url) => ({
             id: url,
             media_url: url,
             media_type: 'image',
