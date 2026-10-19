@@ -1,0 +1,22 @@
+/* In the brief's place, at its height and type, in Mina's green. */
+.mina-mina-brief {
+  height: 160px;
+  margin: 0;
+  overflow: hidden;
+  color: var(--mina-accent-green);
+  font-size: var(--mina-text-32);
+  font-weight: var(--mina-fw-med);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+/* Hidden until its turn comes, one letter after another. */
+.mina-mina-brief__letter {
+  animation: mina-mina-brief-type 0s calc(var(--letter) * var(--mina-talk-speed)) both;
+}
+
+@keyframes mina-mina-brief-type {
+  from {
+    opacity: 0;
+  }
+}

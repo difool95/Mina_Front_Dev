@@ -12,6 +12,7 @@ export const queryKeys = {
   creatorLibrary: ['creatorLibrary'] as const,
   customer: (userId: string) => ['customer', userId] as const,
   generations: (userId: string) => ['generations', userId] as const,
+  generationStatus: (generationId: string) => ['generationStatus', generationId] as const,
   likes: (userId: string) => ['likes', userId] as const,
   /** The same for everyone, so it takes no id. */
   rates: ['rates'] as const,

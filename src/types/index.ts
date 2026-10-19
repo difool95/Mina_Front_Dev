@@ -9,6 +9,7 @@ export type {
   MinaBlockHandle,
   MinaBlockUserBriefHandle,
   MmaPlatform,
+  MmaStatus,
   StillGenerationResult,
   StudioMode,
   StudioSession,

@@ -54,3 +54,9 @@ export interface StillGenerationResult {
   generationId: string
   credits: number
 }
+
+/**
+ * A generation's `mg_mma_status`: the step its pipeline is on, which picks what
+ * Mina types in the brief meanwhile. Same as the API's.
+ */
+export type MmaStatus = 'progressing' | 'scanning' | 'prompting' | 'generating' | 'done' | 'error'

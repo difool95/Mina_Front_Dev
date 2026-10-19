@@ -9,7 +9,7 @@ import { RightStudioPanel } from '@/components/studio/RightStudioPanel'
 import { RoleTagCard } from '@/components/RoleTagCard'
 import { useAccountSetup } from '@/hooks/useAccounts'
 import { useCustomerCredits } from '@/hooks/useCustomerCredits'
-import { useStartStillGeneration } from '@/hooks/useGenerations'
+import { useGenerationStatus, useStartStillGeneration } from '@/hooks/useGenerations'
 import { MINA_LOGO_URL } from '@/lib/constants'
 import { studioSession } from '@/lib/sessionStorage/studioSession'
 import { STUDIO_RATIOS, studioRatio } from '@/lib/studio'
@@ -38,11 +38,18 @@ export function StudioPage() {
   const { session } = useAuth()
   const { data: credits, isSuccess: hasCredits } = useCustomerCredits(session?.user.id)
   const startGeneration = useStartStillGeneration(session?.user.id)
+  const generationId = startGeneration.data?.generationId
+  //this line starts polling the generation status for the current generationId and userId. It uses a custom hook useGenerationStatus that takes in the generationId and 
+  // userId as parameters and returns the current status of the generation. The status is updated every few seconds until the generation has ended. 
+  const generationStatus = useGenerationStatus(generationId, session?.user.id)
+  // Mina types in the brief from the click until the generation has ended and she has said so;
+  // `progressing` covers the Create request itself, before there is a status to read.
+  const minaStatus = startGeneration.isPending || generationId ? (generationStatus ?? 'progressing') : undefined
 
   // The "Create" button is disabled while any upload is in progress, so the user cannot start a generation until all uploads are complete.
   // This prevents the user from starting a generation with incomplete or missing uploads, which could lead to errors or unexpected behavior.
   const create = () => {
-    if (!session || startGeneration.isPending || uploads.some((entry) => entry.isUploading)) return
+    if (!session || minaStatus || uploads.some((entry) => entry.isUploading)) return
 
     const {
       studioSessionId = crypto.randomUUID(),
@@ -129,6 +136,8 @@ export function StudioPage() {
             onCreate={create}
             uploads={uploads}
             onUploads={setUploads}
+            minaStatus={minaStatus}
+            onMinaEnd={startGeneration.reset}
           />
         </main>
 

@@ -1,11 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useEffect } from 'react'
 
+import { GENERATION_POLL_MS, hasEnded } from '@/lib/minaBrief'
 import { queryKeys } from '@/lib/queryKeys'
 import {
   copyLink,
   copyMediaToClipboard,
   deleteGeneration,
   downloadMedia,
+  getGenerationStatus,
   getGenerations,
   getLikedGenerationIds,
   likeGeneration,
@@ -34,6 +37,25 @@ export function useStartStillGeneration(userId: string | undefined) {
       void client.invalidateQueries({ queryKey: queryKeys.generations(userId ?? '') })
     },
   })
+}
+
+/** The step a generation is on, asked again every couple of seconds until it ends. Skipped without an id. */
+export function useGenerationStatus(generationId: string | undefined, userId: string | undefined) {
+  const client = useQueryClient()
+  const { data: status } = useQuery({
+    queryKey: queryKeys.generationStatus(generationId ?? ''),
+    queryFn: () => getGenerationStatus(generationId!),
+    enabled: Boolean(generationId),
+    refetchInterval: ({ state }) => (hasEnded(state.data) ? false : GENERATION_POLL_MS),
+  })
+
+  // A failed generation has refunded its matcha; a done one has its picture for the archive.
+  useEffect(() => {
+    if (status === 'error') void client.invalidateQueries({ queryKey: queryKeys.customer(userId ?? '') })
+    if (status === 'done') void client.invalidateQueries({ queryKey: queryKeys.generations(userId ?? '') })
+  }, [client, status, userId])
+
+  return status
 }
 
 export function useDeleteGeneration(userId: string | undefined) {

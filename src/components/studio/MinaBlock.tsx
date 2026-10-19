@@ -29,12 +29,20 @@ import { useDeleteStudioImage, useUploadStudioImage } from '@/hooks/useStudioUpl
 import { prepareStudioImage } from '@/lib/media'
 import { studioSession } from '@/lib/sessionStorage/studioSession'
 import { useAuth } from '@/providers/AuthProvider'
-import type { MinaBlockHandle, MinaBlockUserBriefHandle, StudioMode, StudioUpload, UploadKind } from '@/types'
+import type {
+  MinaBlockHandle,
+  MinaBlockUserBriefHandle,
+  MmaStatus,
+  StudioMode,
+  StudioUpload,
+  UploadKind,
+} from '@/types'
 
 import { Rule } from '../builder/Table'
 import { StudioLibrary } from '../studioLibrary/StudioLibrary'
 import { MinaBlockPillsAnimate } from './MinaBlockPillsAnimate'
 import { MinaBlockPillsCreate } from './MinaBlockPillsCreate'
+import { MinaBlockMinaBrief } from './MinaBlockMinaBrief'
 import { MinaBlockUploadAndLibraries } from './MinaBlockUploadAndLibraries'
 import { MinaBlockUserBrief } from './MinaBlockUserBrief'
 
@@ -58,6 +66,8 @@ export function MinaBlock({
   onCreate,
   uploads,
   onUploads,
+  minaStatus,
+  onMinaEnd,
   ref,
 }: {
   mode: StudioMode
@@ -67,6 +77,9 @@ export function MinaBlock({
   onCreate: () => void
   uploads: StudioUpload[]
   onUploads: Dispatch<SetStateAction<StudioUpload[]>>
+  /** The running Create's step, while Mina types in the brief's place; undefined the rest of the time. */
+  minaStatus: MmaStatus | undefined
+  onMinaEnd: () => void
   ref?: Ref<MinaBlockHandle>
 }) {
   const [upload, setUpload] = useState<UploadKind>('scene')
@@ -290,7 +303,11 @@ export function MinaBlock({
           />
         ))}
       <div ref={brief} className="mina-block__brief" onFocus={openLong}>
-        <MinaBlockUserBrief ref={userBrief} placeholder={BRIEF_PLACEHOLDERS[mode]} />
+        {minaStatus ? (
+          <MinaBlockMinaBrief status={minaStatus} onEnd={onMinaEnd} />
+        ) : (
+          <MinaBlockUserBrief ref={userBrief} placeholder={BRIEF_PLACEHOLDERS[mode]} />
+        )}
       </div>
       {isOpen && (
         <>
@@ -322,7 +339,7 @@ export function MinaBlock({
             {canAfford ? (
               <MinaBlockCTA
                 label={isUploading ? UPLOADING_LABEL : STUDIO_CTA_LABELS[mode]}
-                isDisabled={isUploading}
+                isDisabled={isUploading || Boolean(minaStatus)}
                 onClick={mode === 'create' ? onCreate : undefined}
               />
             ) : (
