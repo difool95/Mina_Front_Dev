@@ -97,8 +97,12 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
 }
 
 /* "Go Back" (.hyperlink-bold) on desktop, "Back" (.button-body) on a phone. */
+/* The link's own size matches its text (both classes are 11px): left unset it
+   would measure its line box against the inherited 16px, which stands it taller
+   than every other cell and sinks its text below theirs. */
 .mina-profile__back {
   color: var(--mina-ink);
+  font-size: var(--mina-text-11);
 }
 
 .mina-profile__back--long {
