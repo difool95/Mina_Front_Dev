@@ -18,26 +18,34 @@
   transition: opacity var(--mina-anim-fade) ease;
 }
 
+/* Type and hover come from `.pill-small` and `.button-cta` (index.css). The
+   rules below that change them are qualified by the block, so they outrank index.css. */
 .mina-block__vision {
   margin-top: 6px;
-  font-size: var(--mina-fs-micro);
-  font-weight: var(--mina-fw-med);
+}
+
+/* The vision switch rests a little faded and never takes the pill's hover background. */
+.mina-block .mina-block__vision {
+  opacity: 0.9;
+  line-height: normal;
+}
+
+.mina-block .mina-block__vision:hover {
+  background: none;
 }
 
 .mina-block__cta {
-  font-size: var(--mina-cta-fs);
-  font-weight: var(--mina-cta-fw);
-  text-decoration: underline;
   text-underline-offset: var(--mina-btn-underline-offset);
 }
 
-.mina-block__vision:hover,
-.mina-block__cta:hover:not(:disabled) {
-  opacity: 0.8;
+/* "I need more matcha": no hover or click change. */
+.mina-block .mina-block__cta--still:hover,
+.mina-block .mina-block__cta--still:active {
+  opacity: 1;
 }
 
 /* "Uploading...": faded, and no hover to suggest it can be pressed. */
-.mina-block__cta:disabled {
+.mina-block .mina-block__cta:disabled {
   opacity: var(--mina-muted-o);
   color: inherit;
   cursor: default;

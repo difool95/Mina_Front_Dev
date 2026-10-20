@@ -48,7 +48,7 @@ export function MinaBlockUploadAndLibraries({
 
   return (
     <div className="mina-uploads">
-      <p className="mina-uploads__title">{title}</p>
+      <p className="mina-uploads__title paragraph-title">{title}</p>
       {error && <p className="mina-uploads__error">{error}</p>}
 
       <div className="mina-uploads__cards">
@@ -94,7 +94,7 @@ export function MinaBlockUploadAndLibraries({
 
         {canAdd && (
           <button
-            className="mina-uploads__add"
+            className="mina-uploads__add button-box"
             type="button"
             aria-label={title}
             data-tooltip={addLabel}
@@ -106,7 +106,7 @@ export function MinaBlockUploadAndLibraries({
         {/* The library button card only shows when the row is empty, so it doesn't compete with the "+" button. */}
         {library && !images.length && (
           <button
-            className="mina-uploads__library"
+            className="mina-uploads__library button-library"
             type="button"
             aria-label={library.label}
             data-tooltip={library.label}

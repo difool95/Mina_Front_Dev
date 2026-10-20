@@ -352,7 +352,7 @@ export function MinaBlock({
                 onClick={mode === 'create' ? onCreate : undefined}
               />
             ) : (
-              <MinaBlockCTA label={NEED_MATCHA_LABEL} onClick={onNeedMatcha} />
+              <MinaBlockCTA label={NEED_MATCHA_LABEL} isStill onClick={onNeedMatcha} />
             )}
           </div>
         </>
@@ -391,15 +391,31 @@ function MinaBlockVisionIntelligence() {
   const [isOn, setIsOn] = useState(true)
 
   return (
-    <button className="mina-block__vision" type="button" onClick={() => setIsOn((was) => !was)}>
+    <button className="mina-block__vision pill-small" type="button" onClick={() => setIsOn((was) => !was)}>
       Mina vision intelligence: {isOn ? 'ON' : 'OFF'}
     </button>
   )
 }
 
-function MinaBlockCTA({ label, isDisabled, onClick }: { label: string; isDisabled?: boolean; onClick?: () => void }) {
+function MinaBlockCTA({
+  label,
+  isDisabled,
+  isStill,
+  onClick,
+}: {
+  label: string
+  isDisabled?: boolean
+  /** No hover or click change, for "I need more matcha". */
+  isStill?: boolean
+  onClick?: () => void
+}) {
   return (
-    <button className="mina-block__cta" type="button" disabled={isDisabled} onClick={onClick}>
+    <button
+      className={`mina-block__cta button-cta${isStill ? ' mina-block__cta--still' : ''}`}
+      type="button"
+      disabled={isDisabled}
+      onClick={onClick}
+    >
       {label}
     </button>
   )

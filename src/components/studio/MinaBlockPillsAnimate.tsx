@@ -26,47 +26,50 @@ export function MinaBlockPillsAnimate({
     <div className="mina-pills">
       {/* The only upload kind here, so it is always the one lit. */}
       <button
-        className="mina-pills__pill"
+        className="mina-pills__pill pill"
         type="button"
         aria-pressed="true"
         data-tooltip="Add frames & elements - start frame first, then images / video / audio as references"
       >
-        <span className="mina-pills__icon" aria-hidden="true">
+        <span className="mina-pills__icon h5" aria-hidden="true">
           +
         </span>
-        Frames &amp; elements
+        <span className="h5">Frames &amp; elements</span>
       </button>
 
       {/* Fixed for now: the one animation style there is. */}
-      <span className="mina-pills__pill mina-pills__pill--text" data-tooltip="Director - 5 matchas">
-        Director
+      <span
+        className="mina-pills__pill mina-pills__pill--text mina-pills__engine pill-small"
+        data-tooltip="Director - 5 matchas"
+      >
+        <span className="h5">Director</span>
       </span>
 
       <button
-        className="mina-pills__pill mina-pills__pill--text"
+        className="mina-pills__pill mina-pills__pill--text pill"
         type="button"
         data-tooltip={costTooltip}
         onClick={onNextResolution}
       >
-        {resolution}
+        <span className="h5">{resolution}</span>
       </button>
 
       <button
-        className="mina-pills__pill mina-pills__pill--text"
+        className="mina-pills__pill mina-pills__pill--text pill"
         type="button"
         data-tooltip="Toggle audio"
         onClick={() => setIsMuted((was) => !was)}
       >
-        {isMuted ? 'Muted' : 'Sound'}
+        <span className="h5">{isMuted ? 'Muted' : 'Sound'}</span>
       </button>
 
       <button
-        className="mina-pills__pill mina-pills__pill--text"
+        className="mina-pills__pill mina-pills__pill--text pill"
         type="button"
         data-tooltip={costTooltip}
         onClick={onNextDuration}
       >
-        {duration}
+        <span className="h5">{duration}</span>
       </button>
 
       <MinaBlockRatioPill />

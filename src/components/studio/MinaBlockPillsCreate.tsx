@@ -33,7 +33,7 @@ export function MinaBlockPillsCreate({
         return (
           <button
             key={kind}
-            className="mina-pills__pill"
+            className="mina-pills__pill pill"
             type="button"
             aria-pressed={upload === kind}
             data-tooltip={tooltip}
@@ -43,21 +43,21 @@ export function MinaBlockPillsCreate({
               onOpenFilePicker(kind)
             }}
           >
-            <span className="mina-pills__icon" aria-hidden="true">
+            <span className="mina-pills__icon h5" aria-hidden="true">
               {thumbnail ? <img src={cfImage(thumbnail, imageWidthFor(22))} alt="" draggable={false} /> : '+'}
             </span>
-            {label}
+            <span className="h5">{label}</span>
           </button>
         )
       })}
 
       <button
-        className="mina-pills__pill mina-pills__pill--text"
+        className="mina-pills__pill mina-pills__pill--text pill-small"
         type="button"
         data-tooltip={STILL_LANES_TOOLTIP}
         onClick={onNextLane}
       >
-        {laneLabel}
+        <span className="h5">{laneLabel}</span>
       </button>
 
       <MinaBlockRatioPill />

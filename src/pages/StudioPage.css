@@ -47,20 +47,9 @@
   gap: 24px;
 }
 
+/* Type and opacity come from `.button-header` (index.css). */
 .mina-studio__mode {
   transition: opacity var(--mina-anim-fade) ease;
-  opacity: 0.4;
-  font-size: var(--mina-header-toggle-fs);
-  font-weight: var(--mina-header-toggle-fw);
-}
-
-.mina-studio__mode[aria-current='true'] {
-  opacity: 1;
-}
-
-/* Must follow the selected rule, which matches with equal weight. */
-.mina-studio__mode:hover {
-  opacity: 0.8;
 }
 
 /* Inset past the logo and footer. Scrolls on a short window, and the block is
@@ -95,15 +84,11 @@
   inset: 0;
 }
 
+/* Type and colour come from `.button-upload` (index.css). */
 .mina-studio__upload {
-  transition: color var(--mina-anim-fade) ease;
-  color: #0003;
-  font-size: var(--mina-fs-small);
-  font-weight: var(--mina-fw-light);
-}
-
-.mina-studio__upload:hover {
-  color: #0006;
+  transition:
+    color var(--mina-anim-fade) ease,
+    opacity var(--mina-anim-fade) ease;
 }
 
 /* ── shared button reset ──

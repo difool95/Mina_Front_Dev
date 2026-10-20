@@ -28,7 +28,7 @@ export function MinaBlockRatioPill() {
 
   return (
     <button
-      className="mina-pills__pill mina-pills__pill--ratio"
+      className="mina-pills__pill mina-pills__pill--ratio pill"
       type="button"
       data-tooltip="Tap to cycle · Hold to flip landscape"
       onPointerDown={startHold}
@@ -50,8 +50,8 @@ export function MinaBlockRatioPill() {
           style={{ '--icon': `url('${RATIO_ICONS[ratioValue]}')` } as CSSProperties}
         />
       </span>
-      {ratioValue}
-      <span className="mina-pills__muted">{isLandscape ? ratio.landscapeLabel : ratio.label}</span>
+      <span className="h5">{ratioValue}</span>
+      <span className="mina-pills__muted pill-sub">{isLandscape ? ratio.landscapeLabel : ratio.label}</span>
     </button>
   )
 }

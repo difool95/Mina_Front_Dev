@@ -21,41 +21,52 @@ interface AppFooterProps {
  * footer keeps Tutorials and Matcha instead of the Studio link.
  */
 export function AppFooter({ current, mobileOnly, onOpenMatcha }: AppFooterProps) {
+  const separator = (
+    <span className="separator" aria-hidden="true">
+      |
+    </span>
+  )
+
   return (
-    <footer className={`mina-appfooter${mobileOnly ? ' mina-appfooter--mobile-only' : ''}`}>
+    <footer className={`mina-appfooter studio-footer${mobileOnly ? ' mina-appfooter--mobile-only' : ''}`}>
       <Link
-        className="mina-appfooter__link mina-appfooter__link--mobile"
+        className={`mina-appfooter__link mina-appfooter__link--mobile button-footer${current === 'studio' ? ' is-active' : ''}`}
         to="/"
         aria-current={current === 'studio' ? 'page' : undefined}
       >
         Studio
+        {separator}
       </Link>
       <Link
-        className="mina-appfooter__link"
+        className={`mina-appfooter__link button-footer${current === 'profile' ? ' is-active' : ''}`}
         to="/profile"
         aria-current={current === 'profile' ? 'page' : undefined}
       >
         Profile
+        {separator}
       </Link>
-      <button className="mina-appfooter__link mina-appfooter__link--desktop" type="button">
+      <button className="mina-appfooter__link mina-appfooter__link--desktop button-footer" type="button">
         Tutorials
+        {separator}
       </button>
       <button
-        className="mina-appfooter__link mina-appfooter__link--desktop"
+        className="mina-appfooter__link mina-appfooter__link--desktop button-footer"
         type="button"
         onClick={onOpenMatcha}
       >
         Matcha
+        {separator}
       </button>
       <a
-        className="mina-appfooter__link"
+        className="mina-appfooter__link mina-appfooter__help button-footer"
         href={WHATSAPP_HELP_URL}
         target="_blank"
         rel="noreferrer"
       >
         Need help?
+        {separator}
       </a>
-      <span className="mina-appfooter__curators">{CURATOR_COUNT_LABEL}</span>
+      <span className="mina-appfooter__curators counter">{CURATOR_COUNT_LABEL}</span>
     </footer>
   )
 }

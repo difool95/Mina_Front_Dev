@@ -4,7 +4,8 @@
   gap: 8px;
 }
 
-/* Every pill stands as tall as one with an icon slot, text-only ones included. */
+/* Every pill stands as tall as one with an icon slot, text-only ones included.
+   Type and hover come from `.pill` / `.pill-small`, the text inside from `.h5` (index.css). */
 .mina-pills__pill {
   display: inline-flex;
   align-items: center;
@@ -13,17 +14,15 @@
   min-height: 34px;
   max-height: 34px;
   border-radius: 0;
-  background: rgba(var(--mina-ink-rgb), 0.02);
+  background: var(--mina-ink-2);
   padding: var(--mina-pill-pad);
-  font-size: var(--mina-fs-micro);
-  font-weight: var(--mina-fw-med);
-  letter-spacing: 0;
-  line-height: 1.1;
   white-space: nowrap;
   /* Holding the ratio pill must not start selecting its text. */
   user-select: none;
   -webkit-touch-callout: none;
-  transition: background-color var(--mina-anim-fade) ease;
+  transition:
+    background-color var(--mina-anim-fade) ease,
+    opacity var(--mina-anim-fade) ease;
 }
 
 /* The first pill sits on the block's left edge, so its tooltip — the long
@@ -38,10 +37,15 @@
   padding: var(--mina-filter-pill-pad);
 }
 
-/* Only real buttons darken on hover — a fixed pill like Director is a span. */
-button.mina-pills__pill:hover,
 .mina-pills__pill[aria-pressed='true'] {
-  background: rgba(var(--mina-ink-rgb), 0.05);
+  background: var(--mina-ink-5);
+}
+
+/* Animate's engine (Director) is fixed: on hover it only takes the faintest background.
+   Qualified by the block so it outranks `.pill-small:hover` from index.css. */
+.mina-pills .mina-pills__engine:hover {
+  opacity: 1;
+  background: var(--mina-ink-2);
 }
 
 /* The ratio pill keeps its own look: the shared pill style above leaves it out. */
@@ -50,8 +54,6 @@ button.mina-pills__pill:hover,
   max-height: none;
   border-radius: 2px;
   background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.03);
-  letter-spacing: inherit;
-  line-height: normal;
 }
 
 /* A square of its own for the "+" or the ratio frame, not just a space before the label. */
@@ -61,9 +63,14 @@ button.mina-pills__pill:hover,
   place-items: center;
   width: 22px;
   height: 22px;
-  /* Sizes the "+"; the ratio icon and thumbnails ignore it. */
-  font-size: var(--mina-fs-micro);
-  font-weight: var(--mina-fw-strong);
+}
+
+/* The "+" (.h5), bolder and tighter than the pill's text. Qualified by the
+   block so it outranks `.h5` from index.css. */
+.mina-pills .mina-pills__icon {
+  font-weight: var(--mina-weight-bold);
+  letter-spacing: var(--mina-tracking-body);
+  line-height: 1;
 }
 
 /* The pill's first picture, cropped to the square the "+" stood in. Pinned
@@ -84,15 +91,6 @@ button.mina-pills__pill:hover,
   height: 14px;
   background: currentColor;
   mask: var(--icon) center / contain no-repeat;
-}
-
-/* The ratio's name beside its value — Tiktok/Reel, Post… */
-.mina-pills__muted {
-  opacity: 0.6;
-  font-size: var(--mina-fs-small);
-  font-weight: var(--mina-fw-med);
-  letter-spacing: 0;
-  line-height: 1;
 }
 
 /* One line that swipes sideways instead of wrapping onto a second. */

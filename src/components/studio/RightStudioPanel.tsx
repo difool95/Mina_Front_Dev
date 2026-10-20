@@ -47,7 +47,7 @@ export function RightStudioPanel({
         />
       ) : (
         <button
-          className="mina-studio__upload"
+          className="mina-studio__upload button-upload"
           type="button"
           onClick={mode === 'create' ? onUpload : undefined}
         >

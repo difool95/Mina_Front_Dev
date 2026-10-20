@@ -10,52 +10,19 @@
   display: none;
 }
 
-.mina-appfooter__link,
-.mina-appfooter__curators {
-  color: inherit;
-  font-size: var(--mina-fs-label);
-  font-weight: var(--mina-fw-med);
-}
-
-.mina-appfooter__curators {
-  color: var(--mina-muted);
-  font-weight: var(--mina-fw-light);
-}
-
-/* Must follow the base curator rule above, which matches with equal weight.
-   Held back from the full ink, so the footer sits behind the workspace.
-   Desktop only: the phone bar sets its own fade in the media query below. */
-@media (width >= 768px) {
-  .mina-appfooter__link {
-    opacity: 0.75;
-    font-size: var(--mina-fs-small);
-    font-weight: var(--mina-weight-medium);
-    letter-spacing: -.02em;
-  }
-
-  .mina-appfooter__curators {
-    opacity: 0.2;
-    color: inherit;
-    font-size: var(--mina-fs-small);
-    font-weight: var(--mina-weight-medium);
-    letter-spacing: -0.02em;
-  }
-}
-
+/* Type, opacity and the page you are on (.is-active) come from `.button-footer`,
+   the count's from `.counter`, the "|" from `.separator` (index.css). */
 .mina-appfooter__link {
   transition: opacity var(--mina-anim-fade) ease;
 }
 
-/* Outranks the selected phone link's full opacity, so hover reads everywhere. */
-.mina-appfooter .mina-appfooter__link:hover {
-  opacity: 0.8;
+.mina-appfooter__help {
+  letter-spacing: var(--mina-tracking-body);
 }
 
-/* The "|" between entries, matching the signed-out footer. */
-.mina-appfooter__link::after {
+/* The "|" after each entry, matching the signed-out footer. */
+.mina-appfooter__link .separator {
   margin-left: 10px;
-  color: var(--mina-border-strong);
-  content: '|';
 }
 
 .mina-appfooter__link--mobile {
@@ -94,19 +61,10 @@
   .mina-appfooter__link {
     position: relative;
     flex: 1;
-    /* Faded until it is the page you are on. */
-    opacity: 0.75;
-    font-weight: var(--mina-weight-medium);
     text-align: center;
   }
 
-  .mina-appfooter__link[aria-current='page'] {
-    opacity: 0.8;
-    color: var(--mina-ink);
-    font-weight: var(--mina-fw-strong);
-  }
-
-  .mina-appfooter__link::after {
+  .mina-appfooter__link .separator {
     position: absolute;
     top: 0;
     right: 0;
@@ -128,12 +86,6 @@
   .mina-appfooter__link--mobile {
     flex: 0.6 ;
     text-align: left;
-  }
-
-  .mina-appfooter__link,
-  .mina-appfooter__curators {
-    font-size: var(--mina-fs-small);
-    letter-spacing: -0.02em;
   }
 
   .mina-appfooter__link--mobile {

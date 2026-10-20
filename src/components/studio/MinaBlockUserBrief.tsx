@@ -71,7 +71,7 @@ export function MinaBlockUserBrief({
   return (
     <div className="mina-brief">
       <textarea
-        className="mina-brief__input"
+        className="mina-brief__input h1"
         value={brief}
         maxLength={BRIEF_MAX_LENGTH}
         placeholder={placeholder}
