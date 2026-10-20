@@ -310,8 +310,8 @@ body {
   letter-spacing: var(--mina-tracking-body);
   color: var(--mina-black-20);
 }
-@media (max-width: 900px) {
-  .studio-footer .separator { font-size: 0px; color: transparent; }  /* hidden in Studio/Profile footer */
+@media (min-width: 768px) and (max-width: 900px) {
+  .studio-footer .separator { font-size: 0px; color: transparent; }  /* hidden in the Studio/Profile footer on tablets; phones keep them */
 }
 
 /* ── studio ── */
