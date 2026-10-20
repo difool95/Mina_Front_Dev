@@ -129,8 +129,12 @@
   --mina-text-13: 13px;
   --mina-text-32: 32px;
   --mina-text-14: 14px;
+  --mina-text-16: 16px;
   --mina-weight-medium: 500;
   --mina-tracking-tight: -0.01em;   /* must be em: the spec computes -0.11px at 11px and -0.2px at 20px */
+  --mina-tracking-body: 0em;
+  --mina-ink-30: rgba(8, 10, 0, 0.3);
+  --mina-ink-45: rgba(8, 10, 0, 0.45);
   --mina-space-2xs: 4px;
   --mina-space-9xl: 96px;
   --mina-space-100: 100px;
@@ -214,4 +218,87 @@ body {
 /* Once the account dropdown is open the tooltip would sit on top of it. */
 [aria-expanded='true'][data-tooltip]:hover::after {
   opacity: 0;
+}
+
+/* ── design system ──
+   One class per kind of text element, called from the components. A
+   component's own CSS only adds layout, and any one-off change on top. */
+
+.button-header-link {
+  font-size: var(--mina-text-11);
+  font-weight: var(--mina-weight-extrabold);   /* shows as 700, the font stops at 700 */
+  letter-spacing: var(--mina-tracking-tight);
+}
+.button-header-link:hover  { opacity: 0.92; }
+.button-header-link:active { opacity: 0.72; }
+
+.button-login {
+  font-size: var(--mina-text-20);
+  font-weight: var(--mina-weight-semibold);
+  letter-spacing: var(--mina-tracking-tight);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  opacity: 0.9;
+}
+.button-login:hover  { opacity: 1; }
+.button-login:active { opacity: 0.6; }
+
+.button-quiet {
+  font-size: var(--mina-text-13);
+  font-weight: var(--mina-weight-regular);
+  opacity: 0.75;
+}
+.button-quiet:hover  { opacity: 0.9; }
+.button-quiet:active { opacity: 0.5; }
+
+.h3 {
+  font-size: var(--mina-text-20);
+  font-weight: var(--mina-weight-semibold);
+  letter-spacing: var(--mina-tracking-tight);
+}
+
+.hyperlink {
+  font-size: var(--mina-text-11);
+  font-weight: var(--mina-weight-semibold);
+  letter-spacing: var(--mina-tracking-tight);
+  text-decoration: underline;
+}
+.hyperlink:hover  { opacity: 0.85; }
+.hyperlink:active { opacity: 0.6; }
+
+.comment {
+  font-size: var(--mina-text-10);
+  font-weight: var(--mina-weight-regular);
+  letter-spacing: var(--mina-tracking-body);
+  color: var(--mina-ink-45);
+}
+
+.button-icon {
+  font-size: var(--mina-text-16);
+  font-weight: var(--mina-weight-regular);
+}
+.button-icon:hover  { opacity: 0.8; }
+.button-icon:active { opacity: 0.6; }
+
+.button-footer {
+  font-size: var(--mina-text-10);
+  font-weight: var(--mina-weight-medium);
+  opacity: 0.75;
+}
+.button-footer.is-active { font-weight: var(--mina-weight-bold); }
+.button-footer:hover  { opacity: 0.95; }
+.button-footer:active { opacity: 0.6; }
+@media (max-width: 768px) {
+  .login-footer .button-footer,
+  .login-footer .separator { font-size: clamp(8px, 2.7vw, 11px); }  /* login only = 10.125px on a 375 phone */
+}
+
+.separator {
+  font-size: var(--mina-text-10);
+  font-weight: var(--mina-weight-medium);
+  letter-spacing: var(--mina-tracking-body);
+  color: var(--mina-black-20);
+}
+@media (max-width: 900px) {
+  .studio-footer .separator { font-size: 0px; color: transparent; }  /* hidden in Studio/Profile footer */
 }

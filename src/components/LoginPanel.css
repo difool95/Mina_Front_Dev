@@ -90,15 +90,10 @@
   mask: url('/assets/icons/left-toggle.svg') center / contain no-repeat;
 }
 
+/* Type and opacity come from the design system classes (index.css). */
 .mina-login__cta {
   color: inherit;
-  opacity: 0.9;
-  font-size: var(--mina-fs-h4);
-  font-weight: var(--mina-fw-med);
-  letter-spacing: var(--mina-tracking-tight);
   text-align: left;
-  text-decoration: underline;
-  text-underline-offset: var(--mina-btn-underline-offset);
 }
 
 .mina-login__cta,
@@ -106,28 +101,18 @@
   transition: opacity var(--mina-anim-fade) ease;
 }
 
-.mina-login__cta:hover:not(:disabled) {
-  opacity: 0.8;
-}
-
-.mina-login__alt:hover {
-  opacity: 0.9;
-}
-
 .mina-login__cta:disabled {
   cursor: default;
 }
 
-.mina-login__cta--static {
+/* Qualified by the block: index.css loads last and its `.button-login` underline would otherwise win the tie. */
+.mina-login .mina-login__cta--static {
   margin: 0;
   text-decoration: none;
 }
 
 .mina-login__alt {
   margin-top: var(--mina-space-2xs);
-  color: var(--mina-ink-75);
-  font-size: var(--mina-text-13);
-  font-weight: var(--mina-weight-regular);
 }
 
 .mina-login__input {
@@ -138,9 +123,6 @@
   background: transparent;
   color: var(--mina-text);
   font-family: inherit;
-  font-size: var(--mina-fs-h4);
-  font-weight: var(--mina-fw-med);
-  letter-spacing: var(--mina-tracking-tight);
 }
 
 .mina-login__input::placeholder {
@@ -194,18 +176,24 @@
   font-size: var(--mina-fs-micro);
 }
 
-/* "Sign in" sits one step down from the primary actions. Must stay after
-   __cta — equal specificity, so source order decides. */
-.mina-login__reveal-text {
-  font-size: var(--mina-fs-label);
+/* "Sign in" (.hyperlink) rests a little faded and lights up fully on hover.
+   Qualified by the block so it outranks `.hyperlink:hover` from index.css. */
+.mina-login .mina-login__reveal-text {
+  opacity: 0.85;
 }
 
-/* The one-time-link explainer under "Sign in". */
+.mina-login .mina-login__reveal-text:hover {
+  opacity: 1;
+}
+
+/* The one-time-link explainer under "Sign in" (.comment), lighter than a usual comment. */
 .mina-login__hint {
   margin: var(--mina-space-s) 0 0;
   max-width: 340px;
-  color: rgba(var(--mina-ink-rgb), var(--mina-muted-o));
-  font-size: var(--mina-fs-small);
+}
+
+.mina-login .mina-login__hint {
+  color: var(--mina-ink-30);
 }
 
 .mina-login__error {

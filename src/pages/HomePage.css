@@ -34,10 +34,14 @@
   height: auto;
 }
 
+/* The tutorial's type comes from `.button-header-link` (index.css). */
 .mina-home__tutorial,
 .mina-home__logout {
   padding: var(--mina-space-m) var(--mina-space-l);
   color: var(--mina-ink);
+}
+
+.mina-home__logout {
   font-size: var(--mina-text-11);
   font-weight: var(--mina-weight-bold);
   letter-spacing: var(--mina-tracking-tight);
@@ -68,7 +72,7 @@
   font-weight: var(--mina-weight-medium);
 }
 
-.mina-home__footer-link,
+/* The links' type and opacity come from `.button-footer` (index.css). */
 .mina-home__curators {
   font-size: var(--mina-fs-small, 10px);
   font-weight: var(--mina-weight-medium);
@@ -80,26 +84,14 @@
   transition: opacity var(--mina-anim-fade) ease;
 }
 
-/* Outranks the desktop resting opacity below, so hover wins at every width. */
-.mina-home .mina-home__tutorial:hover,
-.mina-home .mina-home__footer-link:hover {
-  opacity: 0.8;
+.mina-home__help {
+  letter-spacing: var(--mina-tracking-body);
 }
 
-/* Desktop only: the phone footer sets its own ink in the mobile query. */
-@media (width >= 768px) {
-  .mina-home__footer-link {
-    opacity: 0.75;
-    color: inherit;
-  }
-}
-
-/* The "|" separators between footer items, including before the curator count.
-   Its margin matches the footer gap, so the bar sits centred between items. */
-.mina-home__footer-link::after {
+/* The "|" (.separator) after each footer link, including before the curator
+   count. Its margin matches the footer gap, so the bar sits centred between items. */
+.mina-home__footer-link .separator {
   margin-left: var(--mina-space-l);
-  color: var(--mina-black-20);
-  content: '|';
 }
 
 .mina-home__curators {
@@ -187,10 +179,13 @@
   .mina-home__curators {
     position: relative;
     flex: 2 1 auto;
+    text-align: center;
+  }
+
+  .mina-home__curators {
     color: var(--mina-ink-60);
     font-size: var(--mina-fs-small);
     font-weight: var(--mina-weight-semibold);
-    text-align: center;
   }
 
   .mina-home__footer > :first-child {
@@ -203,7 +198,7 @@
     text-align: right;
   }
 
-  .mina-home__footer-link::after {
+  .mina-home__footer-link .separator {
     position: absolute;
     right: 0;
     margin-left: 0;

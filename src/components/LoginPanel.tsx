@@ -58,14 +58,14 @@ export function LoginPanel() {
     <div className="mina-login">
       <div className="mina-login__choice" data-hidden={emailStep || undefined} inert={emailStep}>
         <button
-          className="mina-login__cta"
+          className="mina-login__cta button-login"
           type="button"
           disabled={googleLoading}
           onClick={() => void loginWithGoogle()}
         >
           {googleLoading ? 'Opening Google…' : 'Login with Google'}
         </button>
-        <button className="mina-login__alt" type="button" onClick={() => setEmailStep(true)}>
+        <button className="mina-login__alt button-quiet" type="button" onClick={() => setEmailStep(true)}>
           Use email instead
         </button>
         {error && !emailStep && <p className="mina-login__error">{error}</p>}
@@ -73,7 +73,7 @@ export function LoginPanel() {
 
       <div className="mina-login__email" data-hidden={!emailStep || undefined} inert={!emailStep}>
         <button
-          className="mina-login__back"
+          className="mina-login__back button-icon"
           type="button"
           aria-label="Back"
           onClick={() => setEmailStep(false)}
@@ -86,7 +86,7 @@ export function LoginPanel() {
             {/* Unrecognised domains get no deep link, so fall back to plain text. */}
             {webmail ? (
               <a
-                className="mina-login__cta"
+                className="mina-login__cta button-login"
                 href={webmail.url}
                 target="_blank"
                 rel="noreferrer"
@@ -94,7 +94,7 @@ export function LoginPanel() {
                 Open {webmail.name}
               </a>
             ) : (
-              <p className="mina-login__cta mina-login__cta--static">Check your inbox</p>
+              <p className="mina-login__cta mina-login__cta--static button-login">Check your inbox</p>
             )}
             <p className="mina-login__note">
               We&rsquo;ve sent a sign-in link to <strong>{email.trim()}</strong>. Open it to
@@ -113,7 +113,7 @@ export function LoginPanel() {
             }}
           >
             <input
-              className="mina-login__input"
+              className="mina-login__input h3"
               type="email"
               placeholder="Type email here"
               value={email}
@@ -131,13 +131,13 @@ export function LoginPanel() {
               {/* Revealed by the first character typed, hidden when cleared. */}
               <div className="mina-login__reveal" data-hidden={!typed || undefined} inert={!typed}>
                 <button
-                  className="mina-login__cta mina-login__reveal-text"
+                  className="mina-login__cta mina-login__reveal-text hyperlink"
                   type="submit"
                   disabled={status === 'sending'}
                 >
                   {status === 'sending' ? 'Sending link…' : 'Sign in'}
                 </button>
-                <p className="mina-login__hint">
+                <p className="mina-login__hint comment">
                   We&rsquo;ll email you a one-time link. If this address is new, that email will{' '}
                   also confirm your account.
                 </p>
