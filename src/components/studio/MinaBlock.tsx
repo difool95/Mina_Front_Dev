@@ -18,6 +18,7 @@ import {
   LIBRARY_PREVIEW_URLS,
   NEED_MATCHA_LABEL,
   SCENE_LIBRARY_BRIEF,
+  STILL_LANES,
   STUDIO_CTA_LABELS,
   UPLOADING_LABEL,
   UPLOAD_ERRORS,
@@ -173,9 +174,15 @@ export function MinaBlock({
   const [durationIndex, setDurationIndex] = useState(0)
   const resolution = ANIMATE_RESOLUTIONS[resolutionIndex]!
   const duration = ANIMATE_DURATIONS[durationIndex]!
+  // Kept in sessionStorage, where the Create request reads it.
+  const [laneIndex, setLaneIndex] = useState(() =>
+    Math.max(0, STILL_LANES.findIndex((entry) => entry.lane === studioSession.read().lane)),
+  )
+  const lane = STILL_LANES[laneIndex]!
+  useEffect(() => studioSession.save({ lane: lane.lane }), [lane])
   //If the image is in the process of being uploaded, the create button is disabled / changes the text to uploading... to prevent the user from starting a generation with incomplete or missing uploads.
   const isUploading = mode === 'create' && uploads.some((entry) => entry.isUploading)
-  const canAfford = credits === undefined || canAffordGeneration(credits, mode, resolution, duration)
+  const canAfford = credits === undefined || canAffordGeneration(credits, mode, lane, resolution, duration)
   const [uploadSwitch, setUploadSwitch] = useState<'up' | 'down' | null>(null)
   const [leavingUpload, setLeavingUpload] = useState<UploadKind | null>(null)
 
@@ -300,6 +307,8 @@ export function MinaBlock({
             uploads={uploads}
             onSelectUploadKind={selectUploadKind}
             onOpenFilePicker={openFilePicker}
+            laneLabel={lane.label}
+            onNextLane={() => setLaneIndex((index) => (index + 1) % STILL_LANES.length)}
           />
         ))}
       <div ref={brief} className="mina-block__brief" onFocus={openLong}>

@@ -45,8 +45,8 @@ export const DEFAULT_MATCHA_PACK = 500
 
 /** What a generation costs, by what it is. One row of the pricing table each. */
 export const MATCHA_RATES = [
-  { kinds: ['1 Niche', '1 Creative', '1 Creative+'], matchas: 1 },
-  { kinds: ['2s Director', '4s Quicks'], matchas: 2 },
+  { kinds: ['1 Niche', '1 Creative'], matchas: 1 },
+  { kinds: ['1 Creative+', '2s Director', '4s Quicks'], matchas: 2 },
   { kinds: ['1s 4K Director', '2s 4K Quicks'], matchas: 3 },
 ] as const
 

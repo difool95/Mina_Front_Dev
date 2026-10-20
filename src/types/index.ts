@@ -12,6 +12,7 @@ export type {
   MmaPlatform,
   MmaStatus,
   StillGenerationResult,
+  StillLane,
   StudioMode,
   StudioSession,
   StudioUpload,

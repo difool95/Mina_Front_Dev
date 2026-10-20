@@ -71,7 +71,7 @@ export function StudioPage() {
       studioSessionId = crypto.randomUUID(),
       ratioIndex = 0,
       isLandscape = false,
-      isCreative = false,
+      lane = 'niche',
       brief = '',
       locked = '',
     } = studioSession.read()
@@ -83,7 +83,7 @@ export function StudioPage() {
         platform: STUDIO_RATIOS[ratioIndex]!.platform,
         // The image engine renders this ratio, landscape flip included.
         aspectRatio: studioRatio(ratioIndex, isLandscape),
-        isCreative,
+        lane,
         // MMA reads the locked strip as the brief's last line.
         brief: [brief, locked].filter(Boolean).join('\n'),
         //this line maps the uploads array to a new array of objects that only contain the kind, url, and origin properties. This is done to ensure that only

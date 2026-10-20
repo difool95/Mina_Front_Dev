@@ -1,8 +1,5 @@
-import { useEffect, useState } from 'react'
-
 import { cfImage, imageWidthFor } from '@/lib/media'
-import { UPLOAD_KINDS } from '@/lib/studio'
-import { studioSession } from '@/lib/sessionStorage/studioSession'
+import { STILL_LANES_TOOLTIP, UPLOAD_KINDS } from '@/lib/studio'
 import type { StudioUpload, UploadKind } from '@/types'
 
 import { MinaBlockRatioPill } from './MinaBlockRatioPill'
@@ -14,16 +11,17 @@ export function MinaBlockPillsCreate({
   uploads,
   onSelectUploadKind,
   onOpenFilePicker,
+  laneLabel,
+  onNextLane,
 }: {
   upload: UploadKind
   uploads: StudioUpload[]
   onSelectUploadKind: (kind: UploadKind) => void
   /** Opens the file picker for that pill — the same as the "+" card under it. */
   onOpenFilePicker: (kind: UploadKind) => void
+  laneLabel: string
+  onNextLane: () => void
 }) {
-  const [isCreative, setIsCreative] = useState(() => studioSession.read().isCreative ?? false)
-  useEffect(() => studioSession.save({ isCreative }), [isCreative])
-
   return (
     <div className="mina-pills">
       {/* Hovering picks one and it stays picked, so exactly one is ever lit.
@@ -56,10 +54,10 @@ export function MinaBlockPillsCreate({
       <button
         className="mina-pills__pill mina-pills__pill--text"
         type="button"
-        data-tooltip="Niche - 1 matcha · Creative - 1 matcha"
-        onClick={() => setIsCreative((was) => !was)}
+        data-tooltip={STILL_LANES_TOOLTIP}
+        onClick={onNextLane}
       >
-        {isCreative ? 'Creative' : 'Niche'}
+        {laneLabel}
       </button>
 
       <MinaBlockRatioPill />

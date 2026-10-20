@@ -1,4 +1,4 @@
-import type { AspectRatio, MmaPlatform, Ratio, StudioMode, UploadKind } from '@/types'
+import type { AspectRatio, MmaPlatform, Ratio, StillLane, StudioMode, UploadKind } from '@/types'
 
 /** What the brief is set to when a scene is picked from the scene library. */
 export const SCENE_LIBRARY_BRIEF = {
@@ -50,8 +50,17 @@ export const ANIMATE_MATCHA_COST: Record<
   '1080p': { '5s': 10, '10s': 18, '15s': 30, '30s': 54 },
 }
 
-/** Every Create generation costs the same. */
-export const CREATE_MATCHA_COST = 1
+/** Create mode's lane pill cycles through these in order, each with what a generation on it costs in matcha. */
+export const STILL_LANES: { lane: StillLane; label: string; matchas: number }[] = [
+  { lane: 'niche', label: 'Niche', matchas: 1 },
+  { lane: 'creative', label: 'Creative', matchas: 1 },
+  { lane: 'creative_plus', label: 'Creative+', matchas: 2 },
+]
+
+/** The lane pill's tooltip: every lane and its price. */
+export const STILL_LANES_TOOLTIP = STILL_LANES.map(
+  ({ label, matchas }) => `${label} - ${matchas} matcha${matchas > 1 ? 's' : ''}`,
+).join(' · ')
 
 /** The call to action's label when the balance cannot cover the generation. */
 export const NEED_MATCHA_LABEL = 'I need more matcha'
@@ -60,10 +69,11 @@ export const NEED_MATCHA_LABEL = 'I need more matcha'
 export function canAffordGeneration(
   credits: number,
   mode: StudioMode,
+  lane: (typeof STILL_LANES)[number],
   resolution: (typeof ANIMATE_RESOLUTIONS)[number],
   duration: (typeof ANIMATE_DURATIONS)[number],
 ) {
-  const cost = mode === 'create' ? CREATE_MATCHA_COST : ANIMATE_MATCHA_COST[resolution][duration]
+  const cost = mode === 'create' ? lane.matchas : ANIMATE_MATCHA_COST[resolution][duration]
   return credits >= cost
 }
 

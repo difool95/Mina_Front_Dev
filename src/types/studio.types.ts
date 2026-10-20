@@ -36,7 +36,7 @@ export interface StudioSession {
   brief: string
   locked: string
   uploads: StudioUpload[]
-  isCreative: boolean
+  lane: StillLane
   ratioIndex: number
   isLandscape: boolean
   /** This tab's studio session. Gone with the tab, so a reopened one starts a new session row. */
@@ -50,6 +50,9 @@ export type MmaPlatform = 'tiktok' | 'instagram-post' | 'print' | 'square'
 
 /** The ratio on the studio's ratio pill, landscape flip included. Same as the API's. */
 export type AspectRatio = '9:16' | '16:9' | '3:4' | '4:3' | '2:3' | '3:2' | '1:1'
+
+/** Create mode's lane pill: Niche, Creative or Creative+. Same as the API's. */
+export type StillLane = 'niche' | 'creative' | 'creative_plus'
 
 /** `POST /api/mma/still`: the generation it started and the balance after its charge. */
 export interface StillGenerationResult {

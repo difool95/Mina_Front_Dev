@@ -5,6 +5,7 @@ import type {
   MmaPlatform,
   MmaStatus,
   StillGenerationResult,
+  StillLane,
   StudioUpload,
 } from '@/types'
 import type { MegaGeneration } from '@/types/generation.types'
@@ -22,7 +23,7 @@ export function startStillGeneration(
     studioSessionId: string
     platform: MmaPlatform
     aspectRatio: AspectRatio
-    isCreative: boolean
+    lane: StillLane
     brief: string
     uploads: Pick<StudioUpload, 'kind' | 'url' | 'origin'>[]
   },
