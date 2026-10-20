@@ -68,10 +68,10 @@ export function CreationOtherPanel({ generation, isOpen, onToggle }: CreationOth
   return (
     <Table className="mina-other">
       <Row valign="top">
-        <p className={`mina-other__prompt${isOpen ? ' mina-other__prompt--full' : ''}`}>
+        <p className={`mina-other__prompt caption${isOpen ? ' mina-other__prompt--full' : ''}`}>
           {promptOf(generation)}
         </p>
-        <button className="mina-other__toggle" type="button" onClick={onToggle}>
+        <button className="mina-other__toggle hyperlink-small" type="button" onClick={onToggle}>
           {isOpen ? 'less' : 'more'}
         </button>
       </Row>
@@ -81,8 +81,8 @@ export function CreationOtherPanel({ generation, isOpen, onToggle }: CreationOth
           <Rule />
 
           <Row>
-            <span className="mina-other__label">Type</span>
-            <span className="mina-other__value">{details.type}</span>
+            <span className="mina-other__label h6">Type</span>
+            <span className="mina-other__value h6">{details.type}</span>
           </Row>
 
           <Rule />
@@ -90,9 +90,9 @@ export function CreationOtherPanel({ generation, isOpen, onToggle }: CreationOth
           {/* The buttons are cells of this row, so they spread across it and
               carry to the next line whole rather than breaking their words. */}
           <Row>
-            <span className="mina-other__label">Actions</span>
+            <span className="mina-other__label h6">Actions</span>
             {ACTIONS.map((action) => (
-              <button className="mina-other__action" type="button" key={action}>
+              <button className="mina-other__action button-small" type="button" key={action}>
                 {action}
               </button>
             ))}
@@ -102,15 +102,15 @@ export function CreationOtherPanel({ generation, isOpen, onToggle }: CreationOth
 
           {rows.map(([label, value]) => (
             <Row key={label}>
-              <span className="mina-other__label">{label}</span>
-              <span className="mina-other__value">{value}</span>
+              <span className="mina-other__label h6">{label}</span>
+              <span className="mina-other__value h6">{value}</span>
             </Row>
           ))}
 
           <Row>
-            <span className="mina-other__label">Like</span>
+            <span className="mina-other__label h6">Like</span>
             <button
-              className={`mina-other__like${isLiked ? ' mina-other__like--on' : ''}`}
+              className={`mina-other__like button-small${isLiked ? ' mina-other__like--on' : ''}`}
               type="button"
               onClick={() => (isLiked ? unlike.mutate(generationId) : like.mutate(generation))}
             >
@@ -122,13 +122,13 @@ export function CreationOtherPanel({ generation, isOpen, onToggle }: CreationOth
           <Rule />
 
           <Row>
-            <span className="mina-other__label">Share</span>
-            <button className="mina-other__action" type="button">
+            <span className="mina-other__label h6">Share</span>
+            <button className="mina-other__action button-small" type="button">
               Prompt file
               <span className="mina-other__icon mina-other__icon--download" />
             </button>
             <button
-              className="mina-other__action"
+              className="mina-other__action button-small"
               type="button"
               onClick={() =>
                 copyLink.mutate(viewerLinkFor(generation), {

@@ -9,22 +9,23 @@
 }
 
 /* Left as an inline button rather than a flex box, so its text baseline is the
-   element's baseline and the address lines up with the "Email" label. */
+   element's baseline and the address lines up with the "Email" label. Type,
+   colour and hover come from `.button-account` (index.css). */
 .mina-account__trigger {
-  transition: opacity var(--mina-anim-fade) ease;
-  color: rgba(var(--mina-ink-rgb), 0.6);
-  font-size: var(--mina-fs-body);
-  font-weight: var(--mina-weight-regular);
-  letter-spacing: var(--mina-tracking-tight);
+  transition:
+    color var(--mina-anim-fade) ease,
+    opacity var(--mina-anim-fade) ease;
 }
 
-.mina-account__trigger:hover {
-  opacity: 0.8;
-}
-
+/* The ▾ (.button-account), smaller and lighter than the address. Qualified so
+   it outranks `.button-account:hover` from index.css. */
 .mina-account__caret {
   margin-left: 6px;
-  font-size: var(--mina-fs-micro);
+}
+
+.mina-account .mina-account__trigger .mina-account__caret {
+  font-size: var(--mina-text-8);
+  color: var(--mina-ink-50);
 }
 
 .mina-account__menu {

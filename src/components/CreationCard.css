@@ -41,19 +41,27 @@
   font-weight: var(--mina-weight-regular);
 }
 
+/* Download (.button-small): a little lighter ink, and a softer hover. Qualified
+   so it outranks `.button-small:hover` from index.css. */
+.mina-creation .mina-creation__download {
+  color: var(--mina-ink-85);
+}
+
+.mina-creation .mina-creation__download:hover {
+  opacity: 0.9;
+}
+
 .mina-creation__confirm {
   display: flex;
   gap: 10px;
 }
 
-/* The font settings size the button's line box, which the icon then fills. */
+/* The font settings of `.button-icon-strong` (index.css) size the button's
+   line box, which the icon then fills. */
 .mina-creation__menu {
   padding: 2px 6px;
-  opacity: 0.85;
   color: inherit;
-  font-size: 16px;
-  font-weight: var(--mina-weight-extrabold);
-  line-height: 1;
+  transition: opacity var(--mina-anim-fade) ease;
 }
 
 /* The svg draws in `currentColor`, which an <img> cannot pick up, so it is a
@@ -145,10 +153,6 @@
   flex: 1;
   overflow: hidden;
   margin: 0;
-  color: rgba(var(--mina-ink-rgb), 0.65);
-  font-size: var(--mina-fs-micro);
-  font-weight: var(--mina-fw-light);
-  letter-spacing: -0.02em;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -158,30 +162,18 @@
   white-space: normal;
 }
 
+/* Type comes from `.caption` (prompt), `.hyperlink-small` (more / less), `.h6`
+   (labels and values) and `.button-small` (actions), in index.css. */
 .mina-other__toggle {
   flex-shrink: 0;
   transition: opacity var(--mina-anim-fade) ease;
-  opacity: 0.5;
   color: var(--mina-ink);
-  font-size: 8px;
-  font-weight: var(--mina-fw-med);
-  text-decoration: underline;
-  text-underline-offset: var(--mina-btn-underline-offset);
-}
-
-.mina-other__toggle:hover {
-  opacity: 0.8;
 }
 
 /* Labels and their values read alike. */
 .mina-other__label,
 .mina-other__value {
-  opacity: var(--mina-muted-o);
   color: var(--pcd-ink);
-  font-size: var(--pcd-fs);
-  font-weight: var(--mina-fw-light);
-  letter-spacing: -0.02em;
-  line-height: 1.35;
 }
 
 /* The row actions and the two share links read the same: a word, sometimes
@@ -191,16 +183,20 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  transition: color var(--mina-anim-fade) ease;
+  transition: opacity var(--mina-anim-fade) ease;
   color: var(--pcd-ink);
-  font-size: var(--mina-fs-small);
-  font-weight: var(--mina-fw-strong);
   line-height: 1.35;
 }
 
-.mina-other__action:hover,
-.mina-other__like:hover {
-  color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.8);
+/* Qualified so these outrank `.button-small` from index.css. */
+.mina-other .mina-other__action:hover,
+.mina-other .mina-other__like:hover {
+  opacity: 0.7;
+}
+
+.mina-other .mina-other__action:active,
+.mina-other .mina-other__like:active {
+  opacity: 0.5;
 }
 
 /* The svg files draw in `currentColor`, which an <img> cannot pick up, so

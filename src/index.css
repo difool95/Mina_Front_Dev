@@ -132,7 +132,7 @@
   --mina-text-16: 16px;
   --mina-weight-medium: 500;
   --mina-tracking-tight: -0.01em;   /* must be em: the spec computes -0.11px at 11px and -0.2px at 20px */
-  --mina-tracking-body: 0em;
+  --mina-tracking-body: -0.02em;
   --mina-ink-30: rgba(8, 10, 0, 0.3);
   --mina-ink-45: rgba(8, 10, 0, 0.45);
   --mina-ink-2: rgba(8, 10, 0, 0.02);
@@ -141,6 +141,11 @@
   --mina-black: #000000;
   --mina-black-25: rgba(0, 0, 0, 0.25);
   --mina-black-40: rgba(0, 0, 0, 0.4);
+  --mina-text-8: 8px;
+  --mina-ink-40: rgba(8, 10, 0, 0.4);
+  --mina-ink-50: rgba(8, 10, 0, 0.5);
+  --mina-ink-85: rgba(8, 10, 0, 0.85);
+  --mina-ink-90: rgba(8, 10, 0, 0.9);
   --mina-space-2xs: 4px;
   --mina-space-9xl: 96px;
   --mina-space-100: 100px;
@@ -417,4 +422,100 @@ body {
 }
 @media (max-width: 900px) {
   .counter { color: var(--mina-ink-45); opacity: 1; }
+}
+
+/* ── profile ── */
+
+.button-header-cta {
+  font-size: var(--mina-text-18);
+  font-weight: var(--mina-weight-semibold);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+}
+.button-header-cta:hover  { opacity: 0.8; }
+.button-header-cta:active { opacity: 0.6; }
+@media (max-width: 767px) {   /* Mobile layout (live uses a separate mobile header button) */
+  .button-header-cta { text-decoration-thickness: auto; }
+  .button-header-cta:hover { opacity: 0.7; }
+}
+
+.hyperlink-bold {
+  font-size: var(--mina-text-11);
+  font-weight: var(--mina-weight-bold);
+  text-decoration: underline;
+}
+.hyperlink-bold:hover  { opacity: 0.7; }
+.hyperlink-bold:active { opacity: 0.6; }
+
+.button-body {
+  font-size: var(--mina-text-11);
+  font-weight: var(--mina-weight-bold);
+}
+.button-body:hover  { opacity: 0.7; }
+.button-body:active { opacity: 0.6; }
+
+.h4 {
+  font-size: var(--mina-text-11);
+  font-weight: var(--mina-weight-bold);
+  letter-spacing: var(--mina-tracking-body);
+}
+
+.thin {
+  font-size: var(--mina-text-11);
+  font-weight: var(--mina-weight-regular);
+  letter-spacing: var(--mina-tracking-body);
+  color: var(--mina-ink-40);
+}
+
+.button-account {
+  font-size: var(--mina-text-11);
+  font-weight: var(--mina-weight-regular);
+  letter-spacing: var(--mina-tracking-tight);
+  line-height: 1.2;
+  color: var(--mina-ink-60);
+}
+.button-account:hover  { color: var(--mina-ink-90); opacity: 0.8; }
+.button-account:active { opacity: 0.6; }
+
+.h2 {
+  font-size: var(--mina-text-20);
+  font-weight: var(--mina-weight-bold);
+  letter-spacing: var(--mina-tracking-tight);
+}
+
+.button-icon-strong {
+  font-size: var(--mina-text-16);
+  font-weight: var(--mina-weight-extrabold);
+  line-height: 1;
+  opacity: 0.85;
+}
+.button-icon-strong:hover    { opacity: 1; }
+.button-icon-strong:active   { opacity: 0.6; }
+.button-icon-strong:disabled { opacity: 0.35; }
+
+.caption {
+  font-size: var(--mina-text-10);
+  font-weight: var(--mina-weight-medium);
+  letter-spacing: -0.03em;
+  line-height: 1.45;
+  opacity: 0.5;
+}
+
+.hyperlink-small {
+  font-size: var(--mina-text-8);
+  font-weight: var(--mina-weight-semibold);
+  line-height: 0.9;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  opacity: 0.5;
+}
+.hyperlink-small:hover  { opacity: 0.8; }
+.hyperlink-small:active { opacity: 0.6; }
+
+.h6 {
+  font-size: var(--mina-text-9);
+  font-weight: var(--mina-weight-regular);
+  letter-spacing: var(--mina-tracking-body);
+  line-height: 1.35;
+  opacity: 0.3;
 }

@@ -47,14 +47,14 @@ export function AccountMenu({
   return (
     <div className="mina-account" ref={root}>
       <button
-        className="mina-account__trigger"
+        className="mina-account__trigger button-account"
         type="button"
         aria-expanded={open}
         data-tooltip="Switch account"
         onClick={() => setOpen((wasOpen) => !wasOpen)}
       >
         {email}
-        <span className="mina-account__caret" aria-hidden="true">
+        <span className="mina-account__caret button-account" aria-hidden="true">
           ▾
         </span>
       </button>
