@@ -1,8 +1,15 @@
 import { useState } from 'react'
 
-import { useDownloadMedia } from '@/hooks/useGenerations'
+import {
+  useDownloadMedia,
+  useGenerations,
+  useLikedGenerations,
+  useLikeGeneration,
+  useUnlikeGeneration,
+} from '@/hooks/useGenerations'
 import { filenameFromUrl } from '@/lib/generations'
 import { PANEL_UPLOAD_LABELS } from '@/lib/studio'
+import { useAuth } from '@/providers/AuthProvider'
 import type { StudioMode, StudioUpload } from '@/types'
 
 import { Carousel } from '../Carousel'
@@ -36,6 +43,22 @@ export function RightStudioPanel({
   const [current, setCurrent] = useState(0)
   const currentUrl = shown[current]
   const download = useDownloadMedia()
+/////////////////////////////////////////we need to know the generation id from the currentUrl to check if it is liked or not. We get the userId from the session and use it to fetch all
+//generations and liked generations. and from that we know which url's in the carousel are generations and which are not. We also check if the current generation is liked
+//or not and set the button text accordingly.//////////////////////////////////////////////////////////
+  const { session } = useAuth()
+  const userId = session?.user.id
+  const { data: allGenerations } = useGenerations(userId)
+  const { data: liked } = useLikedGenerations(userId)
+  const like = useLikeGeneration(userId)
+  const unlike = useUnlikeGeneration(userId)
+  const generation =
+    current < generations.length ? allGenerations?.find((entry) => entry.mg_output_url === currentUrl) : undefined
+  const generationId = generation?.mg_generation_id ?? ''
+  const isLiked = liked?.has(generationId) ?? false
+  ///////////////////////////////////we need to know the generation id from the currentUrl to check if it is liked or not. We get the userId from the session and use it to fetch all
+//generations and liked generations. and from that we know which url's in the carousel are generations and which are not. We also check if the current generation is liked
+//or not and set the button text accordingly.///////////////////////////////////////////////////////////////
 
   return (
     <section className="mina-studio__panel">
@@ -68,8 +91,14 @@ export function RightStudioPanel({
             <span className="separator" aria-hidden="true">
               |
             </span>
-            <button className="mina-studio__action button-small" type="button">
-              Like
+            <button
+              className="mina-studio__action button-small"
+              type="button"
+              // Disabled on anything that is not one of Mina's pictures, and while a like or unlike is saving.
+              disabled={!generation || like.isPending || unlike.isPending}
+              onClick={() => generation && (isLiked ? unlike.mutate(generationId) : like.mutate(generation))}
+            >
+              {isLiked ? 'Unlike' : 'Like'}
             </button>
             <span className="separator" aria-hidden="true">
               |

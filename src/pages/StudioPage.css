@@ -111,6 +111,13 @@
   margin-left: auto;
 }
 
+/* Like, on anything that is not one of Mina's pictures.
+   Qualified so no hover from `.button-small` brings it back up. */
+.mina-studio__actions .mina-studio__action:disabled {
+  opacity: var(--mina-muted-o);
+  cursor: default;
+}
+
 /* Qualified by the bar so these outrank `.button-small` and `.separator` from index.css. */
 .mina-studio__actions .button-small {
   color: rgba(0, 0, 0, 0.9);
