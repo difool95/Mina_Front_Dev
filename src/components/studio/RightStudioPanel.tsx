@@ -1,3 +1,7 @@
+import { useState } from 'react'
+
+import { useDownloadMedia } from '@/hooks/useGenerations'
+import { filenameFromUrl } from '@/lib/generations'
 import { PANEL_UPLOAD_LABELS } from '@/lib/studio'
 import type { StudioMode, StudioUpload } from '@/types'
 
@@ -28,23 +32,58 @@ export function RightStudioPanel({
     mode === 'create'
       ? [...uploads.filter((entry) => !entry.isUploading).map(({ url }) => url), ...generations]
       : []
+  // The picture the carousel is on, which the bar's buttons act on.
+  const [current, setCurrent] = useState(0)
+  const currentUrl = shown[current]
+  const download = useDownloadMedia()
 
   return (
     <section className="mina-studio__panel">
       {shown.length ? (
-        // Remounted whenever a picture comes or goes, so the page never points past the end.
-        <Carousel
-          key={shown.length}
-          // Opens on the newest creation, which is the last picture.
-          startIndex={mode === 'create' && generations.length ? shown.length - 1 : 0}
-          media={shown.map((url) => ({
-            id: url,
-            media_url: url,
-            media_type: 'image',
-            thumbnail: null,
-            alt_text: null,
-          }))}
-        />
+        <>
+          <div className="mina-studio__stage">
+            {/* Remounted whenever a picture comes or goes, so the page never points past the end. */}
+            <Carousel
+              key={shown.length}
+              // Opens on the newest creation, which is the last picture.
+              startIndex={mode === 'create' && generations.length ? shown.length - 1 : 0}
+              onIndexChange={setCurrent}
+              media={shown.map((url) => ({
+                id: url,
+                media_url: url,
+                media_type: 'image',
+                thumbnail: null,
+                alt_text: null,
+              }))}
+            />
+          </div>
+
+          {/* Under the pictures on desktop, over them on a phone (StudioPage.css). */}
+          <div className="mina-studio__actions">
+            <button
+              className="mina-studio__action button-small"
+              type="button"
+              onClick={() => currentUrl && download.mutate({ url: currentUrl, filename: filenameFromUrl(currentUrl) })}
+            >
+              Download
+            </button>
+            <span className="separator" aria-hidden="true">
+              |
+            </span>
+            <button className="mina-studio__action button-small" type="button">
+              Like
+            </button>
+            <span className="separator" aria-hidden="true">
+              |
+            </span>
+            <button className="mina-studio__action button-small" type="button">
+              Set Scene
+            </button>
+            <button className="mina-studio__action mina-studio__action--edit button-small" type="button">
+              Edit
+            </button>
+          </div>
+        </>
       ) : (
         <button
           className="mina-studio__upload button-upload"

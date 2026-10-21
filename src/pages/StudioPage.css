@@ -69,19 +69,57 @@
 
 /* ── upload side ── */
 
+/* A column: the pictures, then their action bar under them. */
 .mina-studio__panel {
   position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   background: var(--mina-surface);
 }
 
-/* The uploads cover the whole panel, cropped rather than shown in their own
-   ratio. Pinned to the panel's edges so the picture can never size the box. */
+/* Takes all the height the bar leaves. */
+.mina-studio__stage {
+  position: relative;
+  flex: 1;
+  align-self: stretch;
+}
+
+/* The uploads cover the whole stage, cropped rather than shown in their own
+   ratio. Pinned to its edges so the picture can never size the box. */
 .mina-studio__panel .mina-carousel {
   position: absolute;
   inset: 0;
+}
+
+/* Download | Like | Set Scene, and Edit at the far end. */
+.mina-studio__actions {
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  gap: 12px;
+  background: var(--mina-surface-bar);
+  padding: 32px var(--mina-footer-pad-x);
+}
+
+.mina-studio__action {
+  transition: opacity var(--mina-anim-fade) ease;
+}
+
+.mina-studio__action--edit {
+  margin-left: auto;
+}
+
+/* Qualified by the bar so these outrank `.button-small` and `.separator` from index.css. */
+.mina-studio__actions .button-small {
+  color: rgba(0, 0, 0, 0.9);
+}
+
+.mina-studio__actions .separator {
+  font-weight: var(--mina-weight-bold);
+  color: var(--mina-black-25);
+  line-height: 1;
 }
 
 /* Type and colour come from `.button-upload` (index.css). */
@@ -139,6 +177,16 @@
   .mina-studio__panel {
     min-height: 70dvh;
     padding: var(--mina-header-pad-mobile);
+  }
+
+  /* With pictures, the bar and the pictures run edge to edge, and the bar sits on top of them. */
+  .mina-studio__panel:has(.mina-studio__actions) {
+    padding: 0;
+  }
+
+  .mina-studio__actions {
+    order: -1;
+    padding: 26px var(--mina-footer-pad-x);
   }
 
 }

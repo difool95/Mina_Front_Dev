@@ -48,12 +48,16 @@ function litSlot(i: number, n: number) {
 export function Carousel({
   media,
   startIndex = 0,
+  onIndexChange,
 }: {
   media: Pick<OnboardContent, 'id' | 'media_url' | 'media_type' | 'thumbnail' | 'alt_text'>[]
   /** The media it opens on. */
   startIndex?: number
+  /** Told the media on show, on opening and on every page. */
+  onIndexChange?: (index: number) => void
 }) {
   const [index, setIndex] = useState(startIndex)
+  useEffect(() => onIndexChange?.(index), [index, onIndexChange])
   // Also doubles as the hover flag: null means the pointer is outside.
   const [cursor, setCursor] = useState<{ x: number; y: number; side: 'prev' | 'next' } | null>(null)
   const dragStartX = useRef<number | null>(null)

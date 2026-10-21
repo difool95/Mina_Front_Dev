@@ -283,8 +283,11 @@ export function editorialPlacement(index: number) {
 // ALL THE CODE OF EDITORIAL LAYOUT ENDS HERE.
 
 /** What a downloaded creation is called on disk. */
+/** A file's name, read off the end of its URL. */
+export const filenameFromUrl = (url: string) => url.split('?')[0]?.split('/').pop() ?? ''
+
 export function filenameOf(generation: MegaGeneration) {
-  const fromUrl = generation.mg_output_url?.split('?')[0]?.split('/').pop()
+  const fromUrl = filenameFromUrl(generation.mg_output_url ?? '')
 
   return fromUrl || `${generation.mg_generation_id ?? generation.mg_id}.file`
 }

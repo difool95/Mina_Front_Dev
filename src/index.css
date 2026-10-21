@@ -95,6 +95,7 @@
   --mina-logo-w: 70px;               /* the mina feutre logo (header + login) */
   /* ── Studio ── */
   --mina-surface:#F2F2E9; /* the upload panel beside the prompt */
+  --mina-surface-bar: #EEEEE2; /* the action bar under the studio pictures */
   /* ── Motion ── */
   --mina-talk-speed: 1ms;    /* Mina's typing — ms per letter, lower = faster */
   --mina-anim-zoom: 220ms;   /* media hover zoom */
