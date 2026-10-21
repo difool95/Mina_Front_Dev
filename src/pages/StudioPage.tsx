@@ -165,6 +165,17 @@ export function StudioPage() {
         uploads={uploads}
         generations={shownGenerations}
         onUpload={() => block.current?.OpenFilePickerScene()}
+        onSetScene={(url) => {
+          //This line updates the uploads state to include the new scene upload. It filters out any existing scene uploads and adds the new scene upload
+          //to the end of the list. The new scene upload is marked as sent, indicating that it has been successfully uploaded to R2 cloudflare. This ensures 
+          //that the user can see the newly added scene in the right studio panel and that it is available for use in the generation process.
+          setUploads((list) => [
+            ...list.filter((entry) => entry.kind !== 'scene'),
+            { kind: 'scene', url, origin: 'upload', isSent: true },
+          ])
+          //This line calls the showScene() method defined on the MinaBlock component(the child component).
+          block.current?.showScene()
+        }}
       />
 
       {matchaPanel === 'buy' && (

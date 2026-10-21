@@ -25,6 +25,7 @@ export function RightStudioPanel({
   uploads,
   generations,
   onUpload,
+  onSetScene,
 }: {
   mode: StudioMode
   uploads: StudioUpload[]
@@ -32,6 +33,8 @@ export function RightStudioPanel({
   generations: string[]
   /** Create's button: picks the scene, as the "+ Scene" pill does. */
   onUpload: () => void
+  /** Set Scene: makes the picture on show the scene upload. */
+  onSetScene: (url: string) => void
 }) {
 //This line creates a new array of shown uploads and generations based on the current mode. If the mode is 'create', it filters out any uploads that are still uploading
 // and maps the remaining uploads to their URLs, placing them after the generations array. If the mode is not 'create', it returns an empty array.
@@ -103,7 +106,11 @@ export function RightStudioPanel({
             <span className="separator" aria-hidden="true">
               |
             </span>
-            <button className="mina-studio__action button-small" type="button">
+            <button
+              className="mina-studio__action button-small"
+              type="button"
+              onClick={() => currentUrl && onSetScene(currentUrl)}
+            >
               Set Scene
             </button>
             <button className="mina-studio__action mina-studio__action--edit button-small" type="button">

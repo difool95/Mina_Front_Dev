@@ -238,7 +238,7 @@ export function MinaBlock({
     setUpload(next)
   }
 
-  //THESE METHODS animate() and OpenFilePickerScene() ARE CALLED FROM THE PARENT COMPONENT (STUDIO PAGE) TO ANIMATE THE BLOCK AT START AND TO OPEN THE FILE PICKER FOR THE SCENE PILL
+  //THESE METHODS animate() and OpenFilePickerScene() and ShowScene() ARE CALLED FROM THE PARENT COMPONENT (STUDIO PAGE) TO ANIMATE THE BLOCK AT START AND TO OPEN THE FILE PICKER FOR THE SCENE PILL
   //THIS IS A DEFAULT REACT HOOK THAT ALLOWS THE PARENT COMPONENT TO CALL METHODS ON THE CHILD COMPONENT (MINABLOCK) THROUGH A REF
   useImperativeHandle(ref, () => ({
     animate: () => {
@@ -254,6 +254,10 @@ export function MinaBlock({
       openLong()
       selectUploadKind('scene')
       openFilePicker('scene')
+    },
+    showScene: () => {
+      openLong()
+      selectUploadKind('scene')
     },
   }))
 

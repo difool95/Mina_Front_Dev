@@ -18,6 +18,8 @@ export interface MinaBlockHandle {
   animate: () => void
  // This is the same as the "+ Scene" pill in the right panel: it opens the file picker and adds the chosen picture to the uploads of the scene.
   OpenFilePickerScene: () => void
+  // Opens the block on the scene pill's upload row, as picking a scene does, without the file picker.
+  showScene: () => void
 }
 
 ///** One picture added under a "+" pill, in the order it was added. */
