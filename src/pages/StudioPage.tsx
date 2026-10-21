@@ -52,7 +52,7 @@ export function StudioPage() {
   // A done picture shows the moment it is ready, and joins `generations` for good once Mina has finished talking.
   const doneUrl = generationStatus === 'done' ? generation?.outputUrl : undefined
   //This line creates a new array of generations that includes the doneUrl if it exists, otherwise it just uses the existing generations array.
-  const shownGenerations = doneUrl ? [...generations, doneUrl] : generations
+  const shownGenerations = doneUrl ? [doneUrl, ...generations] : generations
   const endMina = () => {
     if (doneUrl) setGenerations(shownGenerations)
     startGeneration.reset()

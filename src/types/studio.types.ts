@@ -41,7 +41,7 @@ export interface StudioSession {
   isLandscape: boolean
   /** This tab's studio session. Gone with the tab, so a reopened one starts a new session row. */
   studioSessionId: string
-  /** The R2 URLs of the pictures this tab's Creates made, oldest first. */
+  /** The R2 URLs of the pictures this tab's Creates made, newest first. */
   generations: string[]
 }
 

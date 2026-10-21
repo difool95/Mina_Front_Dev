@@ -21,16 +21,16 @@ export function RightStudioPanel({
 }: {
   mode: StudioMode
   uploads: StudioUpload[]
-  /** The R2 URLs of the pictures Create made, oldest first: they page after the uploads. */
+  /** The R2 URLs of the pictures Create made, newest first: they page before the uploads, so the carousel opens on the newest. */
   generations: string[]
   /** Create's button: picks the scene, as the "+ Scene" pill does. */
   onUpload: () => void
 }) {
 //This line creates a new array of shown uploads and generations based on the current mode. If the mode is 'create', it filters out any uploads that are still uploading
-// and maps the remaining uploads to their URLs, then concatenates that with the generations array. If the mode is not 'create', it returns an empty array.
+// and maps the remaining uploads to their URLs, placing them after the generations array. If the mode is not 'create', it returns an empty array.
   const shown =
     mode === 'create'
-      ? [...uploads.filter((entry) => !entry.isUploading).map(({ url }) => url), ...generations]
+      ? [...generations, ...uploads.filter((entry) => !entry.isUploading).map(({ url }) => url)]
       : []
   // The picture the carousel is on, which the bar's buttons act on.
   const [current, setCurrent] = useState(0)
@@ -45,8 +45,6 @@ export function RightStudioPanel({
             {/* Remounted whenever a picture comes or goes, so the page never points past the end. */}
             <Carousel
               key={shown.length}
-              // Opens on the newest creation, which is the last picture.
-              startIndex={mode === 'create' && generations.length ? shown.length - 1 : 0}
               onIndexChange={setCurrent}
               media={shown.map((url) => ({
                 id: url,
