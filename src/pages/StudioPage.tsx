@@ -170,7 +170,8 @@ export function StudioPage() {
           //to the end of the list. The new scene upload is marked as sent, indicating that it has been successfully uploaded to R2 cloudflare. This ensures 
           //that the user can see the newly added scene in the right studio panel and that it is available for use in the generation process.
           setUploads((list) => [
-            ...list.filter((entry) => entry.kind !== 'scene'),
+            // The picture itself leaves any other pill too.
+            ...list.filter((entry) => entry.kind !== 'scene' && entry.url !== url),
             { kind: 'scene', url, origin: 'upload', isSent: true },
           ])
           //This line calls the showScene() method defined on the MinaBlock component(the child component).

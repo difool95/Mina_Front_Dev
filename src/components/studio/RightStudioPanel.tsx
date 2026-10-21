@@ -40,7 +40,8 @@ export function RightStudioPanel({
 // and maps the remaining uploads to their URLs, placing them after the generations array. If the mode is not 'create', it returns an empty array.
   const shown =
     mode === 'create'
-      ? [...generations, ...uploads.filter((entry) => !entry.isUploading).map(({ url }) => url)]
+      ? // Once: a Mina picture set as the scene is in both lists, and the carousel keys its pictures by URL.
+        [...new Set([...generations, ...uploads.filter((entry) => !entry.isUploading).map(({ url }) => url)])]
       : []
   // The picture the carousel is on, which the bar's buttons act on.
   const [current, setCurrent] = useState(0)
