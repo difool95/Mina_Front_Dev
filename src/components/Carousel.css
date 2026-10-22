@@ -12,8 +12,8 @@
   user-select: none;
 }
 
-/* The arrow replaces the pointer, so hide the real one. */
-.mina-carousel--paged {
+/* The disc replaces the pointer, so hide the real one. */
+.mina-carousel--disc {
   cursor: none;
 }
 
@@ -23,22 +23,70 @@
   object-fit: cover;
 }
 
-/* The arrow inside the glass disc. The svg files draw in `currentColor`, which
+/* Fitted by the zoom fingertip: the whole picture in its own ratio, rather than
+   cropped to fill, on the app's own background. */
+.mina-carousel--fitted {
+  background: var(--mina-bg);
+}
+
+.mina-carousel--fitted .mina-carousel__media {
+  object-fit: contain;
+}
+
+/* The icon inside the glass disc. The svg files draw in `currentColor`, which
    an <img> cannot pick up, so each is a mask filled with the disc's own colour
    — white on glass, ink over a light picture. */
-.mina-carousel__arrow {
+.mina-carousel__icon {
   width: calc(22px / 1.5);
   height: calc(22px / 1.5);
   background: currentColor;
-  mask: var(--arrow) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
 }
 
-.mina-carousel__arrow--prev {
-  --arrow: url('/assets/icons/left-toggle.svg');
+.mina-carousel__icon--prev {
+  --icon: url('/assets/icons/left-toggle.svg');
 }
 
-.mina-carousel__arrow--next {
-  --arrow: url('/assets/icons/right-toggle.svg');
+.mina-carousel__icon--next {
+  --icon: url('/assets/icons/right-toggle.svg');
+}
+
+/* ── fingertips ── */
+
+.mina-carousel__icon--fill {
+  --icon: url('/assets/icons/fill-view.svg');
+}
+
+.mina-carousel__icon--fit {
+  --icon: url('/assets/icons/fit-view.svg');
+}
+
+.mina-carousel__icon--copy {
+  --icon: url('/assets/icons/copy.svg');
+}
+
+.mina-carousel__icon--link {
+  --icon: url('/assets/icons/copy-link.svg');
+}
+
+.mina-carousel__icon--download {
+  --icon: url('/assets/icons/download.svg');
+}
+
+.mina-carousel__icon--like {
+  --icon: url('/assets/icons/like-state-off.svg');
+}
+
+.mina-carousel__icon--liked {
+  --icon: url('/assets/icons/like-state-on-liked.svg');
+}
+
+.mina-carousel__icon--edit {
+  --icon: url('/assets/icons/fingerprint-fingertips-edit-toolkit-opener.svg');
+}
+
+.mina-carousel__icon--delete {
+  --icon: url('/assets/icons/delete.svg');
 }
 
 /* ── dots ── */

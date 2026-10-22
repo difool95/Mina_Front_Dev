@@ -18,6 +18,8 @@ export interface MinaBlockHandle {
   animate: () => void
  // This is the same as the "+ Scene" pill in the right panel: it opens the file picker and adds the chosen picture to the uploads of the scene.
   OpenFilePickerScene: () => void
+  // Takes a picture out of the uploads, the same as clicking it in the upload row.
+  removeUpload: (url: string) => void
   // Opens the block on the scene pill's upload row, as picking a scene does, without the file picker.
   showScene: () => void
 }
@@ -45,6 +47,33 @@ export interface StudioSession {
   studioSessionId: string
   /** The R2 URLs of the pictures this tab's Creates made, newest first. */
   generations: string[]
+}
+
+/**
+ * What a fingertip over the carousel does: along the top, left to right, then
+ * paging on the two sides below.
+ */
+export type Fingertip = 'delete' | 'edit' | 'copy' | 'download' | 'like' | 'prev' | 'next'
+
+/**
+ * The fingertips a page switches on in its carousel, with what each does. The
+ * carousel draws and reads them; the page decides what they do.
+ */
+export interface CarouselFingertips {
+  /** Only Mina's own pictures can be liked; elsewhere the top right zooms like the rest. */
+  canLike: boolean
+  isLiked: boolean
+  /** Whole in its own ratio, rather than filling the carousel. */
+  isFitted: boolean
+  onZoom: () => void
+  onLike: () => void
+  onDownload: () => void
+  /** The copy fingertip and a quick right-click: the picture itself. */
+  onCopy: () => void
+  /** The right button held past a second: the picture's share link. */
+  onCopyLink: () => void
+  onEdit: () => void
+  onDelete: () => void
 }
 
 /** Where the output is meant to go, read off the ratio picked in the studio. Same as the API's. */

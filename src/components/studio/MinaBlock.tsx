@@ -255,6 +255,7 @@ export function MinaBlock({
       selectUploadKind('scene')
       openFilePicker('scene')
     },
+    removeUpload: remove,
     showScene: () => {
       openLong()
       selectUploadKind('scene')

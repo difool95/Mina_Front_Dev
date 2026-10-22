@@ -177,6 +177,12 @@ export function StudioPage() {
           //This line calls the showScene() method defined on the MinaBlock component(the child component).
           block.current?.showScene()
         }}
+        //we delete the upload from the uploads state and also remove it from the generations state. This ensures that the deleted upload is no longer displayed in the right studio panel
+        //and is not available for use in the generation process.
+        onRemove={(url) => {
+          block.current?.removeUpload(url)
+          setGenerations((list) => list.filter((entry) => entry !== url))
+        }}
       />
 
       {matchaPanel === 'buy' && (

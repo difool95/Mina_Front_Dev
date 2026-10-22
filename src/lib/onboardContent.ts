@@ -12,7 +12,7 @@ export function pickRow(rows: OnboardContent[] | undefined, contentType: string,
   )
 }
 
-/** All rows of a content_type, already sort_order-ordered by the service. */
+//This method is used to filter an array of OnboardContent objects based on a specific content type.
 export function pickRows(rows: OnboardContent[] | undefined, contentType: string) {
   return rows?.filter((row) => row.content_type === contentType) ?? []
 }

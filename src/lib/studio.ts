@@ -1,4 +1,4 @@
-import type { AspectRatio, MmaPlatform, Ratio, StillLane, StudioMode, UploadKind } from '@/types'
+import type { AspectRatio, Fingertip, MmaPlatform, Ratio, StillLane, StudioMode, UploadKind } from '@/types'
 
 /** What the brief is set to when a scene is picked from the scene library. */
 export const SCENE_LIBRARY_BRIEF = {
@@ -224,3 +224,36 @@ export const BRIEF_SHRINK_FROM = 700
 
 /** Past that, the type loses 1px for every this many characters, down to its floor. */
 export const BRIEF_CHARS_PER_PX = 40
+
+
+
+/////////////////////////THESE ARE FOR THE STUDIO'S RIGHT PANEL FINGERTIPS CONSTANTS THAT WE USE TO KNOW WHICH FINGERTIP IS BEING INTERACTED WITH WHEN WE ARE HOVERING./////////////////////////
+/** How far down the studio's right panel its fingertips reach, as a fraction of its height. */
+const FINGERTIP_BAND = 0.1
+
+/** Below the band, how far in from each side the panel pages rather than zooms, as a fraction of its width. */
+const PAGE_ZONE = 0.3
+
+/**
+ * The fingertips along the top of the studio's right panel, left to right: each
+ * reaches across to `until`, a fraction of the panel's width. The gap between
+ * edit and copy has none, so the picture's zoom carries on through it.
+ */
+const FINGERTIPS: { until: number; fingertip: Fingertip | null }[] = [
+  { until: 0.15, fingertip: 'delete' },
+  { until: 0.45, fingertip: 'edit' },
+  { until: 0.6, fingertip: null },
+  { until: 0.75, fingertip: 'copy' },
+  { until: 0.9, fingertip: 'download' },
+  { until: 1, fingertip: 'like' },
+]
+
+//This method returns the fingertip that is being hovered over based on the x and y coordinates of the mouse.
+export function fingertipAt(x: number, y: number): Fingertip | null {
+  if (y > FINGERTIP_BAND) return x < PAGE_ZONE ? 'prev' : x > 1 - PAGE_ZONE ? 'next' : null
+
+  return FINGERTIPS.find((entry) => x <= entry.until)?.fingertip ?? null
+}
+
+/////////////////////////THESE ARE FOR THE STUDIO'S RIGHT PANEL FINGERTIPS CONSTANTS THAT WE USE TO KNOW WHICH FINGERTIP IS BEING INTERACTED WITH WHEN WE ARE HOVERING./////////////////////////
+

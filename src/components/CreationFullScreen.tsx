@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 
 import { isMotion, promptOf, ratioOf } from '@/lib/generations'
-import { cfImage, FULLSCREEN_WIDTH } from '@/lib/media'
+import { cfImage, COPY_FLASH_MS, COPY_HOLD_MS, FULLSCREEN_WIDTH } from '@/lib/media'
 import type { MegaGeneration } from '@/types/generation.types'
 
 import { GlassDisc } from './GlassDisc'
@@ -24,12 +24,6 @@ interface CreationFullScreenProps {
 
 /** The middle 30% across and 87.5% down saves the file; the rest zooms. */
 const SAVE_ZONE = { x: 0.15, y: 0.4375 }
-
-/** How long the right button has to be held before it offers the link instead. */
-const HOLD_MS = 1000
-
-/** How long the disc stays green after a copy. */
-const FLASH_MS = 900
 
 /** Each half of the crossfade when paging to another creation. */
 const PAGE_FADE_MS = 160
@@ -192,7 +186,7 @@ export function CreationFullScreen({
 
     if (event.button !== 2) return
 
-    hold.current = window.setTimeout(() => setArmed('link'), HOLD_MS)
+    hold.current = window.setTimeout(() => setArmed('link'), COPY_HOLD_MS)
   }
 
   const release = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -224,7 +218,7 @@ export function CreationFullScreen({
 
     setArmed(null)
     setCopied(action)
-    window.setTimeout(() => setCopied(null), FLASH_MS)
+    window.setTimeout(() => setCopied(null), COPY_FLASH_MS)
 
     if (action === 'link') onCopyLink()
     else onCopyMedia()

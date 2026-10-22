@@ -36,6 +36,11 @@
   background: var(--mina-success-60);
 }
 
+.mina-glass--liked {
+  border-color: var(--mina-like-red);
+  background: var(--mina-like-red);
+}
+
 /* Touch devices have no hover, so the disc would only flash mid-drag. */
 @media (hover: none) {
   .mina-glass {

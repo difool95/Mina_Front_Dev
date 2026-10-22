@@ -50,6 +50,12 @@ const VIDEO_WIDTHS = [240, 360, 480, 640, 854, 1280]
 /** The most a creation is ever shown at, full screen included. */
 export const FULLSCREEN_WIDTH = 1920
 
+/** How long the right button has to be held over a creation before it offers the link instead of the picture. */
+export const COPY_HOLD_MS = 1000
+
+/** How long the glass disc stays green after a copy. */
+export const COPY_FLASH_MS = 900
+
 function snap(width: number, ladder: readonly number[]) {
   return ladder.find((rung) => rung >= width) ?? ladder[ladder.length - 1]!
 }

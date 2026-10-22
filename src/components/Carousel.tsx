@@ -1,7 +1,17 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 
-import { cfImageCarousel, cfPoster, cfVideo, imageWidthFor, isLightImage, videoWidthFor } from '@/lib/media'
-import type { OnboardContent } from '@/types'
+import {
+  cfImageCarousel,
+  cfPoster,
+  cfVideo,
+  COPY_FLASH_MS,
+  COPY_HOLD_MS,
+  imageWidthFor,
+  isLightImage,
+  videoWidthFor,
+} from '@/lib/media'
+import { fingertipAt } from '@/lib/studio'
+import type { CarouselFingertips, Fingertip, OnboardContent } from '@/types'
 
 import { GlassDisc } from './GlassDisc'
 
@@ -44,28 +54,52 @@ function litSlot(i: number, n: number) {
   return i - n + DOT_SLOTS
 }
 
-/** Only what it shows of each item, so the studio's uploads can page through it too. */
+/** What the glass disc can show — each one a mask class in `Carousel.css`. */
+type DiscIcon = Fingertip | 'liked' | 'fill' | 'fit' | 'link'
+
+/** What each fingertip that the page decides calls, by name in `CarouselFingertips`. */
+const PAGE_ACTIONS = { delete: 'onDelete', edit: 'onEdit', download: 'onDownload', like: 'onLike' } as const
+
+/**
+ * Only what it shows of each item, so the studio's uploads can page through it too.
+ *
+ * On its own it pages: the disc that stands in for the pointer shows which way,
+ * and a click on either half or a drag goes there. A page can switch on its
+ * `fingertips` as well, and decide what each does: along the top, from the
+ * left, delete, edit, copy, download and like; paging on the two sides below;
+ * a zoom anywhere else; and the right button copying the picture, or its share
+ * link once held past a second. The disc darkens over a light picture either way.
+ */
 export function Carousel({
   media,
   startIndex = 0,
   onIndexChange,
+  fingertips,
 }: {
   media: Pick<OnboardContent, 'id' | 'media_url' | 'media_type' | 'thumbnail' | 'alt_text'>[]
   /** The media it opens on. */
   startIndex?: number
   /** Told the media on show, on opening and on every page. */
   onIndexChange?: (index: number) => void
+  fingertips?: CarouselFingertips
 }) {
   const [index, setIndex] = useState(startIndex)
   useEffect(() => onIndexChange?.(index), [index, onIndexChange])
   // Also doubles as the hover flag: null means the pointer is outside.
-  const [cursor, setCursor] = useState<{ x: number; y: number; side: 'prev' | 'next' } | null>(null)
+  const [cursor, setCursor] = useState<{ x: number; y: number; fingertip: Fingertip | null } | null>(null)
   const dragStartX = useRef<number | null>(null)
   const root = useRef<HTMLDivElement>(null)
   // Nothing is requested until the box is measured, so the original never loads.
   const [boxWidth, setBoxWidth] = useState(0)
-  // Measured on each picture's load, so the arrow disc turns dark over a light one.
+  // Measured on each picture's load, so the disc turns dark over a light one.
   const [isLight, setIsLight] = useState(false)
+  /** Set once the right button has been held long enough to mean "link". */
+  const [isArmed, setIsArmed] = useState(false)
+  /** The copy that just happened, held briefly so the disc can confirm it. */
+  const [copied, setCopied] = useState<'copy' | 'link' | null>(null)
+  const hold = useRef<number | undefined>(undefined)
+
+  useEffect(() => () => window.clearTimeout(hold.current), [])
 
   // Measured again whenever the box resizes with the screen; the width ladder in
   // lib/media keeps that from asking for a new picture on every pixel.
@@ -82,23 +116,79 @@ export function Carousel({
     setIndex((current) => (current + delta + media.length) % media.length)
   }
 
-  const handlePointerUp = (event: React.PointerEvent) => {
+  const paged = media.length > 1
+
+  /** The fingertip under the pointer: with none switched on, only which half it is on. */
+  const fingertipUnder = (event: React.PointerEvent<HTMLDivElement>): Fingertip | null => {
+    const { left, top, width, height } = event.currentTarget.getBoundingClientRect()
+    const x = (event.clientX - left) / width
+
+    if (!fingertips) return paged ? (x < 0.5 ? 'prev' : 'next') : null
+
+    const fingertip = fingertipAt(x, (event.clientY - top) / height)
+    if (fingertip === 'like' && !fingertips.canLike) return null
+    if ((fingertip === 'prev' || fingertip === 'next') && !paged) return null
+
+    return fingertip
+  }
+
+  const track = (event: React.PointerEvent<HTMLDivElement>) => {
+    const { left, top } = event.currentTarget.getBoundingClientRect()
+    setCursor({ x: event.clientX - left, y: event.clientY - top, fingertip: fingertipUnder(event) })
+  }
+
+  const flash = (action: 'copy' | 'link') => {
+    setCopied(action)
+    window.setTimeout(() => setCopied(null), COPY_FLASH_MS)
+  }
+
+  const copy = () => {
+    flash('copy')
+    fingertips?.onCopy()
+  }
+
+  // Paging and copying are the carousel's own; the rest is the page's to decide.
+  const act = (fingertip: Fingertip) => {
+    if (fingertip === 'prev') go(-1)
+    else if (fingertip === 'next') go(1)
+    else if (fingertip === 'copy') copy()
+    else fingertips?.[PAGE_ACTIONS[fingertip]]()
+  }
+
+  const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
     const start = dragStartX.current
     dragStartX.current = null
 
-    // A drag past the threshold navigates; anything shorter is a click, and a
-    // click is resolved by which half of the media it landed on.
+    // The right button copies: the picture itself, or — held long enough — its link.
+    if (fingertips && event.button === 2) {
+      window.clearTimeout(hold.current)
+      setIsArmed(false)
+      if (isArmed) {
+        flash('link')
+        fingertips.onCopyLink()
+      } else copy()
+      return
+    }
+
+    // A drag past the threshold navigates; anything shorter is a click, which does
+    // what the fingertip under it does — on its own, page by the half it landed on.
     if (start !== null && Math.abs(event.clientX - start) > DRAG_THRESHOLD) {
       go(event.clientX < start ? 1 : -1)
       return
     }
 
-    const { left, width } = event.currentTarget.getBoundingClientRect()
-    go(event.clientX - left < width / 2 ? -1 : 1)
+    const fingertip = fingertipUnder(event)
+    if (fingertip) act(fingertip)
+    else fingertips?.onZoom()
   }
 
   const current = media[index]
-  const paged = media.length > 1
+  const fingertip = cursor?.fingertip ?? null
+  // What just happened wins, then what a right-button release would do, then what
+  // a click does where the pointer is — with fingertips, a zoom where there is none.
+  const zoom: DiscIcon | null = fingertips ? (fingertips.isFitted ? 'fill' : 'fit') : null
+  const icon: DiscIcon | null =
+    copied ?? (isArmed ? 'link' : fingertip === 'like' && fingertips?.isLiked ? 'liked' : (fingertip ?? zoom))
   // A light picture darkens what floats over it — the arrow disc and the dots.
   const isOverLight = isLight && current?.media_type !== 'video'
   // Nothing to request until there is both a URL and a measured box.
@@ -112,17 +202,22 @@ export function Carousel({
   return (
     <div
       ref={root}
-      className={`mina-carousel${paged ? ' mina-carousel--paged' : ''}${isOverLight ? ' mina-carousel--light' : ''}`}
+      className={`mina-carousel${paged || fingertips ? ' mina-carousel--disc' : ''}${isOverLight ? ' mina-carousel--light' : ''}${fingertips?.isFitted ? ' mina-carousel--fitted' : ''}`}
       onPointerDown={(event) => {
         dragStartX.current = event.clientX
+        // A touch tap fires no `pointermove` before it, so read the fingertip where it landed.
+        track(event)
+        if (fingertips && event.button === 2) hold.current = window.setTimeout(() => setIsArmed(true), COPY_HOLD_MS)
       }}
       onPointerUp={handlePointerUp}
-      onPointerLeave={() => setCursor(null)}
-      onPointerMove={(event) => {
-        const { left, top, width } = event.currentTarget.getBoundingClientRect()
-        const x = event.clientX - left
-        setCursor({ x, y: event.clientY - top, side: x < width / 2 ? 'prev' : 'next' })
+      onPointerLeave={() => {
+        window.clearTimeout(hold.current)
+        setCursor(null)
+        setIsArmed(false)
       }}
+      onPointerMove={track}
+      // With fingertips the right button is the copy gesture, so the browser's own menu would land on top of it.
+      onContextMenu={fingertips ? (event) => event.preventDefault() : undefined}
     >
       {current?.media_type === 'video' ? (
         <video
@@ -156,15 +251,15 @@ export function Carousel({
         />
       )}
 
-      {cursor && paged && (
+      {cursor && icon && (
         <GlassDisc
           x={cursor.x}
           y={cursor.y}
           anchor="absolute"
           size={48}
-          tone={isOverLight ? 'dark' : 'glass'}
+          tone={copied ? 'accent' : icon === 'liked' ? 'liked' : isOverLight ? 'dark' : 'glass'}
         >
-          <span className={`mina-carousel__arrow mina-carousel__arrow--${cursor.side}`} />
+          <span className={`mina-carousel__icon mina-carousel__icon--${icon}`} />
         </GlassDisc>
       )}
 

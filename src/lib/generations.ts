@@ -97,7 +97,8 @@ export function detailsOf(generation: MegaGeneration) {
  * The URL is percent-encoded, so an asset URL that itself contains `&` or `?`
  * survives being read back out of the query string.
  */
-export function viewerLinkFor(generation: MegaGeneration) {
+//This method is now not only for generations but also for uploads, so we changed the type to accept both.
+ export function viewerLinkFor(generation: Pick<MegaGeneration, 'mg_output_url'>) {
   return `${window.location.origin}/v?u=${encodeURIComponent(generation.mg_output_url ?? '')}`
 }
 

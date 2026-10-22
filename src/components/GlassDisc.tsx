@@ -13,9 +13,9 @@ interface GlassDiscProps {
   size?: number
   /**
    * `accent` fills it success green — for a moment of confirmation. `dark` tints it
-   * and its icon so it still reads over a light picture.
+   * and its icon so it still reads over a light picture. `liked` fills it like red, over a liked creation.
    */
-  tone?: 'glass' | 'dark' | 'accent'
+  tone?: 'glass' | 'dark' | 'accent' | 'liked'
   children: ReactNode
 }
 

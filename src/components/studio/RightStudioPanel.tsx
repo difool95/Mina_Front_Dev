@@ -1,13 +1,15 @@
 import { useState } from 'react'
 
 import {
+  useCopyLink,
+  useCopyMedia,
   useDownloadMedia,
   useGenerations,
   useLikedGenerations,
   useLikeGeneration,
   useUnlikeGeneration,
 } from '@/hooks/useGenerations'
-import { filenameFromUrl } from '@/lib/generations'
+import { filenameFromUrl, viewerLinkFor } from '@/lib/generations'
 import { PANEL_UPLOAD_LABELS } from '@/lib/studio'
 import { useAuth } from '@/providers/AuthProvider'
 import type { StudioMode, StudioUpload } from '@/types'
@@ -26,6 +28,7 @@ export function RightStudioPanel({
   generations,
   onUpload,
   onSetScene,
+  onRemove,
 }: {
   mode: StudioMode
   uploads: StudioUpload[]
@@ -35,6 +38,8 @@ export function RightStudioPanel({
   onUpload: () => void
   /** Set Scene: makes the picture on show the scene upload. */
   onSetScene: (url: string) => void
+  /** The delete fingertip: takes the picture on show out of the studio. */
+  onRemove: (url: string) => void
 }) {
 //This line creates a new array of shown uploads and generations based on the current mode. If the mode is 'create', it filters out any uploads that are still uploading
 // and maps the remaining uploads to their URLs, placing them after the generations array. If the mode is not 'create', it returns an empty array.
@@ -56,10 +61,27 @@ export function RightStudioPanel({
   const { data: liked } = useLikedGenerations(userId)
   const like = useLikeGeneration(userId)
   const unlike = useUnlikeGeneration(userId)
+  //This returns the generation object that corresponds to the currentUrl in the carousel. If the current index is less than the length
+  // of the generations array, it finds the generation object in allGenerations that has a matching mg_output_url with the currentUrl.
+  // If no matching generation is found, it returns undefined.
   const generation =
     current < generations.length ? allGenerations?.find((entry) => entry.mg_output_url === currentUrl) : undefined
   const generationId = generation?.mg_generation_id ?? ''
   const isLiked = liked?.has(generationId) ?? false
+  const copyMedia = useCopyMedia()
+  const copyLink = useCopyLink()
+  // Filling the panel by default; the zoom fingertip shows it whole in its own ratio instead.
+  const [isFitted, setIsFitted] = useState(false)
+
+  // Each shared by a button of the bar and a fingertip over the picture.
+  const saveFile = () => currentUrl && download.mutate({ url: currentUrl, filename: filenameFromUrl(currentUrl) })
+  const toggleLike = () => {
+    if (!generation || like.isPending || unlike.isPending) return
+    if (isLiked) unlike.mutate(generationId)
+    else like.mutate(generation)
+  }
+  // Not built yet: the Edit button and the edit fingertip both land here.
+  const edit = () => {}
   ///////////////////////////////////we need to know the generation id from the currentUrl to check if it is liked or not. We get the userId from the session and use it to fetch all
 //generations and liked generations. and from that we know which url's in the carousel are generations and which are not. We also check if the current generation is liked
 //or not and set the button text accordingly.///////////////////////////////////////////////////////////////
@@ -80,6 +102,19 @@ export function RightStudioPanel({
                 thumbnail: null,
                 alt_text: null,
               }))}
+              // The carousel draws and reads the fingertips; what each does is decided here.
+              fingertips={{
+                canLike: Boolean(generation),
+                isLiked,
+                isFitted,
+                onZoom: () => setIsFitted(!isFitted),
+                onLike: toggleLike,
+                onDownload: saveFile,
+                onCopy: () => currentUrl && copyMedia.mutate(currentUrl),
+                onCopyLink: () => currentUrl && copyLink.mutate(viewerLinkFor({ mg_output_url: currentUrl })),
+                onEdit: edit,
+                onDelete: () => currentUrl && onRemove(currentUrl),
+              }}
             />
           </div>
 
@@ -88,7 +123,7 @@ export function RightStudioPanel({
             <button
               className="mina-studio__action button-small"
               type="button"
-              onClick={() => currentUrl && download.mutate({ url: currentUrl, filename: filenameFromUrl(currentUrl) })}
+              onClick={saveFile}
             >
               Download
             </button>
@@ -100,7 +135,7 @@ export function RightStudioPanel({
               type="button"
               // Disabled on anything that is not one of Mina's pictures, and while a like or unlike is saving.
               disabled={!generation || like.isPending || unlike.isPending}
-              onClick={() => generation && (isLiked ? unlike.mutate(generationId) : like.mutate(generation))}
+              onClick={toggleLike}
             >
               {isLiked ? 'Unlike' : 'Like'}
             </button>
@@ -114,7 +149,7 @@ export function RightStudioPanel({
             >
               Set Scene
             </button>
-            <button className="mina-studio__action mina-studio__action--edit button-small" type="button">
+            <button className="mina-studio__action mina-studio__action--edit button-small" type="button" onClick={edit}>
               Edit
             </button>
           </div>
