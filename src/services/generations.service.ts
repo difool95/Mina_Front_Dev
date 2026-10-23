@@ -48,8 +48,12 @@ export async function getGenerationStatus(generationId: string): Promise<Generat
 const COLUMNS =
   'mg_id, mg_record_type, mg_pass_id, mg_generation_id, mg_mma_mode, mg_mma_status, mg_status, mg_mma_vars, mg_prompt, mg_output_url, mg_meta, mg_created_at, mg_updated_at, mg_session_id, mg_platform, mg_title, mg_type, mg_cost_data'
 
+/** A finished creation's status: `done` from this API, `succeeded` on rows the old system wrote. */
+const FINISHED_STATUSES = ['done', 'succeeded']
+
 /**
- * Everything this user has made, newest first.
+ * Everything this user has made, newest first: only finished creations, so one
+ * still running or that failed never shows.
  *
  * `mega_generations` is the platform's whole event log, so the record type has
  * to be pinned as well as the owner — without it this returns their credit
@@ -61,6 +65,8 @@ export async function getGenerations(userId: string) {
     .select(COLUMNS)
     .eq('mg_pass_id', `pass:user:${userId}`)
     .eq('mg_record_type', 'generation')
+    .in('mg_status', FINISHED_STATUSES)
+    .in('mg_mma_status', FINISHED_STATUSES)
     .order('mg_created_at', { ascending: false })
 
   if (error) throw new Error(error.message)
