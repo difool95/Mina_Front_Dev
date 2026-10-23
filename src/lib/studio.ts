@@ -65,6 +65,9 @@ export const STILL_LANES_TOOLTIP = STILL_LANES.map(
 /** The call to action's label when the balance cannot cover the generation. */
 export const NEED_MATCHA_LABEL = 'I need more matcha'
 
+/** Create's call to action while the brief is empty: it takes the user to the brief instead. */
+export const DESCRIBE_MORE_LABEL = 'Describe more'
+
 /** Whether `credits` covers the generation the studio is currently set up for. */
 export function canAffordGeneration(
   credits: number,

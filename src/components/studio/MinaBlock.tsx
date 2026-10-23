@@ -14,6 +14,7 @@ import {
   ANIMATE_RESOLUTIONS,
   ANIMATE_UPLOAD_TITLE,
   BRIEF_PLACEHOLDERS,
+  DESCRIBE_MORE_LABEL,
   CONTENT_LIBRARY_PREVIEW_URLS,
   LIBRARY_PREVIEW_URLS,
   NEED_MATCHA_LABEL,
@@ -97,6 +98,11 @@ export function MinaBlock({
   const { session } = useAuth()
   const uploadImage = useUploadStudioImage()
   const deleteImage = useDeleteStudioImage()
+  // Whether the brief has nothing to send, typed or locked: Create then asks for more instead.
+  const [isBriefEmpty, setIsBriefEmpty] = useState(() => {
+    const { brief, locked } = studioSession.read()
+    return !brief?.trim() && !locked
+  })
   // What Mina says over the brief when a picture is refused or does not fit, until the user goes back to the brief.
   const [minaUploadError, setMinaUploadError] = useState<string | null>(null)
   // The list as it stands now, for an upload that lands after the render that started it.
@@ -384,6 +390,7 @@ export function MinaBlock({
             placeholder={BRIEF_PLACEHOLDERS[mode]}
             uploadError={minaUploadError}
             onClearUploadError={() => setMinaUploadError(null)}
+            onIsEmptyChange={setIsBriefEmpty}
           />
         )}
       </div>
@@ -414,14 +421,17 @@ export function MinaBlock({
           <div className="mina-block__group mina-block__group--actions">
             <Rule />
             <MinaBlockVisionIntelligence />
-            {canAfford ? (
+            {!canAfford ? (
+              <MinaBlockCTA label={NEED_MATCHA_LABEL} isStill onClick={onNeedMatcha} />
+            ) : mode === 'create' && isBriefEmpty && !isUploading && !minaStatus ? (
+              // Nothing to send yet: the button takes the user to the brief, as a click on it would.
+              <MinaBlockCTA label={DESCRIBE_MORE_LABEL} isStill onClick={() => userBrief.current?.focus()} />
+            ) : (
               <MinaBlockCTA
                 label={isUploading ? UPLOADING_LABEL : STUDIO_CTA_LABELS[mode]}
                 isDisabled={isUploading || Boolean(minaStatus)}
                 onClick={mode === 'create' ? onCreate : undefined}
               />
-            ) : (
-              <MinaBlockCTA label={NEED_MATCHA_LABEL} isStill onClick={onNeedMatcha} />
             )}
           </div>
         </>

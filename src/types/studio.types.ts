@@ -11,6 +11,8 @@ export interface MinaBlockUserBriefHandle {
    * leaves nothing locked) and `brief` in the editable text above it.
    */
   setupBrief: (locked: string, brief: string) => void
+  /** Puts the caret in the brief, as a click on it would. */
+  focus: () => void
 }
 
 export interface MinaBlockHandle {

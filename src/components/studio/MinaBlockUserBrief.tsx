@@ -1,4 +1,4 @@
-import { useEffect, useImperativeHandle, useState, type CSSProperties, type Ref } from 'react'
+import { useEffect, useImperativeHandle, useRef, useState, type CSSProperties, type Ref } from 'react'
 
 import { BRIEF_CHARS_PER_PX, BRIEF_MAX_LENGTH, BRIEF_SHRINK_FROM } from '@/lib/studio'
 import { studioSession } from '@/lib/sessionStorage/studioSession'
@@ -22,6 +22,7 @@ export function MinaBlockUserBrief({
   placeholder,
   uploadError,
   onClearUploadError,
+  onIsEmptyChange,
   ref,
 }: {
   placeholder: string
@@ -32,8 +33,11 @@ export function MinaBlockUserBrief({
    */
   uploadError: string | null
   onClearUploadError: () => void
+  /** Told whether there is anything to send, typed or locked, so the call to action can ask for more. */
+  onIsEmptyChange: (isEmpty: boolean) => void
   ref?: Ref<MinaBlockUserBriefHandle>
 }) {
+  const input = useRef<HTMLTextAreaElement>(null)
   const [brief, setBrief] = useState(() => studioSession.read().brief ?? '')
   const [locked, setLocked] = useState(() => studioSession.read().locked ?? '')
   useEffect(() => studioSession.save({ brief, locked }), [brief, locked])
@@ -77,11 +81,15 @@ export function MinaBlockUserBrief({
       setBeforeLock(null)
       setSelection(null)
     },
+    focus: () => input.current?.focus(),
   }))
+
+  useEffect(() => onIsEmptyChange(!brief.trim() && !locked), [brief, locked, onIsEmptyChange])
 
   return (
     <div className="mina-brief" data-upload-error={uploadError ? '' : undefined}>
       <textarea
+        ref={input}
         className="mina-brief__input h1"
         value={brief}
         maxLength={BRIEF_MAX_LENGTH}
