@@ -279,7 +279,8 @@ export function CreationFullScreen({
             if (!onControls(event)) event.preventDefault()
           }}
         >
-          <VideoPlayer src={url} />
+          {/* Keyed by the clip, like the image below, so the last one never shows while the next loads. */}
+          <VideoPlayer key={url} src={url} />
         </div>
       ) : (
         <div
@@ -293,7 +294,9 @@ export function CreationFullScreen({
           // menu would land on top of it.
           onContextMenu={(event) => event.preventDefault()}
         >
-          <img src={cfImage(url, FULLSCREEN_WIDTH, 90)} alt={promptOf(displayed)} />
+          {/* Keyed by the picture: a fresh element shows nothing until it has loaded, where reusing
+              one would keep painting the previous creation in the meantime. */}
+          <img key={url} src={cfImage(url, FULLSCREEN_WIDTH, 90)} alt={promptOf(displayed)} />
         </div>
       )}
 
