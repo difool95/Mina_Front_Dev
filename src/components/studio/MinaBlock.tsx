@@ -98,6 +98,8 @@ export function MinaBlock({
   const uploadImage = useUploadStudioImage()
   const deleteImage = useDeleteStudioImage()
   const [uploadError, setUploadError] = useState<string | null>(null)
+  // What Mina says over the brief after a paste or drop that did not fit, until the user goes back to the brief.
+  const [minaUploadError, setMinaUploadError] = useState<string | null>(null)
   // The list as it stands now, for an upload that lands after the render that started it.
   const latestUploads = useRef(uploads)
   useEffect(() => {
@@ -155,6 +157,33 @@ export function MinaBlock({
     }
   }
 
+  /**
+   * Pictures for the lit pill, from the file picker, a paste or a drop. A new
+   * scene takes the old one's place, since there is only ever one; on the other
+   * pills only what fits is uploaded, and Mina says so in the brief when some
+   * did not.
+   */
+  const addPictures = (files: File[]) => {
+    setUploadError(null)
+
+    if (upload === 'scene') {
+      for (const entry of uploadsOf('scene')) remove(entry.url)
+      void uploadFile('scene', files[0]!)
+      return
+    }
+
+    const room = roomFor(upload)
+    for (const file of files.slice(0, room)) void uploadFile(upload, file)
+    if (files.length <= room) return
+
+    setMinaUploadError(UPLOAD_ERRORS.full(UPLOAD_LIMITS[upload]))
+  }
+  // The latest one, for the page-wide paste and drop listeners below.
+  const latestAddPictures = useRef(addPictures)
+  useEffect(() => {
+    latestAddPictures.current = addPictures
+  })
+
 // the move function is used to reorder the uploads in the list, it is passed down to the MinaBlockUploadAndLibraries component, 
 // it takes the url of the upload to move and the url of the target upload to move it before, it updates the list of uploads in 
 // the parent component (StudioPage) through the onUploads prop
@@ -195,6 +224,38 @@ export function MinaBlock({
   const [simpleRuns, setSimpleRuns] = useState(0)
   const [openLibrary, setOpenLibrary] = useState<'scene' | 'content' | null>(null)
   const isOpen = animation !== null
+
+  // Once the block is open in Create mode, a picture pasted or dropped anywhere on
+  // the page goes to the lit pill, as the "+" would take it. Anything else pasted
+  // (text into the brief) is left alone.
+  useEffect(() => {
+    if (mode !== 'create' || !isOpen) return
+
+    const take = (files: FileList | null | undefined) => {
+      const pictures = [...(files ?? [])].filter((file) => file.type.startsWith('image/'))
+      if (pictures.length) latestAddPictures.current(pictures)
+      return pictures.length > 0
+    }
+    const paste = (event: ClipboardEvent) => {
+      if (take(event.clipboardData?.files)) event.preventDefault()
+    }
+    // Without it the browser refuses the drop, or opens the picture in place of the studio.
+    const dragOver = (event: DragEvent) => event.preventDefault()
+    const drop = (event: DragEvent) => {
+      event.preventDefault()
+      take(event.dataTransfer?.files)
+    }
+
+    document.addEventListener('paste', paste)
+    document.addEventListener('dragover', dragOver)
+    document.addEventListener('drop', drop)
+
+    return () => {
+      document.removeEventListener('paste', paste)
+      document.removeEventListener('dragover', dragOver)
+      document.removeEventListener('drop', drop)
+    }
+  }, [mode, isOpen])
   const block = useRef<HTMLDivElement>(null)
   const brief = useRef<HTMLDivElement>(null)
   const userBrief = useRef<MinaBlockUserBriefHandle>(null)
@@ -320,7 +381,12 @@ export function MinaBlock({
         {minaStatus ? (
           <MinaBlockMinaBrief status={minaStatus} onEnd={onMinaEnd} />
         ) : (
-          <MinaBlockUserBrief ref={userBrief} placeholder={BRIEF_PLACEHOLDERS[mode]} />
+          <MinaBlockUserBrief
+            ref={userBrief}
+            placeholder={BRIEF_PLACEHOLDERS[mode]}
+            uploadError={minaUploadError}
+            onClearUploadError={() => setMinaUploadError(null)}
+          />
         )}
       </div>
       {isOpen && (
@@ -381,9 +447,7 @@ export function MinaBlock({
         multiple={UPLOAD_LIMITS[upload] > 1}
         hidden
         onChange={(event) => {
-          setUploadError(null)
-          // Past the pill's limit, the extra files are dropped rather than refused.
-          for (const file of [...(event.target.files ?? [])].slice(0, roomFor(upload))) void uploadFile(upload, file)
+          addPictures([...(event.target.files ?? [])])
           // Cleared so picking the same file again still fires a change.
           event.target.value = ''
         }}

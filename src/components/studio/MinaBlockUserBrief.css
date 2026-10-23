@@ -7,6 +7,12 @@
   height: 160px;
 }
 
+/* Under Mina's upload error the brief is unseen, but still takes the click that clears it. */
+.mina-brief[data-upload-error] .mina-brief__input,
+.mina-brief[data-upload-error] .mina-brief__bottom {
+  opacity: 0;
+}
+
 /* Type and placeholder colour come from `.h1` (index.css). */
 .mina-brief__input {
   flex: 1;

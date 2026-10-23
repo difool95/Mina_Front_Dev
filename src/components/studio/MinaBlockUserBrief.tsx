@@ -4,6 +4,8 @@ import { BRIEF_CHARS_PER_PX, BRIEF_MAX_LENGTH, BRIEF_SHRINK_FROM } from '@/lib/s
 import { studioSession } from '@/lib/sessionStorage/studioSession'
 import type { MinaBlockUserBriefHandle } from '@/types'
 
+import { MinaBlockMinaBrief } from './MinaBlockMinaBrief'
+
 import './MinaBlockUserBrief.css'
 
 /**
@@ -18,9 +20,18 @@ import './MinaBlockUserBrief.css'
  */
 export function MinaBlockUserBrief({
   placeholder,
+  uploadError,
+  onClearUploadError,
   ref,
 }: {
   placeholder: string
+  /**
+   * What Mina says over the brief after a paste or drop that did not fit. The
+   * brief stays underneath, and going back to it (a click, focus or a key)
+   * calls `onClearUploadError`.
+   */
+  uploadError: string | null
+  onClearUploadError: () => void
   ref?: Ref<MinaBlockUserBriefHandle>
 }) {
   const [brief, setBrief] = useState(() => studioSession.read().brief ?? '')
@@ -69,7 +80,7 @@ export function MinaBlockUserBrief({
   }))
 
   return (
-    <div className="mina-brief">
+    <div className="mina-brief" data-upload-error={uploadError ? '' : undefined}>
       <textarea
         className="mina-brief__input h1"
         value={brief}
@@ -79,7 +90,9 @@ export function MinaBlockUserBrief({
           setBrief(event.target.value)
           setBeforeLock(null)
         }}
+        onPointerDown={onClearUploadError}
         onKeyDown={(event) => {
+          onClearUploadError()
           if (beforeLock === null || event.shiftKey || !(event.ctrlKey || event.metaKey)) return
           if (event.key.toLowerCase() !== 'z') return
 
@@ -91,7 +104,10 @@ export function MinaBlockUserBrief({
         onSelect={(event) => readSelection(event.currentTarget)}
         // Leaving the tab blurs the brief but keeps its selection; reading it
         // again on the way back brings the pill back with it.
-        onFocus={(event) => readSelection(event.currentTarget)}
+        onFocus={(event) => {
+          onClearUploadError()
+          readSelection(event.currentTarget)
+        }}
         onBlur={() => setSelection(null)}
         style={
           {
@@ -116,6 +132,8 @@ export function MinaBlockUserBrief({
           </button>
         </div>
       )}
+
+      {uploadError && <MinaBlockMinaBrief uploadError={uploadError} />}
     </div>
   )
 }

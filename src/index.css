@@ -104,6 +104,7 @@
   --mina-anim-block-step: 100ms; /* one beat of the studio prompt block entrance */
   --mina-backdrop-blur: 14px;
   --mina-accent-green: 	var(--mina-green); /* Mina talking / generating */
+  --mina-accent-pink: #EA578F66; /* Mina's Upload Error messages in the brief */
   --mina-green:	#BDD796;
   --mina-copycat-gold: 	var(--mina-gold); /* copycat prompt bypass */
   --mina-gold:	#D5AA53;

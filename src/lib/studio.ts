@@ -132,6 +132,7 @@ export const UPLOAD_ERRORS = {
   tooLarge: (name: string) => `${name} is over 4096 px — pick a smaller image.`,
   unreadable: (name: string) => `${name} can't be read — try a JPEG, PNG or WebP.`,
   failed: (name: string) => `${name} could not be uploaded — try again.`,
+  full: (limit: number) => `This panel is full (${limit} files). remove one to add another.`,
 }
 
 /** The Create call to action while pictures are still uploading. */

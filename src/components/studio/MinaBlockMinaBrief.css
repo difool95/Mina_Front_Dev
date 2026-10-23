@@ -10,6 +10,15 @@
   line-height: 1.15;
 }
 
+/* Drawn over the brief, which stays underneath and keeps every click: the first
+   one goes straight into it, and MinaBlock clears the message. */
+.mina-mina-brief--upload-error {
+  position: absolute;
+  inset: 0;
+  color: var(--mina-accent-pink);
+  pointer-events: none;
+}
+
 /* Hidden until its turn comes, one letter after another. */
 .mina-mina-brief__letter {
   animation: mina-mina-brief-type 0s calc(var(--letter) * var(--mina-talk-speed)) both;
