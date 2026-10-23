@@ -67,14 +67,6 @@
   }
 }
 
-/* The same red as the login panel's errors. */
-.mina-uploads__error {
-  margin: -6px 0 12px;
-  color: var(--mina-like-red);
-  font-size: var(--mina-fs-body);
-  font-weight: var(--mina-fw-light);
-}
-
 .mina-uploads__add {
   background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.05);
 }

@@ -97,8 +97,7 @@ export function MinaBlock({
   const { session } = useAuth()
   const uploadImage = useUploadStudioImage()
   const deleteImage = useDeleteStudioImage()
-  const [uploadError, setUploadError] = useState<string | null>(null)
-  // What Mina says over the brief after a paste or drop that did not fit, until the user goes back to the brief.
+  // What Mina says over the brief when a picture is refused or does not fit, until the user goes back to the brief.
   const [minaUploadError, setMinaUploadError] = useState<string | null>(null)
   // The list as it stands now, for an upload that lands after the render that started it.
   const latestUploads = useRef(uploads)
@@ -114,7 +113,7 @@ export function MinaBlock({
     try {
       image = await prepareStudioImage(file)
     } catch (error) {
-      setUploadError((error as Error).message)
+      setMinaUploadError((error as Error).message)
       return
     }
 
@@ -139,7 +138,7 @@ export function MinaBlock({
     } catch {
       //this line removes the upload that failed from the list of uploads in the parent component (StudioPage) through the onUploads prop
       onUploads((list) => list.filter((entry) => entry.url !== preview))
-      setUploadError(UPLOAD_ERRORS.failed(file.name))
+      setMinaUploadError(UPLOAD_ERRORS.failed(file.name))
     } finally {
       URL.revokeObjectURL(preview)
     }
@@ -161,10 +160,10 @@ export function MinaBlock({
    * Pictures for the lit pill, from the file picker, a paste or a drop. A new
    * scene takes the old one's place, since there is only ever one; on the other
    * pills only what fits is uploaded, and Mina says so in the brief when some
-   * did not.
+   * did not. A new add starts with Mina's last upload error cleared.
    */
   const addPictures = (files: File[]) => {
-    setUploadError(null)
+    setMinaUploadError(null)
 
     if (upload === 'scene') {
       for (const entry of uploadsOf('scene')) remove(entry.url)
@@ -340,7 +339,6 @@ export function MinaBlock({
       <MinaBlockUploadAndLibraries
         title={UPLOAD_KINDS.find((entry) => entry.kind === kind)!.title}
         images={uploadsOf(kind)}
-        error={uploadError}
         canAdd={roomFor(kind) > 0}
         onOpenFilePicker={() => openFilePicker(kind)}
         onRemove={remove}

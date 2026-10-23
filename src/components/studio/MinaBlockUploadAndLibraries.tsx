@@ -22,7 +22,6 @@ export function MinaBlockUploadAndLibraries({
   title,
   addLabel = 'Add image',
   images = [],
-  error,
   canAdd = true,
   onOpenFilePicker,
   onRemove,
@@ -33,8 +32,6 @@ export function MinaBlockUploadAndLibraries({
   /** The "+" card's tooltip. */
   addLabel?: string
   images?: Pick<StudioUpload, 'url' | 'isUploading'>[]
-  /** Why the last picked picture was refused. */
-  error?: string | null
   canAdd?: boolean
   onOpenFilePicker?: () => void
   onRemove?: (url: string) => void
@@ -49,7 +46,6 @@ export function MinaBlockUploadAndLibraries({
   return (
     <div className="mina-uploads">
       <p className="mina-uploads__title paragraph-title">{title}</p>
-      {error && <p className="mina-uploads__error">{error}</p>}
 
       <div className="mina-uploads__cards">
         {images.map(({ url, isUploading }) => (

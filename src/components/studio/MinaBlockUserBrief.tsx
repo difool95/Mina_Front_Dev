@@ -26,7 +26,7 @@ export function MinaBlockUserBrief({
 }: {
   placeholder: string
   /**
-   * What Mina says over the brief after a paste or drop that did not fit. The
+   * What Mina says over the brief when a picture is refused or does not fit. The
    * brief stays underneath, and going back to it (a click, focus or a key)
    * calls `onClearUploadError`.
    */
