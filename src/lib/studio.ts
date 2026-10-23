@@ -1,4 +1,13 @@
-import type { AspectRatio, Fingertip, MmaPlatform, Ratio, StillLane, StudioMode, UploadKind } from '@/types'
+import type {
+  AspectRatio,
+  Fingertip,
+  MmaPlatform,
+  Ratio,
+  StillLane,
+  StudioMode,
+  StudioUpload,
+  UploadKind,
+} from '@/types'
 
 /** What the brief is set to when a scene is picked from the scene library. */
 export const SCENE_LIBRARY_BRIEF = {
@@ -78,6 +87,17 @@ export function canAffordGeneration(
 ) {
   const cost = mode === 'create' ? lane.matchas : ANIMATE_MATCHA_COST[resolution][duration]
   return credits >= cost
+}
+
+/**
+ * `uploads` with `url` as the one scene. The picture leaves any other pill too;
+ * it is already on R2, so it is marked sent and never deleted on removal.
+ */
+export function withScene(uploads: StudioUpload[], url: string): StudioUpload[] {
+  return [
+    ...uploads.filter((entry) => entry.kind !== 'scene' && entry.url !== url),
+    { kind: 'scene', url, origin: 'upload', isSent: true },
+  ]
 }
 
 /** Up to `count` items of `list`, picked at random. */

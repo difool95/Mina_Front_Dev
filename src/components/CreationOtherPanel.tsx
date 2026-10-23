@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import {
   useCopyLink,
@@ -8,12 +9,14 @@ import {
 } from '@/hooks/useGenerations'
 import { formatDateTime } from '@/lib/format'
 import { detailsOf, promptOf, viewerLinkFor } from '@/lib/generations'
+import { studioSession } from '@/lib/sessionStorage/studioSession'
+import { withScene } from '@/lib/studio'
 import { useAuth } from '@/providers/AuthProvider'
 import type { MegaGeneration } from '@/types/generation.types'
 
 import { Row, Rule, Table } from './builder/Table'
 
-/** The studio actions the panel offers. None of them are wired to anything yet. */
+/** The studio actions the panel offers. Only Set scene is wired so far. */
 const ACTIONS = ['Set scene', 'Animate', 'Re-create']
 
 /** How long the share button says so after putting the link on the clipboard. */
@@ -57,6 +60,13 @@ export function CreationOtherPanel({ generation, isOpen, onToggle }: CreationOth
   const isLiked = liked?.has(generationId) ?? false
   const details = detailsOf(generation)
 
+  // We get the generation url and put it as scene while saving it in studio Session
+  const navigate = useNavigate()
+  const setScene = () => {
+    studioSession.save({ uploads: withScene(studioSession.read().uploads ?? [], generation.mg_output_url ?? '') })
+    navigate('/')
+  }
+
   const rows = [
     ['Mode', details.mode],
     ['Resolution', details.resolution],
@@ -92,7 +102,12 @@ export function CreationOtherPanel({ generation, isOpen, onToggle }: CreationOth
           <Row>
             <span className="mina-other__label h6">Actions</span>
             {ACTIONS.map((action) => (
-              <button className="mina-other__action button-small" type="button" key={action}>
+              <button
+                className="mina-other__action button-small"
+                type="button"
+                key={action}
+                onClick={action === 'Set scene' ? setScene : undefined}
+              >
                 {action}
               </button>
             ))}

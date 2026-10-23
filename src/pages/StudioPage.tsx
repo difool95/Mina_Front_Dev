@@ -12,7 +12,7 @@ import { useCustomerCredits } from '@/hooks/useCustomerCredits'
 import { useGenerationStatus, useStartStillGeneration } from '@/hooks/useGenerations'
 import { MINA_LOGO_URL } from '@/lib/constants'
 import { studioSession } from '@/lib/sessionStorage/studioSession'
-import { STUDIO_RATIOS, studioRatio } from '@/lib/studio'
+import { STUDIO_RATIOS, studioRatio, withScene } from '@/lib/studio'
 import { useAuth } from '@/providers/AuthProvider'
 import type { MinaBlockHandle, StudioMode, StudioUpload } from '@/types'
 
@@ -169,11 +169,7 @@ export function StudioPage() {
           //This line updates the uploads state to include the new scene upload. It filters out any existing scene uploads and adds the new scene upload
           //to the end of the list. The new scene upload is marked as sent, indicating that it has been successfully uploaded to R2 cloudflare. This ensures 
           //that the user can see the newly added scene in the right studio panel and that it is available for use in the generation process.
-          setUploads((list) => [
-            // The picture itself leaves any other pill too.
-            ...list.filter((entry) => entry.kind !== 'scene' && entry.url !== url),
-            { kind: 'scene', url, origin: 'upload', isSent: true },
-          ])
+          setUploads((list) => withScene(list, url))
           //This line calls the showScene() method defined on the MinaBlock component(the child component).
           block.current?.showScene()
         }}
