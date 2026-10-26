@@ -20,7 +20,19 @@ export interface GenerationVars {
     mode?: string
     aspect_ratio?: string
   }
-  meta?: { billing?: { matchas?: number } }
+  meta?: {
+    billing?: { matchas?: number }
+    /** MMA step 1's reading of every picture sent, in the order they were added. */
+    create_asset_plan?: {
+      items?: {
+        /** The R2 picture behind Cloudflare's image resizing. */
+        url: string
+        /** The pill it came in under; the product pill is `featured_asset`. */
+        slot_hint: 'scene' | 'logo' | 'featured_asset'
+        origin: 'upload' | 'scene_library'
+      }[]
+    }
+  }
 }
 
 /** A `mega_generations` row whose `mg_record_type` is `generation`. */

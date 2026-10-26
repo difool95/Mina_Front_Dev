@@ -8,15 +8,16 @@ import {
   useUnlikeGeneration,
 } from '@/hooks/useGenerations'
 import { formatDateTime } from '@/lib/format'
-import { detailsOf, promptOf, viewerLinkFor } from '@/lib/generations'
+import { detailsOf, promptOf, recreateOf, viewerLinkFor } from '@/lib/generations'
 import { studioSession } from '@/lib/sessionStorage/studioSession'
 import { withScene } from '@/lib/studio'
 import { useAuth } from '@/providers/AuthProvider'
+import type { StudioSession } from '@/types'
 import type { MegaGeneration } from '@/types/generation.types'
 
 import { Row, Rule, Table } from './builder/Table'
 
-/** The studio actions the panel offers. Only Set scene is wired so far. */
+/** The studio actions the panel offers. Animate is not wired yet. */
 const ACTIONS = ['Set scene', 'Animate', 'Re-create']
 
 /** How long the share button says so after putting the link on the clipboard. */
@@ -60,11 +61,18 @@ export function CreationOtherPanel({ generation, isOpen, onToggle }: CreationOth
   const isLiked = liked?.has(generationId) ?? false
   const details = detailsOf(generation)
 
-  // We get the generation url and put it as scene while saving it in studio Session
+  // The studio reads its settings from the studio session when it mounts.
   const navigate = useNavigate()
-  const setScene = () => {
-    studioSession.save({ uploads: withScene(studioSession.read().uploads ?? [], generation.mg_output_url ?? '') })
+  const openStudio = (part: Partial<StudioSession>) => {
+    studioSession.save(part)
     navigate('/')
+  }
+  const onAction: Record<string, () => void> = {
+    // We get the generation url and put it as scene while saving it in studio Session
+    'Set scene': () =>
+      openStudio({ uploads: withScene(studioSession.read().uploads ?? [], generation.mg_output_url ?? '') }),
+    // The brief, pictures, ratio and lane this creation was made with replace the studio's own.
+    'Re-create': () => openStudio(recreateOf(generation)),
   }
 
   const rows = [
@@ -106,7 +114,7 @@ export function CreationOtherPanel({ generation, isOpen, onToggle }: CreationOth
                 className="mina-other__action button-small"
                 type="button"
                 key={action}
-                onClick={action === 'Set scene' ? setScene : undefined}
+                onClick={onAction[action]}
               >
                 {action}
               </button>
