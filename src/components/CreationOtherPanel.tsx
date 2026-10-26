@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import {
@@ -8,11 +8,12 @@ import {
   useUnlikeGeneration,
 } from '@/hooks/useGenerations'
 import { formatDateTime } from '@/lib/format'
-import { detailsOf, promptOf, recreateOf, viewerLinkFor } from '@/lib/generations'
+import { detailsOf, promptOf, recreateOf, uploadsOf, viewerLinkFor } from '@/lib/generations'
+import { cfImage, imageWidthFor } from '@/lib/media'
 import { studioSession } from '@/lib/sessionStorage/studioSession'
 import { withScene } from '@/lib/studio'
 import { useAuth } from '@/providers/AuthProvider'
-import type { StudioSession } from '@/types'
+import type { StudioSession, UploadKind } from '@/types'
 import type { MegaGeneration } from '@/types/generation.types'
 
 import { Row, Rule, Table } from './builder/Table'
@@ -74,6 +75,22 @@ export function CreationOtherPanel({ generation, isOpen, onToggle }: CreationOth
     // The brief, pictures, ratio and lane this creation was made with replace the studio's own.
     'Re-create': () => openStudio(recreateOf(generation)),
   }
+
+  // The pictures it was made from, a pill to a cell: scene and logo share a row,
+  // products have their own. A pill with nothing in it has no cell, and a row
+  // with no cells is not drawn at all.
+  const uploads = uploadsOf(generation)
+  const picturesOf = (label: string, kind: UploadKind) => ({
+    label,
+    urls: uploads.filter((entry) => entry.kind === kind).map((entry) => entry.url),
+  })
+  //This variables has all the url's in each category (scene,Logo, product)
+  const pictureRows = [
+    [picturesOf('Scene', 'scene'), picturesOf('Logo & Designs', 'logo')],
+    [picturesOf('Product and Elements', 'product')],
+  ]
+    .map((cells) => cells.filter(({ urls }) => urls.length))
+    .filter((cells) => cells.length)
 
   const rows = [
     ['Mode', details.mode],
@@ -143,6 +160,36 @@ export function CreationOtherPanel({ generation, isOpen, onToggle }: CreationOth
           </Row>
 
           <Rule />
+
+          {pictureRows.map((cells) => (
+            <Fragment key={cells[0]!.label}>
+              <Row>
+                {cells.map(({ label, urls }) => (
+                  <Fragment key={label}>
+                    <span className="mina-other__label h6">{label}</span>
+                    {/* The pictures are a way back to the setup they came from, as Re-create is. */}
+                    <button
+                      className="mina-other__pictures"
+                      type="button"
+                      aria-label="Re-create"
+                      onClick={onAction['Re-create']}
+                    >
+                      {urls.map((url) => (
+                        <img
+                          className="mina-other__picture"
+                          src={cfImage(url, imageWidthFor(34))}
+                          alt=""
+                          key={url}
+                        />
+                      ))}
+                    </button>
+                  </Fragment>
+                ))}
+              </Row>
+
+              <Rule />
+            </Fragment>
+          ))}
 
           <Row>
             <span className="mina-other__label h6">Share</span>

@@ -204,6 +204,34 @@
   opacity: 0.5;
 }
 
+/* A pill's pictures travel as one cell. Too wide to sit beside its label, the
+   row carries the cell to a line of its own, where it wraps its pictures. */
+.mina-other__pictures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transition: opacity var(--mina-anim-fade) ease;
+}
+
+/* Clickable like the actions, so they answer the pointer the same way. */
+.mina-other__pictures:hover {
+  opacity: 0.7;
+}
+
+.mina-other__pictures:active {
+  opacity: 0.5;
+}
+
+.mina-other__picture {
+  width: 34px;
+  height: 34px;
+  object-fit: cover;
+}
+
 /* The svg files draw in `currentColor`, which an <img> cannot pick up, so
    each is a mask filled with the text colour beside it. */
 .mina-other__icon {

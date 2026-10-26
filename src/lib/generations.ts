@@ -1,5 +1,5 @@
 import { STILL_LANES, STUDIO_RATIOS } from '@/lib/studio'
-import type { StudioSession } from '@/types'
+import type { StudioSession, StudioUpload } from '@/types'
 import type {
   MegaGeneration,
   ModeFilter,
@@ -95,6 +95,17 @@ export function detailsOf(generation: MegaGeneration) {
 /** The studio pill each of MMA's pill hints stands for. */
 const KIND_BY_SLOT = { scene: 'scene', logo: 'logo', featured_asset: 'product' } as const
 
+/** The pictures the creation was made from, each under the pill it was added to, in order. */
+export function uploadsOf(generation: MegaGeneration): StudioUpload[] {
+  return (generation.mg_mma_vars?.meta?.create_asset_plan?.items ?? []).map(({ url, slot_hint, origin }) => ({
+    kind: KIND_BY_SLOT[slot_hint],
+    // Back to the plain R2 URL the studio sent: the API resizes it again itself.
+    url: url.replace(/\/cdn-cgi\/image\/[^/]+/, ''),
+    origin,
+    // That creation still reads it, so removing it must not delete it from R2.
+    isSent: true,
+  }))
+}
 
 /**
  * The studio as it stood when the creation was made: brief, pictures, ratio
@@ -112,14 +123,7 @@ export function recreateOf(generation: MegaGeneration): Partial<StudioSession> {
   return {
     brief: vars?.inputs?.brief ?? '',
     locked: '',
-    uploads: (vars?.meta?.create_asset_plan?.items ?? []).map(({ url, slot_hint, origin }) => ({
-      kind: KIND_BY_SLOT[slot_hint],
-      // Back to the plain R2 URL the studio sent: the API resizes it again itself.
-      url: url.replace(/\/cdn-cgi\/image\/[^/]+/, ''),
-      origin,
-      // That creation still reads it, so removing it must not delete it from R2.
-      isSent: true,
-    })),
+    uploads: uploadsOf(generation),
     lane: STILL_LANES.find(({ lane }) => lane === vars?.inputs?.still_lane)?.lane ?? 'niche',
     ratioIndex,
     isLandscape: ratio !== flipped && STUDIO_RATIOS[ratioIndex]!.value === flipped,
