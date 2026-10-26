@@ -13,6 +13,11 @@
   margin-top: var(--card-offset, 0);
 }
 
+
+.mina-archive--editorial .mina-creation:has(.mina-other__prompt--full) ~ .mina-creation {
+  margin-top: max(var(--card-offset, 0px), 0px);
+}
+
 .mina-creation__bar {
   display: flex;
   align-items: center;
