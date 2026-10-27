@@ -44,7 +44,7 @@ export function MatchaSlider({ stops, value, onChange }: MatchaSliderProps) {
 
       {stops.map((stop, index) => (
         <button
-          className={`mina-slider__stop${index <= chosen ? ' mina-slider__stop--on' : ''}`}
+          className={`mina-slider__stop paragraph-title${index > chosen ? ' grey' : ''}`}
           type="button"
           key={stop.matchas}
           style={{ '--at': `${stop.at}%` } as CSSProperties}

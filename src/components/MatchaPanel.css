@@ -49,12 +49,9 @@
   display: contents;
 }
 
+/* Type for everything in the panel comes from the design system classes (index.css). */
 .mina-matcha__title {
   margin: 0;
-  color: var(--mina-ink);
-  font-size: var(--mina-fs-h5);
-  font-weight: var(--mina-fw-title);
-  letter-spacing: var(--mina-tracking-tight);
 }
 
 /* Same icon as the full-screen view's close, and the only way out of here. */
@@ -105,67 +102,10 @@
   white-space: normal;
 }
 
-/* The blurb and the generation kinds of each rate. */
-.mina-matcha__blurb,
-.mina-matcha__kind {
-  opacity: var(--mina-quiet-o);
-  color: var(--mina-ink);
-  font-size: var(--mina-fs-body);
-  font-weight: var(--mina-fw-med);
-  letter-spacing: -0.02em;
-}
-
-.mina-matcha__cost {
-  color: var(--mina-ink);
-  font-size: var(--mina-fs-body);
-  font-weight: var(--mina-fw-strong);
-  letter-spacing: -0.02em;
-}
-
-/* "Price Transparency" and the breakdown it reveals. */
-.mina-matcha__transparency,
-.mina-matcha__breakdown {
-  opacity: var(--mina-muted-o);
-  color: var(--mina-ink);
-  font-size: var(--mina-fs-label);
-  font-weight: var(--mina-fw-med);
-}
-
-.mina-matcha__breakdown {
-  letter-spacing: -0.02em;
-}
-
-/* Auto-Matcha. */
-.mina-matcha__action {
-  font-size: var(--mina-fs-label);
-  font-weight: var(--mina-fw-med);
-  letter-spacing: var(--mina-tracking-tight);
-  text-decoration: underline;
-  /* A touch closer than the shared offset. */
-  text-underline-offset: calc(var(--mina-btn-underline-offset) - 1px);
-}
-
-/* "Close Pricing" shows and hides the pricing rather than leaving the panel,
-   so it is not dressed as a link. */
-.mina-matcha__action--plain {
-  color: var(--mina-ink);
-  font-size: var(--mina-fs-body);
-  font-weight: var(--mina-fw-strong);
-  letter-spacing: inherit;
-  text-decoration: none;
-}
-
 .mina-matcha__action,
 .mina-matcha__transparency,
 .mina-matcha__purchase {
   transition: opacity var(--mina-anim-fade) ease;
-}
-
-/* "Price Transparency" rests fainter than this, so it darkens on hover. */
-.mina-matcha__action:hover,
-.mina-matcha__transparency:hover,
-.mina-matcha__purchase:hover:not(:disabled) {
-  opacity: 0.8;
 }
 
 /* The slider brings its own height, and wants more room at its ends than the
@@ -181,12 +121,7 @@
 }
 
 .mina-matcha__purchase {
-  color: var(--mina-text);
-  font-size: var(--mina-text-21);
-  font-weight: var(--mina-fw-med);
   line-height: 1;
-  text-decoration: underline;
-  text-underline-offset: var(--mina-btn-underline-offset);
 }
 
 /* The dialog holds real controls, so they keep the pointer and the reset the

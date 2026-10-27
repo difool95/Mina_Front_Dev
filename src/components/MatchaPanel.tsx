@@ -81,18 +81,18 @@ export function MatchaPanel({
     >
       <Table className="mina-matcha__table">
         <Row className="mina-matcha__lead" valign="bottom">
-          <h2 className="mina-matcha__title">Airpot of Matcha Lattes</h2>
-          <button className="mina-matcha__close" type="button" aria-label="Close" onClick={onClose}>
+          <h2 className="mina-matcha__title h3">Airpot of Matcha Lattes</h2>
+          <button className="mina-matcha__close paragraph-title-button bold button" type="button" aria-label="Close" onClick={onClose}>
             <span className="mina-matcha__close-icon" aria-hidden="true" />
           </button>
         </Row>
 
         <Row>
-          <p className="mina-matcha__blurb">
+          <p className="mina-matcha__blurb paragraph-title muted">
             Mina uses matcha to create and animate your images (1-month expiry)
           </p>
           <button
-            className="mina-matcha__action mina-matcha__action--plain"
+            className="mina-matcha__action paragraph-title-button bold button"
             type="button"
             aria-expanded={isPricingOpen}
             onClick={() => setIsPricingOpen((wasOpen) => !wasOpen)}
@@ -108,7 +108,7 @@ export function MatchaPanel({
               <Row>
                 <Group>
                   {rate.kinds.map((kind) => (
-                    <span className="mina-matcha__kind" key={kind}>
+                    <span className="mina-matcha__kind paragraph-title muted" key={kind}>
                       {kind}
                     </span>
                   ))}
@@ -118,7 +118,7 @@ export function MatchaPanel({
                   {Array.from({ length: rate.matchas }, (_, index) => (
                     <span className="mina-matcha__cup" key={index} />
                   ))}
-                  <span className="mina-matcha__cost">{rate.matchas} Matcha</span>
+                  <span className="mina-matcha__cost paragraph-title">{rate.matchas} Matcha</span>
                 </Group>
               </Row>
             </div>
@@ -130,14 +130,14 @@ export function MatchaPanel({
 
             <Row>
               <button
-                className="mina-matcha__transparency"
+                className="mina-matcha__transparency paragraph-title-button button faint"
                 type="button"
                 aria-expanded={isBreakdownOpen}
                 onClick={() => setIsBreakdownOpen((wasOpen) => !wasOpen)}
               >
                 Price Transparency
               </button>
-              {isBreakdownOpen && <span className="mina-matcha__breakdown">{PRICE_BREAKDOWN}</span>}
+              {isBreakdownOpen && <span className="mina-matcha__breakdown paragraph-title faint">{PRICE_BREAKDOWN}</span>}
             </Row>
           </>
         )}
@@ -147,15 +147,15 @@ export function MatchaPanel({
         </Row>
 
         <Row className="mina-matcha__foot">
-          <button className="mina-matcha__action" type="button" onClick={onOpenAutoMatcha}>
+          <button className="mina-matcha__action paragraph-title-button underline button" type="button" onClick={onOpenAutoMatcha}>
             Auto-Matcha {isAutoMatchaOn ? 'ON' : 'OFF'}
           </button>
           <Group className="mina-matcha__buy">
             {checkout.isError && (
-              <span className="mina-matcha__breakdown">Could not start checkout — try again.</span>
+              <span className="mina-matcha__breakdown paragraph-title faint">Could not start checkout — try again.</span>
             )}
             <button
-              className="mina-matcha__purchase"
+              className="mina-matcha__purchase h3 underline button"
               type="button"
               disabled={checkout.isPending}
               onClick={buy}

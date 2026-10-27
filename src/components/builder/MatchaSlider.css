@@ -3,8 +3,8 @@
   --slider-rail: 2px;
   /* What a length of rail leaves clear of the dot at each of its ends. */
   --slider-clear: 5px;
-  /* Stops not yet reached and the rail between them. */
-  --slider-off: #bdbdbd;
+  /* The rail between stops not yet reached; their labels take `.grey` (index.css). */
+  --slider-off: var(--mina-grey);
 
   position: relative;
   /* The labels sit at the very top and bottom, so the height is what sets
@@ -53,11 +53,6 @@
   padding: 0;
   border: 0;
   background: none;
-  color: var(--slider-off);
-  font-family: inherit;
-  font-size: var(--mina-fs-label);
-  font-weight: var(--mina-fw-strong);
-  letter-spacing: var(--mina-tracking-tight);
   cursor: pointer;
 }
 
@@ -74,11 +69,7 @@
   justify-items: end;
 }
 
-/* Reached: the amount, the dot and the price all come up to full strength. */
-.mina-slider__stop--on {
-  color: var(--mina-text);
-}
-
+/* Drawn in the stop's colour, so it greys with its labels past the chosen stop. */
 .mina-slider__dot {
   width: var(--slider-dot);
   height: var(--slider-dot);

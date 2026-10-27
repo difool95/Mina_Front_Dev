@@ -172,6 +172,7 @@
   --mina-opacity-soft:  0.7;
   --mina-opacity-muted: 0.4;
   --mina-opacity-faint: 0.2;
+  --mina-grey: #BDBDBD;
 }
 
 /* Safari / iOS friendly viewport */
@@ -250,7 +251,7 @@ body {
 /* ── design system ──
    One class per kind of text element, called from the components. A
    component's own CSS only adds layout, and any one-off change on top.
-   Text classes set the type; `.button`, `.pill`, `.underline`, `.soft`, `.muted` and `.faint`
+   Text classes set the type; `.button`, `.pill`, `.underline`, `.soft`, `.muted`, `.faint` and `.grey`
    combine with them. */
 
 .h1 { font-size: var(--mina-text-32); font-weight: var(--mina-semibold); letter-spacing: var(--mina-tracking-heading); }
@@ -276,6 +277,7 @@ body {
 .soft      { opacity: var(--mina-opacity-soft); }
 .muted     { opacity: var(--mina-opacity-muted); }
 .faint     { opacity: var(--mina-opacity-faint); }
+.grey      { color: var(--mina-grey); }
 .placeholder-faint::placeholder { color: var(--mina-ink); -webkit-text-fill-color: var(--mina-ink); opacity: var(--mina-opacity-faint); }
 
 @media (max-width: 768px) {
