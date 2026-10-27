@@ -40,33 +40,16 @@
   margin-bottom: 20px;
 }
 
+/* Type for everything in the panel comes from the design system classes (index.css). */
 .mina-auto__title {
   margin: 0;
-  font-size: var(--mina-fs-h4);
-  font-weight: var(--mina-fw-title);
-}
-
-.mina-auto__back {
-  transition: color var(--mina-anim-fade) ease;
-  color: var(--mina-text);
-  font-size: var(--mina-fs-small);
-  font-weight: var(--mina-fw-strong);
 }
 
 .mina-auto__blurb {
   flex: 1;
   min-width: 0;
   margin: 0;
-  color: var(--mina-muted);
-  font-size: var(--mina-fs-small);
-  font-weight: var(--mina-fw-med);
   white-space: normal;
-}
-
-.mina-auto__label {
-  color: var(--mina-muted);
-  font-size: var(--mina-fs-small);
-  font-weight: var(--mina-fw-med);
 }
 
 /* The label stays put; an auto margin on the first pack pushes the group of
@@ -76,30 +59,11 @@
   margin-left: auto;
 }
 
-.mina-auto__pack {
-  color: var(--mina-muted);
-  font-size: var(--mina-fs-small);
-  font-weight: var(--mina-fw-strong);
-}
-
-.mina-auto__pack[aria-pressed='true'] {
-  color: var(--mina-text);
-}
-
 .mina-auto__input {
   border: 0;
   outline: none;
   background: none;
-  color: var(--mina-text);
-  font-family: inherit;
-  font-size: var(--mina-fs-body);
-  font-weight: var(--mina-fw-strong);
   text-align: right;
-}
-
-.mina-auto__input::placeholder {
-  color: var(--mina-muted);
-  font-weight: var(--mina-fw-light);
 }
 
 .mina-auto__input--threshold {
@@ -110,33 +74,15 @@
   width: 21em;
 }
 
-.mina-auto__back:hover,
-.mina-auto__pack:hover {
-  color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.6);
-}
-
 .mina-auto__foot {
   margin-top: 12px;
   margin-bottom: 8px;
 }
 
-.mina-auto__error {
-  color: var(--mina-muted);
-  font-size: var(--mina-fs-small);
-  font-weight: var(--mina-fw-med);
-}
-
+.mina-auto__back,
+.mina-auto__pack,
 .mina-auto__turn-on {
-  transition: color var(--mina-anim-fade) ease;
-  color: var(--mina-text);
-  font-size: var(--mina-fs-h5);
-  font-weight: var(--mina-fw-title);
-  text-decoration: underline;
-  text-underline-offset: var(--mina-btn-underline-offset);
-}
-
-.mina-auto__turn-on:hover {
-  color: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.6);
+  transition: opacity var(--mina-anim-fade) ease;
 }
 
 :where(.mina-auto button) {

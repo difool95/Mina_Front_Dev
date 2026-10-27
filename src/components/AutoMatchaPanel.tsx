@@ -101,14 +101,14 @@ export function AutoMatchaPanel({
     >
       <Table className="mina-auto__table">
         <Row className="mina-auto__lead">
-          <h2 className="mina-auto__title">Auto Matcha Refill</h2>
-          <button className="mina-auto__back" type="button" onClick={onBack}>
+          <h2 className="mina-auto__title h3">Auto Matcha Refill</h2>
+          <button className="mina-auto__back comment-button button" type="button" onClick={onBack}>
             Back
           </button>
         </Row>
 
         <Row>
-          <p className="mina-auto__blurb">
+          <p className="mina-auto__blurb paragraph-title muted">
             Keep enjoying Mina without interruption. Your balance will refill automatically
             whenever it runs low.
           </p>
@@ -117,9 +117,9 @@ export function AutoMatchaPanel({
         <Rule />
 
         <Row>
-          <span className="mina-auto__label">When my matcha is below</span>
+          <span className="mina-auto__label paragraph-title muted">When my matcha is below</span>
           <input
-            className="mina-auto__input mina-auto__input--threshold"
+            className="mina-auto__input mina-auto__input--threshold paragraph-title placeholder-faint"
             type="text"
             inputMode="numeric"
             value={threshold}
@@ -137,11 +137,11 @@ export function AutoMatchaPanel({
         <Rule />
 
         <Row anchor="left" className="mina-auto__packs-row">
-          <span className="mina-auto__label">Refill my account with</span>
+          <span className="mina-auto__label paragraph-title muted">Refill my account with</span>
           {REFILL_PACKS.map((pack) => (
             <button
               key={pack.matchas}
-              className="mina-auto__pack"
+              className={`mina-auto__pack paragraph-title-button button${refillPack === pack.matchas ? '' : ' grey'}`}
               type="button"
               aria-pressed={refillPack === pack.matchas}
               onClick={() => setRefillPack(pack.matchas)}
@@ -154,9 +154,9 @@ export function AutoMatchaPanel({
         <Rule />
 
         <Row>
-          <span className="mina-auto__label">Monthly Refill Limit</span>
+          <span className="mina-auto__label paragraph-title muted">Monthly Refill Limit</span>
           <input
-            className="mina-auto__input mina-auto__input--limit"
+            className="mina-auto__input mina-auto__input--limit paragraph-title placeholder-faint"
             type="text"
             inputMode="numeric"
             placeholder="Leave blank for unlimited re-fills each month"
@@ -172,10 +172,10 @@ export function AutoMatchaPanel({
 
         <Row className="mina-auto__foot" anchor="right">
           {updateAutoRefill.isError && (
-            <span className="mina-auto__error">Could not save — try again.</span>
+            <span className="mina-auto__error paragraph-title muted">Could not save — try again.</span>
           )}
           <button
-            className="mina-auto__turn-on"
+            className="mina-auto__turn-on h3 underline button"
             type="button"
             disabled={updateAutoRefill.isPending}
             onClick={isOn ? turnOff : turnOn}
