@@ -104,6 +104,8 @@ export function withScene(uploads: StudioUpload[], url: string): StudioUpload[] 
 
 /** A prompt file's extension: the profile downloads it, the studio takes it when dropped. */
 export const PROMPT_FILE_EXTENSION = '.mina'
+// Followed by "-" and the brief's first words, so the file says what it is for.
+export const PROMPT_FILE_NAME = 'Drag and drop this file in mina'
 
 /** What Mina says over the brief, in green, once a dropped prompt file has been tried. */
 export const PROMPT_FILE_LINES = {

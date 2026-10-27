@@ -9,10 +9,10 @@ import {
 } from '@/hooks/useGenerations'
 import { useExportPromptFile } from '@/hooks/usePromptFiles'
 import { formatDateTime } from '@/lib/format'
-import { detailsOf, filenameOf, promptOf, recreateOf, uploadsOf, viewerLinkFor } from '@/lib/generations'
+import { detailsOf, promptOf, recreateOf, uploadsOf, viewerLinkFor } from '@/lib/generations'
 import { cfImage, imageWidthFor } from '@/lib/media'
 import { studioSession } from '@/lib/sessionStorage/studioSession'
-import { PROMPT_FILE_EXTENSION, withScene } from '@/lib/studio'
+import { PROMPT_FILE_EXTENSION, PROMPT_FILE_NAME, withScene } from '@/lib/studio'
 import { useAuth } from '@/providers/AuthProvider'
 import type { StudioSession, UploadKind } from '@/types'
 import type { MegaGeneration } from '@/types/generation.types'
@@ -203,7 +203,7 @@ export function CreationOtherPanel({ generation, isOpen, onToggle }: CreationOth
                 exportPromptFile.mutate({
                   token: session.access_token,
                   generationId,
-                  filename: filenameOf(generation).replace(/\.[^.]*$/, '') + PROMPT_FILE_EXTENSION,
+                  filename: `${PROMPT_FILE_NAME}-${(generation.mg_mma_vars?.inputs?.brief ?? '').trim().split(/\s+/).slice(0, 10).join(' ')}${PROMPT_FILE_EXTENSION}`,
                 })
               }
             >
