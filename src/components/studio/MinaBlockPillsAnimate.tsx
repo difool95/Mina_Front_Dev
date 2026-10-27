@@ -1,22 +1,22 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 
 import { ANIMATE_DURATIONS, ANIMATE_MATCHA_COST, ANIMATE_RESOLUTIONS } from '@/lib/studio'
 
-import { MinaBlockRatioPill } from './MinaBlockRatioPill'
-
 import './MinaBlockPills.css'
 
-/** Resolution and duration are held by `MinaBlock`, whose call to action prices them. */
+/** Resolution, duration and the ratio pill are held by `MinaBlock`, whose call to action prices them. */
 export function MinaBlockPillsAnimate({
   resolution,
   duration,
   onNextResolution,
   onNextDuration,
+  ratioPill,
 }: {
   resolution: (typeof ANIMATE_RESOLUTIONS)[number]
   duration: (typeof ANIMATE_DURATIONS)[number]
   onNextResolution: () => void
   onNextDuration: () => void
+  ratioPill: ReactNode
 }) {
   const [isMuted, setIsMuted] = useState(false)
   // Shared by the resolution and duration pills, and follows both.
@@ -72,7 +72,7 @@ export function MinaBlockPillsAnimate({
         <span className="h5">{duration}</span>
       </button>
 
-      <MinaBlockRatioPill />
+      {ratioPill}
     </div>
   )
 }

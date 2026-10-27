@@ -78,6 +78,35 @@ export interface CarouselFingertips {
   onDelete: () => void
 }
 
+/**
+ * One line Mina says over the brief, until the user goes back to it. Its tone
+ * picks the colour: `warning` (pink) for a picture refused, `info` (Mina's green)
+ * for the rest, a prompt file that could not be read included.
+ */
+export interface MinaNote {
+  line: string
+  tone: 'info' | 'warning'
+}
+
+/**
+ * A whole studio setup to load: a creation's own (Re-create), or a prompt
+ * file's. Lane and ratio stay loose, since older creations may hold values
+ * the pills no longer have.
+ */
+export interface StudioSetup {
+  brief: string
+  lane?: string
+  aspectRatio?: string
+  uploads: Pick<StudioUpload, 'kind' | 'url' | 'origin'>[]
+}
+
+/** What `POST /api/prompt-files/import` reads out of a `.mina` file. Same as the API's `PromptFileInputs`. */
+export interface PromptFileInputs extends StudioSetup {
+  lane: StillLane
+  platform: MmaPlatform
+  aspectRatio: AspectRatio
+}
+
 /** Where the output is meant to go, read off the ratio picked in the studio. Same as the API's. */
 export type MmaPlatform = 'tiktok' | 'instagram-post' | 'print' | 'square'
 

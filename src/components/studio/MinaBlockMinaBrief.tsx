@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 
 import { MINA_LINE_MS, hasEnded, minaLine } from '@/lib/minaBrief'
-import type { MmaStatus } from '@/types'
+import type { MinaNote, MmaStatus } from '@/types'
 
 import './MinaBlockMinaBrief.css'
 
@@ -11,14 +11,14 @@ import './MinaBlockMinaBrief.css'
  * - `status`: while a Create runs, a green line every few seconds, picked by the
  *   step the generation is on; once it has ended and its last line has had its
  *   time, `onEnd`.
- * - `uploadError`: one pink line, drawn over the brief, that stays until the user
- *   goes back to the brief (MinaBlock clears it then).
+ * - `note`: one line, drawn over the brief, that stays until the user goes back
+ *   to the brief (MinaBlockUserBrief clears it then); pink when it is a warning.
  */
 export function MinaBlockMinaBrief(
-  props: { status: MmaStatus; onEnd: () => void } | { uploadError: string },
+  props: { status: MmaStatus; onEnd: () => void } | { note: MinaNote },
 ) {
-  return 'uploadError' in props ? (
-    <MinaTypedLine line={props.uploadError} isUploadError />
+  return 'note' in props ? (
+    <MinaTypedLine line={props.note.line} isNote tone={props.note.tone} />
   ) : (
     <MinaGenerationLines status={props.status} onEnd={props.onEnd} />
   )
@@ -54,11 +54,14 @@ function MinaGenerationLines({ status, onEnd }: { status: MmaStatus; onEnd: () =
   return <MinaTypedLine line={line} />
 }
 
-/** One line typed out letter by letter: green by default, pink for an upload error. */
-function MinaTypedLine({ line, isUploadError }: { line: string; isUploadError?: boolean }) {
+/** One line typed out letter by letter: green by default, pink for a warning, over the brief for a note. */
+function MinaTypedLine({ line, isNote, tone }: { line: string; isNote?: boolean; tone?: MinaNote['tone'] }) {
   return (
     // Keyed by the line, so each new one types itself out from the start.
-    <p key={line} className={`mina-mina-brief${isUploadError ? ' mina-mina-brief--upload-error' : ''}`}>
+    <p
+      key={line}
+      className={`mina-mina-brief${isNote ? ' mina-mina-brief--note' : ''}${tone === 'warning' ? ' mina-mina-brief--warning' : ''}`}
+    >
       {/* Every letter is laid out from the start, so the line never reflows as it types. */}
       {[...line].map((letter, index) => (
         <span key={index} className="mina-mina-brief__letter" style={{ '--letter': index } as CSSProperties}>

@@ -18,15 +18,20 @@ import {
   CONTENT_LIBRARY_PREVIEW_URLS,
   LIBRARY_PREVIEW_URLS,
   NEED_MATCHA_LABEL,
+  PROMPT_FILE_EXTENSION,
+  PROMPT_FILE_LINES,
   SCENE_LIBRARY_BRIEF,
   STILL_LANES,
   STUDIO_CTA_LABELS,
+  STUDIO_RATIOS,
   UPLOADING_LABEL,
   UPLOAD_ERRORS,
   UPLOAD_KINDS,
   UPLOAD_LIMITS,
   canAffordGeneration,
+  studioSetup,
 } from '@/lib/studio'
+import { useImportPromptFile } from '@/hooks/usePromptFiles'
 import { useDeleteStudioImage, useUploadStudioImage } from '@/hooks/useStudioUploads'
 import { prepareStudioImage } from '@/lib/media'
 import { studioSession } from '@/lib/sessionStorage/studioSession'
@@ -34,8 +39,10 @@ import { useAuth } from '@/providers/AuthProvider'
 import type {
   MinaBlockHandle,
   MinaBlockUserBriefHandle,
+  MinaNote,
   MmaStatus,
   StudioMode,
+  StudioSetup,
   StudioUpload,
   UploadKind,
 } from '@/types'
@@ -45,6 +52,7 @@ import { StudioLibrary } from '../studioLibrary/StudioLibrary'
 import { MinaBlockPillsAnimate } from './MinaBlockPillsAnimate'
 import { MinaBlockPillsCreate } from './MinaBlockPillsCreate'
 import { MinaBlockMinaBrief } from './MinaBlockMinaBrief'
+import { MinaBlockRatioPill } from './MinaBlockRatioPill'
 import { MinaBlockUploadAndLibraries } from './MinaBlockUploadAndLibraries'
 import { MinaBlockUserBrief } from './MinaBlockUserBrief'
 
@@ -98,13 +106,15 @@ export function MinaBlock({
   const { session } = useAuth()
   const uploadImage = useUploadStudioImage()
   const deleteImage = useDeleteStudioImage()
+  const importPromptFile = useImportPromptFile()
   // Whether the brief has nothing to send, typed or locked: Create then asks for more instead.
   const [isBriefEmpty, setIsBriefEmpty] = useState(() => {
     const { brief, locked } = studioSession.read()
     return !brief?.trim() && !locked
   })
-  // What Mina says over the brief when a picture is refused or does not fit, until the user goes back to the brief.
-  const [minaUploadError, setMinaUploadError] = useState<string | null>(null)
+  // What Mina says over the brief (a picture refused, a prompt file loaded), until the user goes back to the brief.
+  const [minaNote, setMinaNote] = useState<MinaNote | null>(null)
+  const sayWarning = (line: string) => setMinaNote({ line, tone: 'warning' })
   // The list as it stands now, for an upload that lands after the render that started it.
   const latestUploads = useRef(uploads)
   useEffect(() => {
@@ -119,7 +129,7 @@ export function MinaBlock({
     try {
       image = await prepareStudioImage(file)
     } catch (error) {
-      setMinaUploadError((error as Error).message)
+      sayWarning((error as Error).message)
       return
     }
 
@@ -144,7 +154,7 @@ export function MinaBlock({
     } catch {
       //this line removes the upload that failed from the list of uploads in the parent component (StudioPage) through the onUploads prop
       onUploads((list) => list.filter((entry) => entry.url !== preview))
-      setMinaUploadError(UPLOAD_ERRORS.failed(file.name))
+      sayWarning(UPLOAD_ERRORS.failed(file.name))
     } finally {
       URL.revokeObjectURL(preview)
     }
@@ -169,7 +179,7 @@ export function MinaBlock({
    * did not. A new add starts with Mina's last upload error cleared.
    */
   const addPictures = (files: File[]) => {
-    setMinaUploadError(null)
+    setMinaNote(null)
 
     if (upload === 'scene') {
       for (const entry of uploadsOf('scene')) remove(entry.url)
@@ -181,12 +191,43 @@ export function MinaBlock({
     for (const file of files.slice(0, room)) void uploadFile(upload, file)
     if (files.length <= room) return
 
-    setMinaUploadError(UPLOAD_ERRORS.full(UPLOAD_LIMITS[upload]))
+    sayWarning(UPLOAD_ERRORS.full(UPLOAD_LIMITS[upload]))
   }
-  // The latest one, for the page-wide paste and drop listeners below.
+  /**
+   * A dropped `.mina` file: the API unseals it, then its setup replaces the
+   * studio's, the current pictures leaving as a removal would take them. Mina
+   * says how it went over the brief, in green either way.
+   */
+  const openPromptFile = async (file: File) => {
+    if (!session) return
+    setMinaNote(null)
+
+    let setup: StudioSetup
+    try {
+      setup = await importPromptFile.mutateAsync({ token: session.access_token, file })
+    } catch {
+      setMinaNote({ line: PROMPT_FILE_LINES.unreadable, tone: 'info' })
+      return
+    }
+  // When we import a correct mina prompt file we start removing any old url uploaded by the user
+    for (const entry of latestUploads.current) remove(entry.url)
+
+    // Each piece saves itself to the session, as it does when the user changes it.
+    const next = studioSetup(setup)
+    onUploads(next.uploads)
+    setLaneIndex(STILL_LANES.findIndex((entry) => entry.lane === next.lane))
+    setRatioIndex(next.ratioIndex)
+    setIsLandscape(next.isLandscape)
+    userBrief.current?.setupBrief(next.locked, next.brief)
+    setMinaNote({ line: PROMPT_FILE_LINES.loaded, tone: 'info' })
+  }
+
+  // The latest ones, for the page-wide paste and drop listeners below.
   const latestAddPictures = useRef(addPictures)
+  const latestOpenPromptFile = useRef(openPromptFile)
   useEffect(() => {
     latestAddPictures.current = addPictures
+    latestOpenPromptFile.current = openPromptFile
   })
 
 // the move function is used to reorder the uploads in the list, it is passed down to the MinaBlockUploadAndLibraries component, 
@@ -214,6 +255,18 @@ export function MinaBlock({
   )
   const lane = STILL_LANES[laneIndex]!
   useEffect(() => studioSession.save({ lane: lane.lane }), [lane])
+  // Shared by both modes' pills, and kept in sessionStorage like the lane.
+  const [ratioIndex, setRatioIndex] = useState(() => studioSession.read().ratioIndex ?? 0)
+  const [isLandscape, setIsLandscape] = useState(() => studioSession.read().isLandscape ?? false)
+  useEffect(() => studioSession.save({ ratioIndex, isLandscape }), [ratioIndex, isLandscape])
+  const ratioPill = (
+    <MinaBlockRatioPill
+      ratioIndex={ratioIndex}
+      isLandscape={isLandscape}
+      onNext={() => setRatioIndex((index) => (index + 1) % STUDIO_RATIOS.length)}
+      onFlip={() => setIsLandscape((was) => !was)}
+    />
+  )
   //If the image is in the process of being uploaded, the create button is disabled / changes the text to uploading... to prevent the user from starting a generation with incomplete or missing uploads.
   const isUploading = mode === 'create' && uploads.some((entry) => entry.isUploading)
   const canAfford = credits === undefined || canAffordGeneration(credits, mode, lane, resolution, duration)
@@ -248,6 +301,14 @@ export function MinaBlock({
     const dragOver = (event: DragEvent) => event.preventDefault()
     const drop = (event: DragEvent) => {
       event.preventDefault()
+      // A prompt file is a whole setup, so it wins over any pictures dropped with it.
+      // .mina upload: the first dropped file whose name ends in `.mina`, if there is one.
+      const promptFile = [...(event.dataTransfer?.files ?? [])].find((file) =>
+        file.name.toLowerCase().endsWith(PROMPT_FILE_EXTENSION),
+      )
+      // .mina prompt file drag drop upload
+      if (promptFile) return void latestOpenPromptFile.current(promptFile)
+      // Pictures drag drop upload
       take(event.dataTransfer?.files)
     }
 
@@ -370,6 +431,7 @@ export function MinaBlock({
             duration={duration}
             onNextResolution={() => setResolutionIndex((index) => (index + 1) % ANIMATE_RESOLUTIONS.length)}
             onNextDuration={() => setDurationIndex((index) => (index + 1) % ANIMATE_DURATIONS.length)}
+            ratioPill={ratioPill}
           />
         ) : (
           <MinaBlockPillsCreate
@@ -379,6 +441,7 @@ export function MinaBlock({
             onOpenFilePicker={openFilePicker}
             laneLabel={lane.label}
             onNextLane={() => setLaneIndex((index) => (index + 1) % STILL_LANES.length)}
+            ratioPill={ratioPill}
           />
         ))}
       <div ref={brief} className="mina-block__brief" onFocus={openLong}>
@@ -388,8 +451,8 @@ export function MinaBlock({
           <MinaBlockUserBrief
             ref={userBrief}
             placeholder={BRIEF_PLACEHOLDERS[mode]}
-            uploadError={minaUploadError}
-            onClearUploadError={() => setMinaUploadError(null)}
+            minaNote={minaNote}
+            onClearMinaNote={() => setMinaNote(null)}
             onIsEmptyChange={setIsBriefEmpty}
           />
         )}

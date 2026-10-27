@@ -10,13 +10,16 @@
   line-height: 1.15;
 }
 
-/* Drawn over the brief, which stays underneath and keeps every click: the first
-   one goes straight into it, and MinaBlock clears the message. */
-.mina-mina-brief--upload-error {
+/* A note sits over the brief without taking its clicks: they fall through to the
+   brief underneath, whose first click, focus or key clears the note. */
+.mina-mina-brief--note {
   position: absolute;
   inset: 0;
-  color: var(--mina-accent-pink);
   pointer-events: none;
+}
+
+.mina-mina-brief--warning {
+  color: var(--mina-accent-pink);
 }
 
 /* Hidden until its turn comes, one letter after another. */

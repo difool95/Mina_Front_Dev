@@ -7,9 +7,9 @@
   height: 160px;
 }
 
-/* Under Mina's upload error the brief is unseen, but still takes the click that clears it. */
-.mina-brief[data-upload-error] .mina-brief__input,
-.mina-brief[data-upload-error] .mina-brief__bottom {
+/* Under Mina's note the brief is unseen, but still takes the click that clears it. */
+.mina-brief[data-mina-note] .mina-brief__input,
+.mina-brief[data-mina-note] .mina-brief__bottom {
   opacity: 0;
 }
 

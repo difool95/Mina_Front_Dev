@@ -1,15 +1,24 @@
-import { useEffect, useRef, useState, type CSSProperties } from 'react'
+import { useRef, type CSSProperties } from 'react'
 
 import { RATIO_HOLD_MS, RATIO_ICONS, STUDIO_RATIOS, studioRatio } from '@/lib/studio'
-import { studioSession } from '@/lib/sessionStorage/studioSession'
 
 import './MinaBlockPills.css'
 
-/** The ratio pill both modes end on: a tap cycles the ratio, a hold flips it to landscape and back. */
-export function MinaBlockRatioPill() {
-  const [ratioIndex, setRatioIndex] = useState(() => studioSession.read().ratioIndex ?? 0)
-  const [isLandscape, setIsLandscape] = useState(() => studioSession.read().isLandscape ?? false)
-  useEffect(() => studioSession.save({ ratioIndex, isLandscape }), [ratioIndex, isLandscape])
+/**
+ * The ratio pill both modes end on: a tap cycles the ratio, a hold flips it to landscape and back.
+ * The ratio is held by `MinaBlock`, so a loaded prompt file can set it.
+ */
+export function MinaBlockRatioPill({
+  ratioIndex,
+  isLandscape,
+  onNext,
+  onFlip,
+}: {
+  ratioIndex: number
+  isLandscape: boolean
+  onNext: () => void
+  onFlip: () => void
+}) {
   const holdTimer = useRef<number | undefined>(undefined)
   // A hold that flipped the orientation must not also cycle on the click its release fires.
   const wasHeld = useRef(false)
@@ -20,7 +29,7 @@ export function MinaBlockRatioPill() {
     wasHeld.current = false
     holdTimer.current = window.setTimeout(() => {
       wasHeld.current = true
-      setIsLandscape((was) => !was)
+      onFlip()
     }, RATIO_HOLD_MS)
   }
 
@@ -41,7 +50,7 @@ export function MinaBlockRatioPill() {
           wasHeld.current = false
           return
         }
-        setRatioIndex((index) => (index + 1) % STUDIO_RATIOS.length)
+        onNext()
       }}
     >
       <span className="mina-pills__icon" aria-hidden="true">

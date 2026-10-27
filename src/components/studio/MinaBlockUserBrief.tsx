@@ -2,7 +2,7 @@ import { useEffect, useImperativeHandle, useRef, useState, type CSSProperties, t
 
 import { BRIEF_CHARS_PER_PX, BRIEF_MAX_LENGTH, BRIEF_SHRINK_FROM } from '@/lib/studio'
 import { studioSession } from '@/lib/sessionStorage/studioSession'
-import type { MinaBlockUserBriefHandle } from '@/types'
+import type { MinaBlockUserBriefHandle, MinaNote } from '@/types'
 
 import { MinaBlockMinaBrief } from './MinaBlockMinaBrief'
 
@@ -20,19 +20,19 @@ import './MinaBlockUserBrief.css'
  */
 export function MinaBlockUserBrief({
   placeholder,
-  uploadError,
-  onClearUploadError,
+  minaNote,
+  onClearMinaNote,
   onIsEmptyChange,
   ref,
 }: {
   placeholder: string
   /**
-   * What Mina says over the brief when a picture is refused or does not fit. The
-   * brief stays underneath, and going back to it (a click, focus or a key)
-   * calls `onClearUploadError`.
+   * What Mina says over the brief: a picture refused or that does not fit, a
+   * prompt file loaded or not. The brief stays underneath, and going back to
+   * it (a click, focus or a key) calls `onClearMinaNote`.
    */
-  uploadError: string | null
-  onClearUploadError: () => void
+  minaNote: MinaNote | null
+  onClearMinaNote: () => void
   /** Told whether there is anything to send, typed or locked, so the call to action can ask for more. */
   onIsEmptyChange: (isEmpty: boolean) => void
   ref?: Ref<MinaBlockUserBriefHandle>
@@ -87,7 +87,7 @@ export function MinaBlockUserBrief({
   useEffect(() => onIsEmptyChange(!brief.trim() && !locked), [brief, locked, onIsEmptyChange])
 
   return (
-    <div className="mina-brief" data-upload-error={uploadError ? '' : undefined}>
+    <div className="mina-brief" data-mina-note={minaNote ? '' : undefined}>
       <textarea
         ref={input}
         className="mina-brief__input h1"
@@ -98,9 +98,9 @@ export function MinaBlockUserBrief({
           setBrief(event.target.value)
           setBeforeLock(null)
         }}
-        onPointerDown={onClearUploadError}
+        onPointerDown={onClearMinaNote}
         onKeyDown={(event) => {
-          onClearUploadError()
+          onClearMinaNote()
           if (beforeLock === null || event.shiftKey || !(event.ctrlKey || event.metaKey)) return
           if (event.key.toLowerCase() !== 'z') return
 
@@ -113,7 +113,7 @@ export function MinaBlockUserBrief({
         // Leaving the tab blurs the brief but keeps its selection; reading it
         // again on the way back brings the pill back with it.
         onFocus={(event) => {
-          onClearUploadError()
+          onClearMinaNote()
           readSelection(event.currentTarget)
         }}
         onBlur={() => setSelection(null)}
@@ -141,7 +141,7 @@ export function MinaBlockUserBrief({
         </div>
       )}
 
-      {uploadError && <MinaBlockMinaBrief uploadError={uploadError} />}
+      {minaNote && <MinaBlockMinaBrief note={minaNote} />}
     </div>
   )
 }

@@ -5,6 +5,8 @@ import type {
   Ratio,
   StillLane,
   StudioMode,
+  StudioSession,
+  StudioSetup,
   StudioUpload,
   UploadKind,
 } from '@/types'
@@ -98,6 +100,46 @@ export function withScene(uploads: StudioUpload[], url: string): StudioUpload[] 
     ...uploads.filter((entry) => entry.kind !== 'scene' && entry.url !== url),
     { kind: 'scene', url, origin: 'upload', isSent: true },
   ]
+}
+
+/** A prompt file's extension: the profile downloads it, the studio takes it when dropped. */
+export const PROMPT_FILE_EXTENSION = '.mina'
+
+/** What Mina says over the brief, in green, once a dropped prompt file has been tried. */
+export const PROMPT_FILE_LINES = {
+  unreadable: "That .mina file couldn't be read. Make sure it's a Mina prompt file.",
+  loaded: 'Restored your settings from the .mina file.',
+}
+
+/**
+ * A whole setup — a creation's own, or a prompt file's — as the studio keeps
+ * it: the ratio becomes the pill's position and landscape flip, and a lane or
+ * ratio the pills do not have falls back to their first.
+ *
+ * The brief comes back whole, with no locked strip: the API stores the locked
+ * line appended to it, so the two cannot be told apart.
+ */
+export function studioSetup({
+  brief,
+  lane,
+  aspectRatio = '',
+  uploads,
+}: StudioSetup): Omit<StudioSession, 'studioSessionId' | 'generations'> {
+  const flipped = aspectRatio.split(':').reverse().join(':')
+  const ratioIndex = Math.max(
+    0,
+    STUDIO_RATIOS.findIndex(({ value }) => value === aspectRatio || value === flipped),
+  )
+
+  return {
+    brief,
+    locked: '',
+    // That creation still reads them, so removing one must not delete it from R2.
+    uploads: uploads.map((upload) => ({ ...upload, isSent: true })),
+    lane: STILL_LANES.find((entry) => entry.lane === lane)?.lane ?? 'niche',
+    ratioIndex,
+    isLandscape: aspectRatio !== flipped && STUDIO_RATIOS[ratioIndex]!.value === flipped,
+  }
 }
 
 /** Up to `count` items of `list`, picked at random. */

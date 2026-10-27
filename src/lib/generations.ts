@@ -1,5 +1,5 @@
-import { STILL_LANES, STUDIO_RATIOS } from '@/lib/studio'
-import type { StudioSession, StudioUpload } from '@/types'
+import { studioSetup } from '@/lib/studio'
+import type { StudioSetup } from '@/types'
 import type {
   MegaGeneration,
   ModeFilter,
@@ -96,38 +96,25 @@ export function detailsOf(generation: MegaGeneration) {
 const KIND_BY_SLOT = { scene: 'scene', logo: 'logo', featured_asset: 'product' } as const
 
 /** The pictures the creation was made from, each under the pill it was added to, in order. */
-export function uploadsOf(generation: MegaGeneration): StudioUpload[] {
+export function uploadsOf(generation: MegaGeneration): StudioSetup['uploads'] {
   return (generation.mg_mma_vars?.meta?.create_asset_plan?.items ?? []).map(({ url, slot_hint, origin }) => ({
     kind: KIND_BY_SLOT[slot_hint],
     // Back to the plain R2 URL the studio sent: the API resizes it again itself.
     url: url.replace(/\/cdn-cgi\/image\/[^/]+/, ''),
     origin,
-    // That creation still reads it, so removing it must not delete it from R2.
-    isSent: true,
   }))
 }
 
-/**
- * The studio as it stood when the creation was made: brief, pictures, ratio
- * and lane, read out of `mg_mma_vars`.
- */
-export function recreateOf(generation: MegaGeneration): Partial<StudioSession> {
-  const vars = generation.mg_mma_vars
-  const ratio = vars?.inputs?.aspect_ratio ?? ''
-  const flipped = ratio.split(':').reverse().join(':')
-  const ratioIndex = Math.max(
-    0,
-    STUDIO_RATIOS.findIndex(({ value }) => value === ratio || value === flipped),
-  )
+/** The studio as it stood when the creation was made, read out of `mg_mma_vars`. */
+export function recreateOf(generation: MegaGeneration) {
+  const inputs = generation.mg_mma_vars?.inputs
 
-  return {
-    brief: vars?.inputs?.brief ?? '',
-    locked: '',
+  return studioSetup({
+    brief: inputs?.brief ?? '',
+    lane: inputs?.still_lane,
+    aspectRatio: inputs?.aspect_ratio,
     uploads: uploadsOf(generation),
-    lane: STILL_LANES.find(({ lane }) => lane === vars?.inputs?.still_lane)?.lane ?? 'niche',
-    ratioIndex,
-    isLandscape: ratio !== flipped && STUDIO_RATIOS[ratioIndex]!.value === flipped,
-  }
+  })
 }
 
 /**

@@ -194,7 +194,12 @@ export async function downloadMedia(url: string, filename: string) {
 
   if (!response.ok) throw new Error(`Could not download the file (${response.status})`)
 
-  const objectUrl = URL.createObjectURL(await response.blob())
+  saveBlob(await response.blob(), filename)
+}
+
+/** Saves a blob to disk under `filename`, as a download. */
+export function saveBlob(blob: Blob, filename: string) {
+  const objectUrl = URL.createObjectURL(blob)
   const link = document.createElement('a')
 
   link.href = objectUrl

@@ -1,8 +1,8 @@
+import type { ReactNode } from 'react'
+
 import { cfImage, imageWidthFor } from '@/lib/media'
 import { STILL_LANES_TOOLTIP, UPLOAD_KINDS } from '@/lib/studio'
 import type { StudioUpload, UploadKind } from '@/types'
-
-import { MinaBlockRatioPill } from './MinaBlockRatioPill'
 
 import './MinaBlockPills.css'
 
@@ -13,6 +13,7 @@ export function MinaBlockPillsCreate({
   onOpenFilePicker,
   laneLabel,
   onNextLane,
+  ratioPill,
 }: {
   upload: UploadKind
   uploads: StudioUpload[]
@@ -21,6 +22,8 @@ export function MinaBlockPillsCreate({
   onOpenFilePicker: (kind: UploadKind) => void
   laneLabel: string
   onNextLane: () => void
+  /** Built by `MinaBlock`, which holds the ratio for both modes. */
+  ratioPill: ReactNode
 }) {
   return (
     <div className="mina-pills">
@@ -60,7 +63,7 @@ export function MinaBlockPillsCreate({
         <span className="h5">{laneLabel}</span>
       </button>
 
-      <MinaBlockRatioPill />
+      {ratioPill}
     </div>
   )
 }
