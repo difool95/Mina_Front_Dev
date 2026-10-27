@@ -105,10 +105,10 @@ export function CreationOtherPanel({ generation, isOpen, onToggle }: CreationOth
   return (
     <Table className="mina-other">
       <Row valign="top">
-        <p className={`mina-other__prompt caption${isOpen ? ' mina-other__prompt--full' : ''}`}>
+        <p className={`mina-other__prompt body-text muted${isOpen ? ' mina-other__prompt--full' : ''}`}>
           {promptOf(generation)}
         </p>
-        <button className="mina-other__toggle hyperlink-small" type="button" onClick={onToggle}>
+        <button className="mina-other__toggle comment-button underline button muted" type="button" onClick={onToggle}>
           {isOpen ? 'less' : 'more'}
         </button>
       </Row>
@@ -118,8 +118,8 @@ export function CreationOtherPanel({ generation, isOpen, onToggle }: CreationOth
           <Rule />
 
           <Row>
-            <span className="mina-other__label h6">Type</span>
-            <span className="mina-other__value h6">{details.type}</span>
+            <span className="mina-other__label comment faint">Type</span>
+            <span className="mina-other__value comment faint">{details.type}</span>
           </Row>
 
           <Rule />
@@ -127,10 +127,10 @@ export function CreationOtherPanel({ generation, isOpen, onToggle }: CreationOth
           {/* The buttons are cells of this row, so they spread across it and
               carry to the next line whole rather than breaking their words. */}
           <Row>
-            <span className="mina-other__label h6">Actions</span>
+            <span className="mina-other__label comment faint">Actions</span>
             {ACTIONS.map((action) => (
               <button
-                className="mina-other__action button-small"
+                className="mina-other__action body-text-button button"
                 type="button"
                 key={action}
                 onClick={onAction[action]}
@@ -144,15 +144,15 @@ export function CreationOtherPanel({ generation, isOpen, onToggle }: CreationOth
 
           {rows.map(([label, value]) => (
             <Row key={label}>
-              <span className="mina-other__label h6">{label}</span>
-              <span className="mina-other__value h6">{value}</span>
+              <span className="mina-other__label comment faint">{label}</span>
+              <span className="mina-other__value comment faint">{value}</span>
             </Row>
           ))}
 
           <Row>
-            <span className="mina-other__label h6">Like</span>
+            <span className="mina-other__label comment faint">Like</span>
             <button
-              className={`mina-other__like button-small${isLiked ? ' mina-other__like--on' : ''}`}
+              className={`mina-other__like body-text-button button${isLiked ? ' mina-other__like--on' : ''}`}
               type="button"
               onClick={() => (isLiked ? unlike.mutate(generationId) : like.mutate(generation))}
             >
@@ -168,7 +168,7 @@ export function CreationOtherPanel({ generation, isOpen, onToggle }: CreationOth
               <Row>
                 {cells.map(({ label, urls }) => (
                   <Fragment key={label}>
-                    <span className="mina-other__label h6">{label}</span>
+                    <span className="mina-other__label comment faint">{label}</span>
                     {/* The pictures are a way back to the setup they came from, as Re-create is. */}
                     <button
                       className="mina-other__pictures"
@@ -194,9 +194,9 @@ export function CreationOtherPanel({ generation, isOpen, onToggle }: CreationOth
           ))}
 
           <Row>
-            <span className="mina-other__label h6">Share</span>
+            <span className="mina-other__label comment faint">Share</span>
             <button
-              className="mina-other__action button-small"
+              className="mina-other__action body-text-button button"
               type="button"
               onClick={() =>
                 session &&
@@ -211,7 +211,7 @@ export function CreationOtherPanel({ generation, isOpen, onToggle }: CreationOth
               <span className="mina-other__icon mina-other__icon--download" />
             </button>
             <button
-              className="mina-other__action button-small"
+              className="mina-other__action body-text-button button"
               type="button"
               onClick={() =>
                 copyLink.mutate(viewerLinkFor(generation), {

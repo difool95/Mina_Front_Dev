@@ -155,7 +155,7 @@ export function ProfilePage() {
             <RoleTagCard />
           </div>
           <button
-            className="mina-profile__matcha button-header-cta"
+            className="mina-profile__matcha h4 underline button"
             type="button"
             onClick={() => setMatchaPanel('buy')}
           >
@@ -174,12 +174,12 @@ export function ProfilePage() {
         <div className="mina-profile__line">
           <Row className="mina-profile__account-head">
             {/* Spelled out on desktop, clipped to fit the phone header. */}
-            <Link className="mina-profile__back" to="/" data-tooltip="Back to the studio">
-              <span className="mina-profile__back--long hyperlink-bold">Go Back</span>
-              <span className="mina-profile__back--short button-body">Back</span>
+            <Link className="mina-profile__back button" to="/" data-tooltip="Back to the studio">
+              <span className="mina-profile__back--long paragraph-title-button bold underline">Go Back</span>
+              <span className="mina-profile__back--short paragraph-title-button bold">Back</span>
             </Link>
             <button
-              className="mina-profile__menu button-body"
+              className="mina-profile__menu paragraph-title-button bold button"
               type="button"
               aria-expanded={menuOpen}
               onClick={() => setMenuOpen((wasOpen) => !wasOpen)}
@@ -197,7 +197,7 @@ export function ProfilePage() {
                 and Auto-Matcha alone on this row. */}
             <Row>
               <span className="mina-profile__field mina-profile__field--email">
-                <span className="mina-profile__label h4">Email</span>
+                <span className="mina-profile__label paragraph-title">Email</span>
                 <AccountMenu
                   email={session?.user.email ?? ''}
                   currentUserId={userId ?? ''}
@@ -210,8 +210,8 @@ export function ProfilePage() {
               </span>
 
               <span className="mina-profile__field mina-profile__field--brand">
-                <span className="mina-profile__label h4">Brand Memory</span>
-                <button className="mina-profile__toggle hyperlink-bold" type="button">
+                <span className="mina-profile__label paragraph-title">Brand Memory</span>
+                <button className="mina-profile__toggle paragraph-title underline" type="button">
                   ON
                 </button>
               </span>
@@ -221,8 +221,8 @@ export function ProfilePage() {
                 type="button"
                 onClick={() => setMatchaPanel('auto')}
               >
-                <span className="mina-profile__label h4">Auto-Matcha</span>
-                <span className="mina-profile__toggle hyperlink-bold">{isAutoMatchaOn ? 'ON' : 'OFF'}</span>
+                <span className="mina-profile__label paragraph-title">Auto-Matcha</span>
+                <span className="mina-profile__toggle paragraph-title underline">{isAutoMatchaOn ? 'ON' : 'OFF'}</span>
               </button>
             </Row>
 
@@ -230,13 +230,13 @@ export function ProfilePage() {
 
             <Row>
               <span className="mina-profile__field mina-profile__field--matcha">
-                <span className="mina-profile__label h4">Matcha</span>
-                <span className="mina-profile__value thin">{credits?.mg_credits ?? 0}</span>
+                <span className="mina-profile__label paragraph-title">Matcha</span>
+                <span className="mina-profile__value paragraph-title muted">{credits?.mg_credits ?? 0}</span>
               </span>
 
               <span className="mina-profile__field mina-profile__field--expiry">
-                <span className="mina-profile__label h4">Best before</span>
-                <span className="mina-profile__value thin">{formatDate(credits?.mg_expires_at)}</span>
+                <span className="mina-profile__label paragraph-title">Best before</span>
+                <span className="mina-profile__value paragraph-title muted">{formatDate(credits?.mg_expires_at)}</span>
               </span>
             </Row>
 
@@ -259,7 +259,7 @@ export function ProfilePage() {
                 </button>
               )}
               <button
-                className="mina-profile__logout button-body"
+                className="mina-profile__logout paragraph-title-button bold button muted"
                 type="button"
                 disabled={signOutAccount.isPending}
                 onClick={() => userId && signOutAccount.mutate(userId)}
@@ -279,8 +279,8 @@ export function ProfilePage() {
 
       <div className="mina-profile__archive-head">
         <div>
-          <h1 className="mina-profile__title h2">Archive</h1>
-          <p className="mina-profile__count comment">
+          <h1 className="mina-profile__title h3">Archive</h1>
+          <p className="mina-profile__count body-text muted">
             {isPending
               ? 'Loading…'
               : `${visible.length} ${visible.length === 1 ? 'creation' : 'creations'}`}
@@ -290,7 +290,7 @@ export function ProfilePage() {
         <div className="mina-profile__filters">
           {/* Dropped on phones, where four pills are all that fit beside the title. */}
           <button
-            className="mina-profile__filter mina-profile__filter--date pill"
+            className="mina-profile__filter mina-profile__filter--date paragraph-title-button pill"
             type="button"
             data-tooltip="Filter by date"
             onClick={() => setTime(nextFilter(TIME_FILTERS, time))}
@@ -298,7 +298,7 @@ export function ProfilePage() {
             {labelFor(TIME_FILTERS, time)}
           </button>
           <button
-            className="mina-profile__filter pill"
+            className="mina-profile__filter paragraph-title-button pill"
             type="button"
             data-tooltip="Filter by type"
             onClick={() => setMode(nextFilter(MODE_FILTERS, mode))}
@@ -308,7 +308,7 @@ export function ProfilePage() {
           {/* The only filter that latches rather than stepping through values,
               so it keeps the hover ground while it is on. */}
           <button
-            className="mina-profile__filter mina-profile__filter--liked pill"
+            className="mina-profile__filter mina-profile__filter--liked paragraph-title-button pill"
             type="button"
             aria-pressed={isLikedOnly}
             data-tooltip={isLikedOnly ? 'Show all' : 'Liked only'}
@@ -317,7 +317,7 @@ export function ProfilePage() {
             Liked
           </button>
           <button
-            className="mina-profile__filter pill"
+            className="mina-profile__filter paragraph-title-button pill"
             type="button"
             data-tooltip="Filter by ratio"
             onClick={() => setRatio(nextFilter(RATIO_FILTERS, ratio))}
@@ -325,7 +325,7 @@ export function ProfilePage() {
             {labelFor(RATIO_FILTERS, ratio)}
           </button>
           <button
-            className="mina-profile__filter mina-profile__filter--layout pill"
+            className="mina-profile__filter mina-profile__filter--layout paragraph-title-button pill"
             type="button"
             aria-label="Change layout"
             aria-pressed={layout === 'library'}

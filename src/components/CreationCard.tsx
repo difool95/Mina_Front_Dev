@@ -60,7 +60,7 @@ export function CreationCard({
       }
     >
       <header className="mina-creation__bar">
-        <button className="mina-creation__action mina-creation__download button-small" type="button" onClick={onDownload}>
+        <button className="mina-creation__action mina-creation__download body-text-button button" type="button" onClick={onDownload}>
           Download
         </button>
 
@@ -83,7 +83,7 @@ export function CreationCard({
           </span>
         ) : (
           <button
-            className="mina-creation__menu button-icon-strong"
+            className="mina-creation__menu h5 button"
             type="button"
             aria-label="Creation options"
             onClick={() => setConfirming(true)}

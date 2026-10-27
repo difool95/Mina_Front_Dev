@@ -256,6 +256,7 @@ body {
 .h1 { font-size: var(--mina-text-32); font-weight: var(--mina-semibold); letter-spacing: var(--mina-tracking-heading); }
 .h2 { font-size: var(--mina-text-28); font-weight: var(--mina-semibold); letter-spacing: var(--mina-tracking-heading); text-decoration: underline; }
 .h3 { font-size: var(--mina-text-21); font-weight: var(--mina-semibold); letter-spacing: var(--mina-tracking-heading); }
+.h4 { font-size: var(--mina-text-18); font-weight: var(--mina-semibold); letter-spacing: var(--mina-tracking-heading); }
 .h5 { font-size: var(--mina-text-16); font-weight: var(--mina-semibold); letter-spacing: var(--mina-tracking-heading); }
 .h6 { font-size: var(--mina-text-14); font-weight: var(--mina-regular);  letter-spacing: var(--mina-tracking-heading); }
 .paragraph-title        { font-size: var(--mina-text-11); font-weight: var(--mina-semibold); letter-spacing: var(--mina-tracking-text); }
@@ -280,99 +281,3 @@ body {
 @media (max-width: 768px) {
   .login-footer .body-text { font-size: clamp(8px, 2.7vw, 11px); }  /* login only = 10.125px on a 375 phone */
 }
-
-.button-icon {
-  font-size: var(--mina-text-16);
-  font-weight: var(--mina-weight-regular);
-}
-.button-icon:hover  { opacity: 0.8; }
-.button-icon:active { opacity: 0.6; }
-
-.button-small {
-  font-size: var(--mina-text-10);
-  font-weight: var(--mina-weight-bold);
-}
-.button-small:hover  { opacity: 0.8; }
-.button-small:active { opacity: 0.6; }
-
-/* ── profile ── */
-
-.button-header-cta {
-  font-size: var(--mina-text-18);
-  font-weight: var(--mina-weight-semibold);
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-}
-.button-header-cta:hover  { opacity: 0.8; }
-.button-header-cta:active { opacity: 0.6; }
-@media (max-width: 767px) {   /* Mobile layout (live uses a separate mobile header button) */
-  .button-header-cta { text-decoration-thickness: auto; }
-  .button-header-cta:hover { opacity: 0.7; }
-}
-
-.hyperlink-bold {
-  font-size: var(--mina-text-11);
-  font-weight: var(--mina-weight-bold);
-  text-decoration: underline;
-}
-.hyperlink-bold:hover  { opacity: 0.7; }
-.hyperlink-bold:active { opacity: 0.6; }
-
-.button-body {
-  font-size: var(--mina-text-11);
-  font-weight: var(--mina-weight-bold);
-}
-.button-body:hover  { opacity: 0.7; }
-.button-body:active { opacity: 0.6; }
-
-.h4 {
-  font-size: var(--mina-text-11);
-  font-weight: var(--mina-weight-bold);
-  letter-spacing: var(--mina-tracking-body);
-}
-
-.thin {
-  font-size: var(--mina-text-11);
-  font-weight: var(--mina-weight-regular);
-  letter-spacing: var(--mina-tracking-body);
-  color: var(--mina-ink-40);
-}
-
-.button-account {
-  font-size: var(--mina-text-11);
-  font-weight: var(--mina-weight-regular);
-  letter-spacing: var(--mina-tracking-tight);
-  line-height: 1.2;
-  color: var(--mina-ink-60);
-}
-.button-account:hover  { color: var(--mina-ink-90); opacity: 0.8; }
-.button-account:active { opacity: 0.6; }
-
-.button-icon-strong {
-  font-size: var(--mina-text-16);
-  font-weight: var(--mina-weight-extrabold);
-  line-height: 1;
-  opacity: 0.85;
-}
-.button-icon-strong:hover    { opacity: 1; }
-.button-icon-strong:active   { opacity: 0.6; }
-.button-icon-strong:disabled { opacity: 0.35; }
-
-.caption {
-  font-size: var(--mina-text-10);
-  font-weight: var(--mina-weight-medium);
-  letter-spacing: -0.03em;
-  line-height: 1.45;
-  opacity: 0.5;
-}
-
-.hyperlink-small {
-  font-size: var(--mina-text-8);
-  font-weight: var(--mina-weight-semibold);
-  line-height: 0.9;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  opacity: 0.5;
-}
-.hyperlink-small:hover  { opacity: 0.8; }
-.hyperlink-small:active { opacity: 0.6; }

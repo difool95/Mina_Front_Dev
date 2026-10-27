@@ -29,7 +29,7 @@
   min-height: 20px;
 }
 
-/* Download, delete and cancel. */
+/* Delete and cancel; Download takes its type from `.body-text-button` (index.css). */
 .mina-creation__action {
   transition: opacity var(--mina-anim-fade) ease;
   color: rgba(var(--mina-ink-rgb), 0.85);
@@ -46,22 +46,12 @@
   font-weight: var(--mina-weight-regular);
 }
 
-/* Download (.button-small): a little lighter ink, and a softer hover. Qualified
-   so it outranks `.button-small:hover` from index.css. */
-.mina-creation .mina-creation__download {
-  color: var(--mina-ink-85);
-}
-
-.mina-creation .mina-creation__download:hover {
-  opacity: 0.9;
-}
-
 .mina-creation__confirm {
   display: flex;
   gap: 10px;
 }
 
-/* The font settings of `.button-icon-strong` (index.css) size the button's
+/* The font settings of `.h5` (index.css) size the button's
    line box, which the icon then fills. */
 .mina-creation__menu {
   padding: 2px 6px;
@@ -167,8 +157,8 @@
   white-space: normal;
 }
 
-/* Type comes from `.caption` (prompt), `.hyperlink-small` (more / less), `.h6`
-   (labels and values) and `.button-small` (actions), in index.css. */
+/* Type comes from `.body-text` (prompt), `.comment-button` (more / less), `.comment`
+   (labels and values) and `.body-text-button` (actions), in index.css. */
 .mina-other__toggle {
   flex-shrink: 0;
   transition: opacity var(--mina-anim-fade) ease;
@@ -191,17 +181,6 @@
   transition: opacity var(--mina-anim-fade) ease;
   color: var(--pcd-ink);
   line-height: 1.35;
-}
-
-/* Qualified so these outrank `.button-small` from index.css. */
-.mina-other .mina-other__action:hover,
-.mina-other .mina-other__like:hover {
-  opacity: 0.7;
-}
-
-.mina-other .mina-other__action:active,
-.mina-other .mina-other__like:active {
-  opacity: 0.5;
 }
 
 /* A pill's pictures travel as one cell. Too wide to sit beside its label, the

@@ -58,7 +58,6 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
    the rules here only lay things out, plus the one-off changes on top. */
 .mina-profile__matcha {
   transition: opacity var(--mina-anim-fade) ease;
-  text-underline-offset: var(--mina-btn-underline-offset);
 }
 
 /* ── account row ── */
@@ -96,17 +95,13 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
   gap: 7px;
 }
 
-/* "Go Back" (.hyperlink-bold) on desktop, "Back" (.button-body) on a phone. */
+/* "Go Back" (underlined) on desktop and tablet, "Back" on a phone: `.paragraph-title-button.bold` with `.button`. */
 /* The link's own size matches its text (both classes are 11px): left unset it
    would measure its line box against the inherited 16px, which stands it taller
    than every other cell and sinks its text below theirs. */
 .mina-profile__back {
   color: var(--mina-ink);
   font-size: var(--mina-text-11);
-}
-
-.mina-profile__back--long {
-  text-underline-offset: var(--mina-btn-underline-offset);
 }
 
 .mina-profile__back--short {
@@ -117,34 +112,13 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
   color: var(--mina-ink);
 }
 
-/* Brand Memory and Auto-Matcha (.h4) keep the normal letter spacing. */
-.mina-profile__field--brand .mina-profile__label,
-.mina-profile__field--auto .mina-profile__label {
-  letter-spacing: normal;
-}
-
-/* ON / OFF (.hyperlink-bold) has no hover of its own: the Auto-Matcha row around it has. */
-.mina-profile__toggle {
-  color: var(--mina-ink);
-  text-underline-offset: var(--mina-btn-underline-offset);
-}
-
-.mina-profile .mina-profile__toggle:hover,
-.mina-profile .mina-profile__toggle:active {
-  opacity: 1;
-}
-
+/* ON / OFF (.paragraph-title.underline) has no hover of its own: the Auto-Matcha row around it has. */
 .mina-profile__field--auto:hover {
   opacity: 0.7;
 }
 
 .mina-profile__field--auto:active {
   opacity: 0.6;
-}
-
-/* Logout (.button-body), lighter than the other actions. */
-.mina-profile__logout {
-  color: var(--mina-ink-50);
 }
 
 /* Ahead of Logout in the markup for the phone row; on the one desktop line it
