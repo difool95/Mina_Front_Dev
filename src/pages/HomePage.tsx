@@ -42,7 +42,7 @@ export function HomePage() {
           <img src={MINA_LOGO_URL} alt="Mina" />
         </button>
         <button
-          className="mina-home__tutorial button-header-link"
+          className="mina-home__tutorial paragraph-title-button bold button"
           type="button"
           onClick={() => setTutorialOpen(true)}
         >
@@ -62,24 +62,24 @@ export function HomePage() {
         {FOOTER_LINKS.map((link) =>
           'href' in link ? (
             <a
-              className="mina-home__footer-link mina-home__help button-footer"
+              className="mina-home__footer-link body-text button soft"
               key={link.label}
               href={link.href}
               target="_blank"
               rel="noreferrer"
             >
               {link.label}
-              <span className="separator" aria-hidden="true">|</span>
+              <span className="mina-home__separator body-text faint" aria-hidden="true">|</span>
             </a>
           ) : (
             <button
-              className="mina-home__footer-link button-footer"
+              className="mina-home__footer-link body-text button soft"
               type="button"
               key={link.label}
               onClick={() => setLegal(link.contentType)}
             >
               {link.label}
-              <span className="separator" aria-hidden="true">|</span>
+              <span className="mina-home__separator body-text faint" aria-hidden="true">|</span>
             </button>
           ),
         )}

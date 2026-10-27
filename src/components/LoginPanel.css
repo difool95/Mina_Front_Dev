@@ -92,7 +92,6 @@
 
 /* Type and opacity come from the design system classes (index.css). */
 .mina-login__cta {
-  color: inherit;
   text-align: left;
 }
 
@@ -105,10 +104,8 @@
   cursor: default;
 }
 
-/* Qualified by the block: index.css loads last and its `.button-login` underline would otherwise win the tie. */
-.mina-login .mina-login__cta--static {
+.mina-login__sent .mina-login__cta {
   margin: 0;
-  text-decoration: none;
 }
 
 .mina-login__alt {
@@ -122,7 +119,6 @@
   outline: none;
   background: transparent;
   color: var(--mina-text);
-  font-family: inherit;
 }
 
 .mina-login__input::placeholder {
@@ -176,24 +172,10 @@
   font-size: var(--mina-fs-micro);
 }
 
-/* "Sign in" (.hyperlink) rests a little faded and lights up fully on hover.
-   Qualified by the block so it outranks `.hyperlink:hover` from index.css. */
-.mina-login .mina-login__reveal-text {
-  opacity: 0.85;
-}
-
-.mina-login .mina-login__reveal-text:hover {
-  opacity: 1;
-}
-
-/* The one-time-link explainer under "Sign in" (.comment), lighter than a usual comment. */
+/* The one-time-link explainer under "Sign in". */
 .mina-login__hint {
   margin: var(--mina-space-s) 0 0;
   max-width: 340px;
-}
-
-.mina-login .mina-login__hint {
-  color: var(--mina-ink-30);
 }
 
 .mina-login__error {

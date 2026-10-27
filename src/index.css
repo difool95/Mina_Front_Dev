@@ -160,6 +160,17 @@
   --pcd-fs: var(--mina-fs-micro);  /* 9px — creation panel rows */
   --pcd-ink: var(--mina-ink);      /* creation panel ink */
   --mina-success-60:	rgba(40, 160, 60, 0.6);
+
+  /* ── Design system ── */
+  --mina-bold:     700;
+  --mina-semibold: 600;
+  --mina-regular:  400;
+  --mina-tracking-heading: -0.01em;
+  --mina-tracking-text:    -0.00em;
+  --mina-hover: 0.8;
+  --mina-click: 0.6;
+  --mina-opacity-soft:  0.7;
+  --mina-opacity-faint: 0.2;
 }
 
 /* Safari / iOS friendly viewport */
@@ -186,6 +197,8 @@ body {
 *::after {
   box-sizing: border-box;
 }
+
+button, a, input, textarea { font: inherit; color: inherit; letter-spacing: inherit; text-decoration: none; }
 
 body {
   background: var(--mina-bg);
@@ -235,49 +248,24 @@ body {
 
 /* ── design system ──
    One class per kind of text element, called from the components. A
-   component's own CSS only adds layout, and any one-off change on top. */
+   component's own CSS only adds layout, and any one-off change on top.
+   Text classes set the type; `.button`, `.underline`, `.soft` and `.faint`
+   combine with them. */
 
-.button-header-link {
-  font-size: var(--mina-text-11);
-  font-weight: var(--mina-weight-extrabold);   /* shows as 700, the font stops at 700 */
-  letter-spacing: var(--mina-tracking-tight);
-}
-.button-header-link:hover  { opacity: 0.92; }
-.button-header-link:active { opacity: 0.72; }
+.h3 { font-size: var(--mina-text-21); font-weight: var(--mina-semibold); letter-spacing: var(--mina-tracking-heading); }
+.h5 { font-size: var(--mina-text-16); font-weight: var(--mina-semibold); letter-spacing: var(--mina-tracking-heading); }
+.h6 { font-size: var(--mina-text-14); font-weight: var(--mina-regular);  letter-spacing: var(--mina-tracking-heading); }
+.body-text { font-size: var(--mina-text-10); font-weight: var(--mina-regular); letter-spacing: var(--mina-tracking-text); }
+.paragraph-title-button { font-size: var(--mina-text-11); font-weight: var(--mina-semibold); letter-spacing: var(--mina-tracking-text); }
+.paragraph-title-button.bold { font-weight: var(--mina-bold); }
 
-.button-login {
-  font-size: var(--mina-text-20);
-  font-weight: var(--mina-weight-semibold);
-  letter-spacing: var(--mina-tracking-tight);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  opacity: 0.9;
-}
-.button-login:hover  { opacity: 1; }
-.button-login:active { opacity: 0.6; }
+.button, .pill { cursor: pointer; }
+.button:hover, .pill:hover   { opacity: var(--mina-hover); }
+.button:active, .pill:active { opacity: var(--mina-click); }
 
-.button-quiet {
-  font-size: var(--mina-text-13);
-  font-weight: var(--mina-weight-regular);
-  opacity: 0.75;
-}
-.button-quiet:hover  { opacity: 0.9; }
-.button-quiet:active { opacity: 0.5; }
-
-.h3 {
-  font-size: var(--mina-text-20);
-  font-weight: var(--mina-weight-semibold);
-  letter-spacing: var(--mina-tracking-tight);
-}
-
-.hyperlink {
-  font-size: var(--mina-text-11);
-  font-weight: var(--mina-weight-semibold);
-  letter-spacing: var(--mina-tracking-tight);
-  text-decoration: underline;
-}
-.hyperlink:hover  { opacity: 0.85; }
-.hyperlink:active { opacity: 0.6; }
+.underline { text-decoration: underline; text-underline-offset: 3px; }
+.soft      { opacity: var(--mina-opacity-soft); }
+.faint     { opacity: var(--mina-opacity-faint); }
 
 .comment {
   font-size: var(--mina-text-10);
@@ -302,8 +290,7 @@ body {
 .button-footer:hover  { opacity: 0.95; }
 .button-footer:active { opacity: 0.6; }
 @media (max-width: 768px) {
-  .login-footer .button-footer,
-  .login-footer .separator { font-size: clamp(8px, 2.7vw, 11px); }  /* login only = 10.125px on a 375 phone */
+  .login-footer .body-text { font-size: clamp(8px, 2.7vw, 11px); }  /* login only = 10.125px on a 375 phone */
 }
 
 .separator {
@@ -355,12 +342,6 @@ body {
   letter-spacing: 0px;
   line-height: 1;
   opacity: 0.6;
-}
-
-.h5 {
-  font-size: var(--mina-text-9);
-  font-weight: var(--mina-weight-semibold);
-  letter-spacing: 0px;
 }
 
 .h1 {
@@ -513,11 +494,3 @@ body {
 }
 .hyperlink-small:hover  { opacity: 0.8; }
 .hyperlink-small:active { opacity: 0.6; }
-
-.h6 {
-  font-size: var(--mina-text-9);
-  font-weight: var(--mina-weight-regular);
-  letter-spacing: var(--mina-tracking-body);
-  line-height: 1.35;
-  opacity: 0.3;
-}

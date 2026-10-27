@@ -34,7 +34,7 @@
   height: auto;
 }
 
-/* The tutorial's type comes from `.button-header-link` (index.css). */
+/* The tutorial's type comes from `.paragraph-title-button.bold` (index.css). */
 .mina-home__tutorial,
 .mina-home__logout {
   padding: var(--mina-space-m) var(--mina-space-l);
@@ -72,7 +72,7 @@
   font-weight: var(--mina-weight-medium);
 }
 
-/* The links' type and opacity come from `.button-footer` (index.css). */
+/* The links' type and opacity come from `.body-text.button.soft` (index.css). */
 .mina-home__curators {
   font-size: var(--mina-fs-small, 10px);
   font-weight: var(--mina-weight-medium);
@@ -84,13 +84,9 @@
   transition: opacity var(--mina-anim-fade) ease;
 }
 
-.mina-home__help {
-  letter-spacing: var(--mina-tracking-body);
-}
-
-/* The "|" (.separator) after each footer link, including before the curator
+/* The "|" (.body-text.faint) after each footer link, including before the curator
    count. Its margin matches the footer gap, so the bar sits centred between items. */
-.mina-home__footer-link .separator {
+.mina-home__separator {
   margin-left: var(--mina-space-l);
 }
 
@@ -198,7 +194,7 @@
     text-align: right;
   }
 
-  .mina-home__footer-link .separator {
+  .mina-home__separator {
     position: absolute;
     right: 0;
     margin-left: 0;
