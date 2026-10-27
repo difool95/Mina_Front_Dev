@@ -18,6 +18,7 @@ import {
   CONTENT_LIBRARY_PREVIEW_URLS,
   LIBRARY_PREVIEW_URLS,
   NEED_MATCHA_LABEL,
+  NEED_MATCHA_LINE,
   PROMPT_FILE_EXTENSION,
   PROMPT_FILE_LINES,
   SCENE_LIBRARY_BRIEF,
@@ -485,7 +486,14 @@ export function MinaBlock({
             <Rule />
             <MinaBlockVisionIntelligence />
             {!canAfford ? (
-              <MinaBlockCTA label={NEED_MATCHA_LABEL} isStill onClick={onNeedMatcha} />
+              <MinaBlockCTA
+                label={NEED_MATCHA_LABEL}
+                isStill
+                onClick={() => {
+                  setMinaNote({ line: NEED_MATCHA_LINE, tone: 'info' })
+                  onNeedMatcha()
+                }}
+              />
             ) : mode === 'create' && isBriefEmpty && !isUploading && !minaStatus ? (
               // Nothing to send yet: the button takes the user to the brief, as a click on it would.
               <MinaBlockCTA label={DESCRIBE_MORE_LABEL} isStill onClick={() => userBrief.current?.focus()} />

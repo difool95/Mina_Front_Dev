@@ -76,6 +76,10 @@ export const STILL_LANES_TOOLTIP = STILL_LANES.map(
 /** The call to action's label when the balance cannot cover the generation. */
 export const NEED_MATCHA_LABEL = 'I need more matcha'
 
+/** What Mina says over the brief when that call to action opens the matcha panel. */
+export const NEED_MATCHA_LINE =
+  'get me more matcha, I need it to create and animate your content. The account will top up automatically after you complete the purchase'
+
 /** Create's call to action while the brief is empty: it takes the user to the brief instead. */
 export const DESCRIBE_MORE_LABEL = 'Describe more'
 
