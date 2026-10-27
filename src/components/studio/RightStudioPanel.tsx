@@ -121,17 +121,17 @@ export function RightStudioPanel({
           {/* Under the pictures on desktop, over them on a phone (StudioPage.css). */}
           <div className="mina-studio__actions">
             <button
-              className="mina-studio__action button-small"
+              className="mina-studio__action body-text-button button"
               type="button"
               onClick={saveFile}
             >
               Download
             </button>
-            <span className="separator" aria-hidden="true">
+            <span className="mina-studio__separator body-text faint" aria-hidden="true">
               |
             </span>
             <button
-              className="mina-studio__action button-small"
+              className="mina-studio__action body-text-button button"
               type="button"
               // Disabled on anything that is not one of Mina's pictures, and while a like or unlike is saving.
               disabled={!generation || like.isPending || unlike.isPending}
@@ -139,24 +139,24 @@ export function RightStudioPanel({
             >
               {isLiked ? 'Unlike' : 'Like'}
             </button>
-            <span className="separator" aria-hidden="true">
+            <span className="mina-studio__separator body-text faint" aria-hidden="true">
               |
             </span>
             <button
-              className="mina-studio__action button-small"
+              className="mina-studio__action body-text-button button"
               type="button"
               onClick={() => currentUrl && onSetScene(currentUrl)}
             >
               Set Scene
             </button>
-            <button className="mina-studio__action mina-studio__action--edit button-small" type="button" onClick={edit}>
+            <button className="mina-studio__action mina-studio__action--edit body-text-button button" type="button" onClick={edit}>
               Edit
             </button>
           </div>
         </>
       ) : (
         <button
-          className="mina-studio__upload button-upload"
+          className="mina-studio__upload body-text-button button faint"
           type="button"
           onClick={mode === 'create' ? onUpload : undefined}
         >

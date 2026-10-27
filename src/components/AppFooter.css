@@ -10,19 +10,21 @@
   display: none;
 }
 
-/* Type, opacity and the page you are on (.is-active) come from `.button-footer`,
-   the count's from `.counter`, the "|" from `.separator` (index.css). */
+/* Type and opacity come from `.body-text` (`.body-text-button` for the page you
+   are on) with `.button` and `.soft`, the "|" and the count from `.body-text.faint` (index.css). */
 .mina-appfooter__link {
   transition: opacity var(--mina-anim-fade) ease;
 }
 
-.mina-appfooter__help {
-  letter-spacing: var(--mina-tracking-body);
+/* The "|" after each entry, hidden from 900px down. */
+.mina-appfooter__separator {
+  margin-left: 10px;
 }
 
-/* The "|" after each entry, matching the signed-out footer. */
-.mina-appfooter__link .separator {
-  margin-left: 10px;
+@media (max-width: 900px) {
+  .mina-appfooter__separator {
+    display: none;
+  }
 }
 
 .mina-appfooter__link--mobile {
@@ -56,19 +58,11 @@
     padding: calc(var(--mina-footer-pad-y) * 1) calc(var(--mina-footer-pad-x) * 1);
   }
 
-  /* Each link takes an equal share and centres its text, with the rule pinned
-     to the share's right edge — so every label sits midway between its bars. */
+  /* Each link takes an equal share and centres its text. */
   .mina-appfooter__link {
     position: relative;
     flex: 1;
     text-align: center;
-  }
-
-  .mina-appfooter__link .separator {
-    position: absolute;
-    top: 0;
-    right: 0;
-    margin-left: 0;
   }
 
   /* Sized to its own text rather than an equal share, which would wrap it. */

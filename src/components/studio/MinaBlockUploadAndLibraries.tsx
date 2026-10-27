@@ -90,7 +90,7 @@ export function MinaBlockUploadAndLibraries({
 
         {canAdd && (
           <button
-            className="mina-uploads__add button-box"
+            className="mina-uploads__add h5 button"
             type="button"
             aria-label={title}
             data-tooltip={addLabel}
@@ -102,7 +102,7 @@ export function MinaBlockUploadAndLibraries({
         {/* The library button card only shows when the row is empty, so it doesn't compete with the "+" button. */}
         {library && !images.length && (
           <button
-            className="mina-uploads__library button-library"
+            className="mina-uploads__library h5 button"
             type="button"
             aria-label={library.label}
             data-tooltip={library.label}
@@ -111,7 +111,7 @@ export function MinaBlockUploadAndLibraries({
             {library.previewUrls.map((url) => (
               <img key={url} src={cfImage(url, imageWidthFor(36))} alt="" draggable={false} />
             ))}
-            <span className="mina-uploads__more" aria-hidden="true">
+            <span className="mina-uploads__more h6 muted" aria-hidden="true">
               +
             </span>
           </button>

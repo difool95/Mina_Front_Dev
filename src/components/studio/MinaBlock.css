@@ -18,20 +18,10 @@
   transition: opacity var(--mina-anim-fade) ease;
 }
 
-/* Type and hover come from `.pill-small` and `.button-cta` (index.css). The
+/* Type and hover come from `.comment-button` and `.h2` with `.button` (index.css). The
    rules below that change them are qualified by the block, so they outrank index.css. */
 .mina-block__vision {
   margin-top: 6px;
-}
-
-/* The vision switch rests a little faded and never takes the pill's hover background. */
-.mina-block .mina-block__vision {
-  opacity: 0.9;
-  line-height: normal;
-}
-
-.mina-block .mina-block__vision:hover {
-  background: none;
 }
 
 .mina-block__cta {

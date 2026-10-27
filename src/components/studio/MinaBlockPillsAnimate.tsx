@@ -26,50 +26,50 @@ export function MinaBlockPillsAnimate({
     <div className="mina-pills">
       {/* The only upload kind here, so it is always the one lit. */}
       <button
-        className="mina-pills__pill pill"
+        className="mina-pills__pill paragraph-title-button pill"
         type="button"
         aria-pressed="true"
         data-tooltip="Add frames & elements - start frame first, then images / video / audio as references"
       >
-        <span className="mina-pills__icon h5" aria-hidden="true">
+        <span className="mina-pills__icon comment" aria-hidden="true">
           +
         </span>
-        <span className="h5">Frames &amp; elements</span>
+        <span className="comment">Frames &amp; elements</span>
       </button>
 
       {/* Fixed for now: the one animation style there is. */}
       <span
-        className="mina-pills__pill mina-pills__pill--text mina-pills__engine pill-small"
+        className="mina-pills__pill mina-pills__pill--text mina-pills__engine comment-button pill"
         data-tooltip="Director - 5 matchas"
       >
-        <span className="h5">Director</span>
+        <span className="comment">Director</span>
       </span>
 
       <button
-        className="mina-pills__pill mina-pills__pill--text pill"
+        className="mina-pills__pill mina-pills__pill--text paragraph-title-button pill"
         type="button"
         data-tooltip={costTooltip}
         onClick={onNextResolution}
       >
-        <span className="h5">{resolution}</span>
+        <span className="comment">{resolution}</span>
       </button>
 
       <button
-        className="mina-pills__pill mina-pills__pill--text pill"
+        className="mina-pills__pill mina-pills__pill--text paragraph-title-button pill"
         type="button"
         data-tooltip="Toggle audio"
         onClick={() => setIsMuted((was) => !was)}
       >
-        <span className="h5">{isMuted ? 'Muted' : 'Sound'}</span>
+        <span className="comment">{isMuted ? 'Muted' : 'Sound'}</span>
       </button>
 
       <button
-        className="mina-pills__pill mina-pills__pill--text pill"
+        className="mina-pills__pill mina-pills__pill--text paragraph-title-button pill"
         type="button"
         data-tooltip={costTooltip}
         onClick={onNextDuration}
       >
-        <span className="h5">{duration}</span>
+        <span className="comment">{duration}</span>
       </button>
 
       {ratioPill}

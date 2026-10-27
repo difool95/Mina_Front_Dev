@@ -1,4 +1,4 @@
-/* Type comes from `.paragraph-title`, the two "+" cards' from `.button-box` and `.button-library` (index.css). */
+/* Type comes from `.paragraph-title`, the two "+" cards. from `.h5` with `.button`, the library "+" from `.h6` with `.muted` (index.css). */
 .mina-uploads__title {
   margin: 0 0 12px;
 }
@@ -97,5 +97,4 @@
   display: grid;
   place-items: center;
   background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.04);
-  color: var(--mina-muted);
 }

@@ -170,6 +170,7 @@
   --mina-hover: 0.8;
   --mina-click: 0.6;
   --mina-opacity-soft:  0.7;
+  --mina-opacity-muted: 0.4;
   --mina-opacity-faint: 0.2;
 }
 
@@ -249,29 +250,35 @@ body {
 /* ── design system ──
    One class per kind of text element, called from the components. A
    component's own CSS only adds layout, and any one-off change on top.
-   Text classes set the type; `.button`, `.underline`, `.soft` and `.faint`
+   Text classes set the type; `.button`, `.pill`, `.underline`, `.soft`, `.muted` and `.faint`
    combine with them. */
 
+.h1 { font-size: var(--mina-text-32); font-weight: var(--mina-semibold); letter-spacing: var(--mina-tracking-heading); }
+.h2 { font-size: var(--mina-text-28); font-weight: var(--mina-semibold); letter-spacing: var(--mina-tracking-heading); text-decoration: underline; }
 .h3 { font-size: var(--mina-text-21); font-weight: var(--mina-semibold); letter-spacing: var(--mina-tracking-heading); }
 .h5 { font-size: var(--mina-text-16); font-weight: var(--mina-semibold); letter-spacing: var(--mina-tracking-heading); }
 .h6 { font-size: var(--mina-text-14); font-weight: var(--mina-regular);  letter-spacing: var(--mina-tracking-heading); }
-.body-text { font-size: var(--mina-text-10); font-weight: var(--mina-regular); letter-spacing: var(--mina-tracking-text); }
+.paragraph-title        { font-size: var(--mina-text-11); font-weight: var(--mina-semibold); letter-spacing: var(--mina-tracking-text); }
 .paragraph-title-button { font-size: var(--mina-text-11); font-weight: var(--mina-semibold); letter-spacing: var(--mina-tracking-text); }
 .paragraph-title-button.bold { font-weight: var(--mina-bold); }
+.body-text        { font-size: var(--mina-text-10); font-weight: var(--mina-regular); letter-spacing: var(--mina-tracking-text); }
+.body-text-button { font-size: var(--mina-text-10); font-weight: var(--mina-bold);    letter-spacing: var(--mina-tracking-text); }
+.comment          { font-size: var(--mina-text-9);  font-weight: var(--mina-semibold); letter-spacing: var(--mina-tracking-text); }
+.comment-button   { font-size: var(--mina-text-9);  font-weight: var(--mina-semibold); letter-spacing: var(--mina-tracking-text); }
 
 .button, .pill { cursor: pointer; }
 .button:hover, .pill:hover   { opacity: var(--mina-hover); }
 .button:active, .pill:active { opacity: var(--mina-click); }
+.pill:hover   { background: rgba(8, 10, 0, 0.05); }
 
 .underline { text-decoration: underline; text-underline-offset: 3px; }
 .soft      { opacity: var(--mina-opacity-soft); }
+.muted     { opacity: var(--mina-opacity-muted); }
 .faint     { opacity: var(--mina-opacity-faint); }
+.placeholder-faint::placeholder { color: var(--mina-ink); -webkit-text-fill-color: var(--mina-ink); opacity: var(--mina-opacity-faint); }
 
-.comment {
-  font-size: var(--mina-text-10);
-  font-weight: var(--mina-weight-regular);
-  letter-spacing: var(--mina-tracking-body);
-  color: var(--mina-ink-45);
+@media (max-width: 768px) {
+  .login-footer .body-text { font-size: clamp(8px, 2.7vw, 11px); }  /* login only = 10.125px on a 375 phone */
 }
 
 .button-icon {
@@ -281,131 +288,12 @@ body {
 .button-icon:hover  { opacity: 0.8; }
 .button-icon:active { opacity: 0.6; }
 
-.button-footer {
-  font-size: var(--mina-text-10);
-  font-weight: var(--mina-weight-medium);
-  opacity: 0.75;
-}
-.button-footer.is-active { font-weight: var(--mina-weight-bold); }
-.button-footer:hover  { opacity: 0.95; }
-.button-footer:active { opacity: 0.6; }
-@media (max-width: 768px) {
-  .login-footer .body-text { font-size: clamp(8px, 2.7vw, 11px); }  /* login only = 10.125px on a 375 phone */
-}
-
-.separator {
-  font-size: var(--mina-text-10);
-  font-weight: var(--mina-weight-medium);
-  letter-spacing: var(--mina-tracking-body);
-  color: var(--mina-black-20);
-}
-@media (min-width: 768px) and (max-width: 900px) {
-  .studio-footer .separator { font-size: 0px; color: transparent; }  /* hidden in the Studio/Profile footer on tablets; phones keep them */
-}
-
-/* ── studio ── */
-
-.button-header {
-  font-size: var(--mina-text-12);
-  font-weight: var(--mina-weight-bold);
-  color: var(--mina-black);
-  opacity: 0.4;
-}
-.button-header.is-active { opacity: 1; }
-.button-header:hover     { opacity: 0.8; }
-.button-header:active    { opacity: 0.6; }
-.button-header:disabled  { opacity: 0.25; }
-
-.pill {
-  font-size: var(--mina-text-11);
-  font-weight: var(--mina-weight-semibold);
-  letter-spacing: var(--mina-tracking-body);
-  line-height: 1.1;
-}
-.pill:hover  { opacity: 0.8; background: var(--mina-ink-5); }
-.pill:active { opacity: 0.6; }
-
-/* small pill — engine toggle, vision toggle */
-.pill-small {
-  font-size: var(--mina-text-9);
-  font-weight: var(--mina-weight-semibold);
-  letter-spacing: var(--mina-tracking-body);
-  line-height: 1;
-}
-.pill-small:hover  { opacity: 0.8; background: var(--mina-ink-5); }  /* Animate engine toggle: only background --mina-ink-2 */
-.pill-small:active { opacity: 0.6; }
-
-/* sub text in a pill — Tiktok/Reel */
-.pill-sub {
-  font-size: var(--mina-text-10);
-  font-weight: var(--mina-weight-semibold);
-  letter-spacing: 0px;
-  line-height: 1;
-  opacity: 0.6;
-}
-
-.h1 {
-  font-size: var(--mina-text-32);   /* the app writes 32px on it and shrinks it while typing */
-  font-weight: var(--mina-weight-semibold);
-  letter-spacing: var(--mina-tracking-body);
-  line-height: 1.08;
-  color: var(--mina-ink);
-}
-.h1::placeholder { color: var(--mina-ink-20); }
-
-.paragraph-title {
-  font-size: var(--mina-text-11);
-  font-weight: var(--mina-weight-semibold);
-  letter-spacing: var(--mina-tracking-tight);
-  opacity: 0.9;
-}
-
-.button-box {
-  font-size: var(--mina-text-16);
-  font-weight: var(--mina-weight-semibold);
-}
-.button-box:hover  { opacity: 0.8; }
-.button-box:active { opacity: 0.85; }
-
-.button-library {
-  font-size: var(--mina-text-16);
-  font-weight: var(--mina-weight-regular);
-}
-.button-library:hover  { opacity: 0.85; }
-.button-library:active { opacity: 0.6; }
-
-.button-cta {
-  font-size: var(--mina-text-28);
-  font-weight: var(--mina-weight-semibold);
-  text-decoration: underline;
-}
-.button-cta:hover  { opacity: 0.8; }
-.button-cta:active { opacity: 0.6; }
-
-.button-upload {
-  font-size: var(--mina-text-10);
-  font-weight: var(--mina-weight-regular);
-  color: var(--mina-black-20);
-}
-.button-upload:hover  { color: var(--mina-black-40); opacity: 0.8; }
-.button-upload:active { opacity: 0.6; }
-
 .button-small {
   font-size: var(--mina-text-10);
   font-weight: var(--mina-weight-bold);
 }
 .button-small:hover  { opacity: 0.8; }
 .button-small:active { opacity: 0.6; }
-
-.counter {
-  font-size: var(--mina-text-10);
-  font-weight: var(--mina-weight-medium);
-  letter-spacing: var(--mina-tracking-body);
-  opacity: 0.2;
-}
-@media (max-width: 900px) {
-  .counter { color: var(--mina-ink-45); opacity: 1; }
-}
 
 /* ── profile ── */
 
@@ -459,12 +347,6 @@ body {
 }
 .button-account:hover  { color: var(--mina-ink-90); opacity: 0.8; }
 .button-account:active { opacity: 0.6; }
-
-.h2 {
-  font-size: var(--mina-text-20);
-  font-weight: var(--mina-weight-bold);
-  letter-spacing: var(--mina-tracking-tight);
-}
 
 .button-icon-strong {
   font-size: var(--mina-text-16);

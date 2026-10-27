@@ -531,7 +531,7 @@ function MinaBlockVisionIntelligence() {
   const [isOn, setIsOn] = useState(true)
 
   return (
-    <button className="mina-block__vision pill-small" type="button" onClick={() => setIsOn((was) => !was)}>
+    <button className="mina-block__vision comment-button button" type="button" onClick={() => setIsOn((was) => !was)}>
       Mina vision intelligence: {isOn ? 'ON' : 'OFF'}
     </button>
   )
@@ -551,7 +551,7 @@ function MinaBlockCTA({
 }) {
   return (
     <button
-      className={`mina-block__cta button-cta${isStill ? ' mina-block__cta--still' : ''}`}
+      className={`mina-block__cta h2 button${isStill ? ' mina-block__cta--still' : ''}`}
       type="button"
       disabled={isDisabled}
       onClick={onClick}

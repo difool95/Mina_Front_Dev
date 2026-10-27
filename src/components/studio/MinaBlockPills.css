@@ -5,7 +5,7 @@
 }
 
 /* Every pill stands as tall as one with an icon slot, text-only ones included.
-   Type and hover come from `.pill` / `.pill-small`, the text inside from `.h5` (index.css). */
+   Type and hover come from `.paragraph-title-button` / `.comment-button` with `.pill`, the text inside from `.comment` (index.css). */
 .mina-pills__pill {
   display: inline-flex;
   align-items: center;
@@ -42,7 +42,7 @@
 }
 
 /* Animate's engine (Director) is fixed: on hover it only takes the faintest background.
-   Qualified by the block so it outranks `.pill-small:hover` from index.css. */
+   Qualified by the block so it outranks `.pill:hover` from index.css. */
 .mina-pills .mina-pills__engine:hover {
   opacity: 1;
   background: var(--mina-ink-2);
@@ -65,11 +65,8 @@
   height: 22px;
 }
 
-/* The "+" (.h5), bolder and tighter than the pill's text. Qualified by the
-   block so it outranks `.h5` from index.css. */
-.mina-pills .mina-pills__icon {
-  font-weight: var(--mina-weight-bold);
-  letter-spacing: var(--mina-tracking-body);
+/* The "+" (.comment), centred in its square. */
+.mina-pills__icon {
   line-height: 1;
 }
 

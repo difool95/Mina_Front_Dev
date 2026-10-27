@@ -22,7 +22,7 @@ interface AppFooterProps {
  */
 export function AppFooter({ current, mobileOnly, onOpenMatcha }: AppFooterProps) {
   const separator = (
-    <span className="separator" aria-hidden="true">
+    <span className="mina-appfooter__separator body-text faint" aria-hidden="true">
       |
     </span>
   )
@@ -30,7 +30,7 @@ export function AppFooter({ current, mobileOnly, onOpenMatcha }: AppFooterProps)
   return (
     <footer className={`mina-appfooter studio-footer${mobileOnly ? ' mina-appfooter--mobile-only' : ''}`}>
       <Link
-        className={`mina-appfooter__link mina-appfooter__link--mobile button-footer${current === 'studio' ? ' is-active' : ''}`}
+        className={`mina-appfooter__link mina-appfooter__link--mobile${current === 'studio' ? ' body-text-button' : ' body-text soft'} button`}
         to="/"
         aria-current={current === 'studio' ? 'page' : undefined}
       >
@@ -38,19 +38,19 @@ export function AppFooter({ current, mobileOnly, onOpenMatcha }: AppFooterProps)
         {separator}
       </Link>
       <Link
-        className={`mina-appfooter__link button-footer${current === 'profile' ? ' is-active' : ''}`}
+        className={`mina-appfooter__link${current === 'profile' ? ' body-text-button' : ' body-text soft'} button`}
         to="/profile"
         aria-current={current === 'profile' ? 'page' : undefined}
       >
         Profile
         {separator}
       </Link>
-      <button className="mina-appfooter__link mina-appfooter__link--desktop button-footer" type="button">
+      <button className="mina-appfooter__link mina-appfooter__link--desktop body-text button soft" type="button">
         Tutorials
         {separator}
       </button>
       <button
-        className="mina-appfooter__link mina-appfooter__link--desktop button-footer"
+        className="mina-appfooter__link mina-appfooter__link--desktop body-text button soft"
         type="button"
         onClick={onOpenMatcha}
       >
@@ -58,7 +58,7 @@ export function AppFooter({ current, mobileOnly, onOpenMatcha }: AppFooterProps)
         {separator}
       </button>
       <a
-        className="mina-appfooter__link mina-appfooter__help button-footer"
+        className="mina-appfooter__link mina-appfooter__help body-text button soft"
         href={WHATSAPP_HELP_URL}
         target="_blank"
         rel="noreferrer"
@@ -66,7 +66,7 @@ export function AppFooter({ current, mobileOnly, onOpenMatcha }: AppFooterProps)
         Need help?
         {separator}
       </a>
-      <span className="mina-appfooter__curators counter">{CURATOR_COUNT_LABEL}</span>
+      <span className="mina-appfooter__curators body-text faint">{CURATOR_COUNT_LABEL}</span>
     </footer>
   )
 }

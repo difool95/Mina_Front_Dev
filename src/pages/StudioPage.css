@@ -47,7 +47,7 @@
   gap: 24px;
 }
 
-/* Type and opacity come from `.button-header` (index.css). */
+/* Type and opacity come from `.paragraph-title-button.bold`, `.button` and `.muted` (index.css). */
 .mina-studio__mode {
   transition: opacity var(--mina-anim-fade) ease;
 }
@@ -112,24 +112,13 @@
 }
 
 /* Like, on anything that is not one of Mina's pictures.
-   Qualified so no hover from `.button-small` brings it back up. */
+   Qualified so no hover from `.button` brings it back up. */
 .mina-studio__actions .mina-studio__action:disabled {
   opacity: var(--mina-muted-o);
   cursor: default;
 }
 
-/* Qualified by the bar so these outrank `.button-small` and `.separator` from index.css. */
-.mina-studio__actions .button-small {
-  color: rgba(0, 0, 0, 0.9);
-}
-
-.mina-studio__actions .separator {
-  font-weight: var(--mina-weight-bold);
-  color: var(--mina-black-25);
-  line-height: 1;
-}
-
-/* Type and colour come from `.button-upload` (index.css). */
+/* Type and opacity come from `.body-text-button`, `.button` and `.faint` (index.css). */
 .mina-studio__upload {
   transition:
     color var(--mina-anim-fade) ease,

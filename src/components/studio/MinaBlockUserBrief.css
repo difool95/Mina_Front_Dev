@@ -13,7 +13,7 @@
   opacity: 0;
 }
 
-/* Type and placeholder colour come from `.h1` (index.css). */
+/* Type comes from `.h1`, the placeholder from `.placeholder-faint` (index.css). */
 .mina-brief__input {
   flex: 1;
   display: block;

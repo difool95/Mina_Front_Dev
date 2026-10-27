@@ -90,7 +90,7 @@ export function MinaBlockUserBrief({
     <div className="mina-brief" data-mina-note={minaNote ? '' : undefined}>
       <textarea
         ref={input}
-        className="mina-brief__input h1"
+        className="mina-brief__input h1 placeholder-faint"
         value={brief}
         maxLength={BRIEF_MAX_LENGTH}
         placeholder={placeholder}

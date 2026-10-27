@@ -125,7 +125,7 @@ export function StudioPage() {
 
           <nav className="mina-studio__modes">
             <button
-              className={`mina-studio__mode button-header${mode === 'create' ? ' is-active' : ''}`}
+              className={`mina-studio__mode paragraph-title-button bold button${mode === 'create' ? '' : ' muted'}`}
               type="button"
               aria-current={mode === 'create'}
               onClick={() => pickMode('create')}
@@ -133,7 +133,7 @@ export function StudioPage() {
               Create
             </button>
             <button
-              className={`mina-studio__mode button-header${mode === 'animate' ? ' is-active' : ''}`}
+              className={`mina-studio__mode paragraph-title-button bold button${mode === 'animate' ? '' : ' muted'}`}
               type="button"
               aria-current={mode === 'animate'}
               onClick={() => pickMode('animate')}
