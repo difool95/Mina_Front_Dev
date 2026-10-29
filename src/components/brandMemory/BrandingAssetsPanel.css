@@ -36,6 +36,12 @@
   margin: 0;
 }
 
+/* Table rows don't wrap; this one does once the panel is narrower than the
+   sentence (a phone), filling the first line before breaking. */
+.mina-assets__subtitle {
+  white-space: normal;
+}
+
 /* The subtitle sits close under the title, closer than the panel's other rows. */
 .mina-assets__lead {
   margin-bottom: calc(var(--mina-space-s) - var(--mina-space-xl));
