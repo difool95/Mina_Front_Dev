@@ -207,7 +207,7 @@ export function BrandingAssetsPanel({ memory, onClose }: { memory: BrandMemory; 
               session && deleteMemory.mutate({ token: session.access_token, memory }, { onSuccess: onClose })
             }
           >
-            Delete
+            {deleteMemory.isPending ? 'Deleting...' : 'Delete'}
           </button>
           <button
             className="mina-assets__save h3 underline button"

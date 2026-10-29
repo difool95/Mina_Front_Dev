@@ -116,8 +116,10 @@
   color: var(--mina-delete-red);
 }
 
-/* Nothing to save yet: faded, and no hover to suggest it can be pressed. */
-.mina-assets .mina-assets__save:disabled {
+/* Nothing to save yet, or already deleting: faded, and no hover to suggest it
+   can be pressed. */
+.mina-assets .mina-assets__save:disabled,
+.mina-assets .mina-assets__delete:disabled {
   opacity: var(--mina-opacity-muted);
   cursor: default;
 }
