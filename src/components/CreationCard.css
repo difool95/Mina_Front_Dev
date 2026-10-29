@@ -23,10 +23,22 @@
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  /* The menu button's height (16px line + 2px padding top and bottom). Delete
-     and cancel are shorter, so without this the bar shrinks while confirming
-     and the media below jumps up. */
-  min-height: 20px;
+}
+
+/* The menu button and delete / cancel share one cell, so the bar is always as
+   tall as the button, confirming or not. */
+.mina-creation__options {
+  display: grid;
+  align-items: center;
+  justify-items: end;
+}
+
+.mina-creation__options > * {
+  grid-area: 1 / 1;
+}
+
+.mina-creation--confirming .mina-creation__menu {
+  visibility: hidden;
 }
 
 /* Delete and cancel; Download takes its type from `.body-text-button` (index.css). */

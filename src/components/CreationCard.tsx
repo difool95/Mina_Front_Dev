@@ -64,24 +64,9 @@ export function CreationCard({
           Download
         </button>
 
-        {confirming ? (
-          <span className="mina-creation__confirm">
-            <button
-              className="mina-creation__action mina-creation__action--danger"
-              type="button"
-              onClick={onDelete}
-            >
-              delete
-            </button>
-            <button
-              className="mina-creation__action"
-              type="button"
-              onClick={() => setConfirming(false)}
-            >
-              cancel
-            </button>
-          </span>
-        ) : (
+        {/* The menu button stays while confirming, only hidden, so the bar keeps
+            its height and the media below doesn't move. */}
+        <span className="mina-creation__options">
           <button
             className="mina-creation__menu h5 button"
             type="button"
@@ -90,7 +75,25 @@ export function CreationCard({
           >
             <span className="mina-creation__menu-icon" aria-hidden="true" />
           </button>
-        )}
+          {confirming && (
+            <span className="mina-creation__confirm">
+              <button
+                className="mina-creation__action mina-creation__action--danger"
+                type="button"
+                onClick={onDelete}
+              >
+                delete
+              </button>
+              <button
+                className="mina-creation__action"
+                type="button"
+                onClick={() => setConfirming(false)}
+              >
+                cancel
+              </button>
+            </span>
+          )}
+        </span>
       </header>
 
       <button
