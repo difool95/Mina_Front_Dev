@@ -112,7 +112,7 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
   color: var(--mina-ink);
 }
 
-/* ON / OFF (.paragraph-title.underline) has no hover of its own: the Auto-Matcha row around it has. */
+/* ON / OFF (.paragraph-title.underline) has no hover of its own: the Auto-Matcha field around it has. */
 .mina-profile__field--auto:hover {
   opacity: 0.7;
 }
@@ -121,10 +121,20 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
   opacity: 0.6;
 }
 
+/* Brand Memory has a row of its own at the end on a phone, but on the one
+   desktop line it sits right after Email: everything after it there steps
+   back one place. */
+.mina-profile__field--auto,
+.mina-profile__field--matcha,
+.mina-profile__field--expiry,
+.mina-profile__logout {
+  order: 1;
+}
+
 /* Ahead of Logout in the markup for the phone row; on the one desktop line it
    is sent to the far end instead. */
 .mina-profile__invoices {
-  order: 1;
+  order: 2;
   margin-left: auto;
   color: var(--mina-ink);
   font-size: var(--mina-fs-label);
@@ -386,12 +396,6 @@ html.mina-no-scrollbar body::-webkit-scrollbar {
 
   .mina-profile__fields[data-open] {
     display: contents;
-  }
-
-  /* No room for it on a phone, and it is the least used of the five — which
-     is what leaves Email and Auto-Matcha alone on their row. */
-  .mina-profile__field--brand {
-    display: none;
   }
 
   /* ── archive ── */

@@ -1,6 +1,12 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-import { signOutCurrentAccount, switchAccount } from '@/services/accounts.service'
+import { queryKeys } from '@/lib/queryKeys'
+import {
+  isBrandMemoryOn,
+  setBrandMemoryOn,
+  signOutCurrentAccount,
+  switchAccount,
+} from '@/services/accounts.service'
 import type { SavedAccount } from '@/types/account.types'
 
 import type { Session } from '@supabase/supabase-js'
@@ -52,5 +58,23 @@ export function useSignOutAccount() {
       queryClient.clear()
       await signOutCurrentAccount(currentUserId)
     },
+  })
+}
+
+/** This account's brand memory switch, read from the saved accounts on this browser. */
+export function useBrandMemoryOn(userId: string | undefined) {
+  return useQuery({
+    queryKey: queryKeys.brandMemoryOn(userId ?? ''),
+    queryFn: () => isBrandMemoryOn(userId!),
+    enabled: Boolean(userId),
+  })
+}
+
+export function useSetBrandMemoryOn(userId: string | undefined) {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (isOn: boolean) => setBrandMemoryOn(userId!, isOn),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.brandMemoryOn(userId ?? '') }),
   })
 }

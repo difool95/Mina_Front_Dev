@@ -5,13 +5,19 @@ import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { AccountMenu } from '@/components/AccountMenu'
 import { AppFooter } from '@/components/AppFooter'
 import { AutoMatchaPanel } from '@/components/AutoMatchaPanel'
+import { BrandMemory } from '@/components/brandMemory/BrandMemory'
 import { CreationCard } from '@/components/CreationCard'
 import { CreationFullScreen } from '@/components/CreationFullScreen'
 import { CreationSkeleton } from '@/components/CreationSkeleton'
 import { MatchaPanel } from '@/components/MatchaPanel'
 import { RoleTagCard } from '@/components/RoleTagCard'
 import { Row, Rule, Table } from '@/components/builder/Table'
-import { useSignOutAccount, useSwitchAccount } from '@/hooks/useAccounts'
+import {
+  useBrandMemoryOn,
+  useSetBrandMemoryOn,
+  useSignOutAccount,
+  useSwitchAccount,
+} from '@/hooks/useAccounts'
 import { useBillingPortal } from '@/hooks/useBillingPortal'
 import { useCustomerCredits } from '@/hooks/useCustomerCredits'
 import {
@@ -69,6 +75,8 @@ export function ProfilePage() {
   // Mobile only: the account fields collapse behind this, since the row cannot
   // fit across a phone. Desktop ignores it and shows them all.
   const [menuOpen, setMenuOpen] = useState(false)
+  // The brand memory strip under the account row, shown and hidden by the Brand Memory field.
+  const [isBrandMemoryOpen, setIsBrandMemoryOpen] = useState(false)
   // Which of the two matcha dialogs is open, if either — "Back" in the auto
   // panel always returns to the buy panel, so one slot is enough for both.
   const [matchaPanel, setMatchaPanel] = useState<'buy' | 'auto' | null>(null)
@@ -91,6 +99,8 @@ export function ProfilePage() {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const switchAccount = useSwitchAccount()
+  const { data: isBrandMemoryOn = true } = useBrandMemoryOn(userId)
+  const setBrandMemoryOn = useSetBrandMemoryOn(userId)
   const signOutAccount = useSignOutAccount()
 
   // Stripe redirects back here once checkout finishes; the balance it paid
@@ -193,8 +203,6 @@ export function ProfilePage() {
           {/* Dissolves like the rows do, so these are rows of the same table.
               It exists only to hide the three of them at once on a phone. */}
           <div className="mina-profile__fields" data-open={menuOpen || undefined}>
-            {/* Brand Memory is dropped on a phone, which is what leaves Email
-                and Auto-Matcha alone on this row. */}
             <Row>
               <span className="mina-profile__field mina-profile__field--email">
                 <span className="mina-profile__label paragraph-title">Email</span>
@@ -207,13 +215,6 @@ export function ProfilePage() {
                   onSwitch={(account) => switchAccount.mutate(account)}
                   onAdd={() => navigate('/add-account', { state: { from: userId } })}
                 />
-              </span>
-
-              <span className="mina-profile__field mina-profile__field--brand">
-                <span className="mina-profile__label paragraph-title">Brand Memory</span>
-                <button className="mina-profile__toggle paragraph-title underline" type="button">
-                  ON
-                </button>
               </span>
 
               <button
@@ -269,13 +270,40 @@ export function ProfilePage() {
             </Row>
 
             <Rule />
+
+            {/* Last on a phone; on the desktop line ProfilePage.css moves it up beside Email. */}
+            <Row>
+              {/* Two buttons: the name shows the memories, the switch turns them on for this account. */}
+              <span className="mina-profile__field mina-profile__field--brand">
+                <button
+                  className="mina-profile__label paragraph-title button"
+                  type="button"
+                  aria-expanded={isBrandMemoryOpen}
+                  onClick={() => setIsBrandMemoryOpen((wasOpen) => !wasOpen)}
+                >
+                  Brand Memory
+                </button>
+                <button
+                  className="mina-profile__toggle paragraph-title underline button"
+                  type="button"
+                  aria-pressed={isBrandMemoryOn}
+                  onClick={() => setBrandMemoryOn.mutate(!isBrandMemoryOn)}
+                >
+                  {isBrandMemoryOn ? 'ON' : 'OFF'}
+                </button>
+              </span>
+            </Row>
+
+            <Rule />
           </div>
         </div>
 
-        {/* Closes the desktop line. On a phone the rule above, under Logout,
-            already does it — and this one would double against it. */}
+        {/* Closes the desktop line. On a phone the rule above, under Brand
+            Memory, already does it — and this one would double against it. */}
         <Rule />
       </Table>
+
+      {isBrandMemoryOpen && <BrandMemory />}
 
       <div className="mina-profile__archive-head">
         <div>

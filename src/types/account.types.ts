@@ -3,4 +3,6 @@ export interface SavedAccount {
   userId: string
   email: string
   refreshToken: string
+  /** Whether this account's brand memory is on. Unset means on. */
+  isBrandMemoryOn?: boolean
 }

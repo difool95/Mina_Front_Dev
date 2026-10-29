@@ -56,17 +56,6 @@
   opacity: 0.6;
 }
 
-/* Still on its way to R2: the local preview flashes until it lands. */
-.mina-uploads__image[data-uploading] img {
-  animation: mina-uploads-uploading var(--mina-anim-slide) ease-in-out infinite alternate;
-}
-
-@keyframes mina-uploads-uploading {
-  to {
-    opacity: var(--mina-muted-o);
-  }
-}
-
 .mina-uploads__add {
   background: rgba(var(--mina-ink-rgb, 8, 10, 0), 0.05);
 }

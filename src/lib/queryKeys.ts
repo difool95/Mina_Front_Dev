@@ -10,6 +10,8 @@ export const queryKeys = {
   sceneLibrary: ['sceneLibrary'] as const,
   contentLibrary: ['contentLibrary'] as const,
   creatorLibrary: ['creatorLibrary'] as const,
+  brandMemories: (userId: string) => ['brandMemories', userId] as const,
+  brandMemoryOn: (userId: string) => ['brandMemoryOn', userId] as const,
   customer: (userId: string) => ['customer', userId] as const,
   generations: (userId: string) => ['generations', userId] as const,
   generationStatus: (generationId: string) => ['generationStatus', generationId] as const,

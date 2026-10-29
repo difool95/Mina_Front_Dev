@@ -1,0 +1,6 @@
+/* The strip under the account row, closed by its own rule before the archive. */
+.mina-brand-memory {
+  display: grid;
+  gap: var(--mina-space-xl);
+  padding-top: var(--mina-space-xl);
+}

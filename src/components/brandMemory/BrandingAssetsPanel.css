@@ -1,0 +1,118 @@
+/* Same modal chrome as MatchaPanel.css: centred by the dialog's own margin,
+   over a blurred profile. Type comes from the design system classes (index.css). */
+.mina-assets {
+  width: min(520px, calc(100vw - 32px));
+  max-width: none;
+  margin: auto;
+  border: 0;
+  background: var(--mina-bg);
+  padding: 0;
+  box-shadow: 0 20px 60px rgba(var(--mina-ink-rgb), 0.14);
+}
+
+.mina-assets::backdrop {
+  backdrop-filter: blur(var(--mina-backdrop-blur));
+  background: rgba(var(--mina-ink-rgb), 0.22);
+}
+
+@keyframes mina-assets-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.mina-assets[open] {
+  animation: mina-assets-fade-in var(--mina-anim-modal) ease-out;
+}
+
+.mina-assets__table {
+  --table-gap-y: var(--mina-space-xl);
+
+  padding: var(--mina-space-xl);
+}
+
+.mina-assets__title,
+.mina-assets__subtitle {
+  margin: 0;
+}
+
+/* The subtitle sits close under the title, closer than the panel's other rows. */
+.mina-assets__lead {
+  margin-bottom: calc(var(--mina-space-s) - var(--mina-space-xl));
+}
+
+.mina-assets__close {
+  display: flex;
+  padding: var(--mina-space-s);
+  margin: calc(-1 * var(--mina-space-s));
+}
+
+/* The svg draws in `currentColor`, which an <img> cannot pick up, so it is a
+   mask filled with the button's own colour. */
+.mina-assets__close-icon {
+  width: 10px;
+  height: 10px;
+  background: currentColor;
+  mask: url('/assets/icons/remove.svg') center / contain no-repeat;
+}
+
+/* The category list drops over the rows under it. */
+.mina-assets__category {
+  position: relative;
+}
+
+.mina-assets__categories {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1;
+  display: grid;
+  min-width: 220px;
+  margin: 0;
+  padding: var(--mina-space-xs);
+  list-style: none;
+  background: var(--mina-bg);
+  box-shadow: 0 10px 30px rgba(var(--mina-ink-rgb), 0.14);
+}
+
+.mina-assets__choice {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--mina-space-s) var(--mina-space-s);
+}
+
+.mina-assets__choice[aria-pressed='true'] {
+  background: var(--mina-ink-5);
+}
+
+/* The name and description read as text, not as fields. */
+.mina-assets__name,
+.mina-assets__description {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  outline: none;
+  background: none;
+  resize: none;
+}
+
+.mina-assets__foot {
+  margin-top: var(--mina-space-s);
+}
+
+.mina-assets__delete {
+  color: var(--mina-delete-red);
+}
+
+/* Nothing to save yet: faded, and no hover to suggest it can be pressed. */
+.mina-assets .mina-assets__save:disabled {
+  opacity: var(--mina-opacity-muted);
+  cursor: default;
+}
+
+:where(.mina-assets button) {
+  padding: 0;
+  border: 0;
+  background: none;
+}

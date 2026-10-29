@@ -1,0 +1,70 @@
+.mina-tiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* One line that scrolls sideways, without a bar. */
+.mina-tiles--scroll {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.mina-tiles--scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.mina-tiles__tile {
+  display: grid;
+  flex: none;
+  align-content: start;
+  gap: 6px;
+  width: var(--tile);
+  text-align: left;
+  transition: opacity var(--mina-anim-fade) ease;
+}
+
+/* Square whatever the picture's own ratio, cropped to fill it. */
+.mina-tiles__picture {
+  position: relative;
+  display: block;
+  width: var(--tile);
+  height: var(--tile);
+  background: rgba(var(--mina-ink-rgb), 0.05);
+}
+
+.mina-tiles__picture img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mina-tiles__add {
+  display: grid;
+  place-items: center;
+}
+
+.mina-tiles__badge {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  padding: 1px 4px;
+  background: var(--mina-ink);
+  color: var(--mina-paper);
+}
+
+.mina-tiles__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* :where() carries no specificity, so the rules above always win. */
+:where(.mina-tiles button) {
+  padding: 0;
+  border: 0;
+  background: none;
+}

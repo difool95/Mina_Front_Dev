@@ -280,6 +280,10 @@ body {
 .grey      { color: var(--mina-grey); }
 .placeholder-faint::placeholder { color: var(--mina-ink); -webkit-text-fill-color: var(--mina-ink); opacity: var(--mina-opacity-faint); }
 
+/* A picture still on its way to R2, in the studio or the brand memory: its local preview flashes until it lands. */
+[data-uploading] img { animation: mina-uploading var(--mina-anim-slide) ease-in-out infinite alternate; }
+@keyframes mina-uploading { to { opacity: var(--mina-muted-o); } }
+
 @media (max-width: 768px) {
   .login-footer .body-text { font-size: clamp(8px, 2.7vw, 11px); }  /* login only = 10.125px on a 375 phone */
 }

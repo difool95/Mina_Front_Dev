@@ -39,10 +39,22 @@ export function rememberAccount(session: Session) {
   }
   const index = accounts.findIndex((saved) => saved.userId === account.userId)
 // THIS LINE IS FOR UPDATING THE ACCOUNT IN LOCAL STORAGE IF IT EXISTS OR ADDING IT IF IT DOESN'T. IT ALSO ENSURES THAT THE NUMBER OF ACCOUNTS DOES NOT EXCEED MAX_ACCOUNTS.
-  if (index >= 0) accounts[index] = account
+  // Merged rather than replaced, so a token refresh keeps the account's own settings.
+  if (index >= 0) accounts[index] = { ...accounts[index], ...account }
   else if (accounts.length < MAX_ACCOUNTS) accounts.push(account)
 
   saveAccounts(accounts)
+}
+
+/** Whether brand memory is on for this account, as saved on this browser. On until turned off. */
+export function isBrandMemoryOn(userId: string) {
+  return listAccounts().find((saved) => saved.userId === userId)?.isBrandMemoryOn ?? true
+}
+
+export function setBrandMemoryOn(userId: string, isOn: boolean) {
+  saveAccounts(
+    listAccounts().map((saved) => (saved.userId === userId ? { ...saved, isBrandMemoryOn: isOn } : saved)),
+  )
 }
 
 // THIS METHOD IS FORGETTING THE ACCOUNT SESSION IN LOCAL STORAGE. IT REMOVES THE ACCOUNT WITH THE GIVEN USER ID FROM THE LIST OF SAVED ACCOUNTS.
