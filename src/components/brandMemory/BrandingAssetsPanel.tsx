@@ -135,6 +135,8 @@ export function BrandingAssetsPanel({ memory, onClose }: { memory: BrandMemory; 
               url,
               action: 'Remove picture',
               badge: index === 0 ? 'COVER' : undefined,
+              // The last picture can't be removed, so it doesn't offer to.
+              hover: vars.images.length > 1 ? 'Remove' : undefined,
               onClick: () => vars.images.length > 1 && removePicture(url),
             })),
             ...previews.map((url) => ({ url, action: 'Uploading', isUploading: true, onClick: () => {} })),

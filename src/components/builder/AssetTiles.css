@@ -61,6 +61,24 @@
   color: var(--mina-paper);
 }
 
+/* A dark layer over the whole picture with its word in the middle, shown only
+   while the tile is hovered. */
+.mina-tiles__hover {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(var(--mina-ink-rgb), 0.35);
+  color: var(--mina-paper);
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity var(--mina-anim-fade) ease;
+}
+
+.mina-tiles__tile:hover .mina-tiles__hover {
+  opacity: 1;
+}
+
 .mina-tiles__label {
   overflow: hidden;
   text-overflow: ellipsis;

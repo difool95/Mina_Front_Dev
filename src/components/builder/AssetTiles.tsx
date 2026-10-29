@@ -13,6 +13,8 @@ export interface AssetTile {
   label?: string
   /** A word over the picture's corner, like "COVER". */
   badge?: string
+  /** A word shown over the darkened picture while it is hovered, like "Remove". */
+  hover?: string
   /** Still on its way to R2: the picture flashes until it lands (index.css). */
   isUploading?: boolean
 }
@@ -44,7 +46,7 @@ export function AssetTiles({
       className={`mina-tiles${isScroll ? ' mina-tiles--scroll' : ''}${isAddFirst ? ' mina-tiles--add-first' : ''}`}
       style={{ '--tile': `${size}px` } as CSSProperties}
     >
-      {tiles.map(({ url, action, onClick, label, badge, isUploading }) => (
+      {tiles.map(({ url, action, onClick, label, badge, hover, isUploading }) => (
         <button
           className="mina-tiles__tile button"
           type="button"
@@ -56,6 +58,7 @@ export function AssetTiles({
           <span className="mina-tiles__picture">
             <img src={cfImage(url, imageWidthFor(size))} alt="" draggable={false} />
             {badge && <span className="mina-tiles__badge body-text-button">{badge}</span>}
+            {hover && <span className="mina-tiles__hover body-text-button">{hover}</span>}
           </span>
           {label !== undefined && <span className="mina-tiles__label body-text">{label}</span>}
         </button>
