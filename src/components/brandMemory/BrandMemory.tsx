@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 import { useBrandMemories, useCreateBrandMemory } from '@/hooks/useBrandMemories'
 import { useUploadStudioImage } from '@/hooks/useStudioUploads'
+import { BRAND_MEMORY_MAX } from '@/lib/brandMemory'
 import { prepareStudioImage } from '@/lib/media'
 import { useAuth } from '@/providers/AuthProvider'
 
@@ -54,7 +55,13 @@ export function BrandMemory() {
         size={48}
         isScroll
         isAddFirst
-        onAdd={(files) => files.forEach((file) => void add(file))}
+        // At the cap the "+" goes away, and a pick past it keeps only what still fits.
+        onAdd={
+          memories.length + previews.length < BRAND_MEMORY_MAX
+            ? (files) =>
+                files.slice(0, BRAND_MEMORY_MAX - memories.length - previews.length).forEach((file) => void add(file))
+            : undefined
+        }
         tiles={[
           ...memories.map((memory) => ({
             url: memory.mg_mma_vars.thumb_url,

@@ -1,3 +1,4 @@
+import { BRAND_MEMORY_MAX } from '@/lib/brandMemory'
 import type { BrandMemory, BrandMemoryVars } from '@/types'
 
 import { apiPost } from './api.client'
@@ -15,6 +16,7 @@ export async function getBrandMemories(userId: string) {
     .eq('mg_record_type', 'product')
     .eq('mg_status', 'done')
     .order('mg_created_at', { ascending: true })
+    .limit(BRAND_MEMORY_MAX)
 
   if (error) throw new Error(error.message)
 

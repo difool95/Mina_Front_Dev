@@ -11,6 +11,8 @@ export const BRAND_MEMORY_CATEGORIES: { category: BrandMemoryCategory; label: st
 /** The most pictures one brand memory holds. */
 export const BRAND_MEMORY_MAX_IMAGES = 5
 
+/** The most brand memories one user can keep; the backend refuses any past it. */
+export const BRAND_MEMORY_MAX = 1000;
 export const BRANDING_ASSETS_PANEL = {
   title: 'Branding Assets',
   subtitle: 'Save your models, products, design and all branding assets here',
