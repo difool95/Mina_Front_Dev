@@ -42,6 +42,11 @@
   object-fit: cover;
 }
 
+/* The "+" stays last in the markup and is only drawn first. */
+.mina-tiles--add-first .mina-tiles__add-tile {
+  order: -1;
+}
+
 .mina-tiles__add {
   display: grid;
   place-items: center;

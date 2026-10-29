@@ -53,6 +53,7 @@ export function BrandMemory() {
       <AssetTiles
         size={48}
         isScroll
+        isAddFirst
         onAdd={(files) => files.forEach((file) => void add(file))}
         tiles={[
           ...memories.map((memory) => ({

@@ -18,19 +18,22 @@ export interface AssetTile {
 }
 
 /**
- * Square pictures in a row, each a button, with a "+" after them that opens
- * the file picker. On one line that scrolls sideways (`isScroll`), or wrapping.
+ * Square pictures in a row, each a button, with a "+" after them (or before
+ * them, `isAddFirst`) that opens the file picker. On one line that scrolls
+ * sideways (`isScroll`), or wrapping.
  */
 export function AssetTiles({
   tiles,
   size,
   isScroll,
+  isAddFirst,
   onAdd,
 }: {
   tiles: AssetTile[]
   /** Each picture's side, in px. */
   size: number
   isScroll?: boolean
+  isAddFirst?: boolean
   /** The pictures picked from the "+"; left out, there is no "+". */
   onAdd?: (files: File[]) => void
 }) {
@@ -38,7 +41,7 @@ export function AssetTiles({
 
   return (
     <div
-      className={`mina-tiles${isScroll ? ' mina-tiles--scroll' : ''}`}
+      className={`mina-tiles${isScroll ? ' mina-tiles--scroll' : ''}${isAddFirst ? ' mina-tiles--add-first' : ''}`}
       style={{ '--tile': `${size}px` } as CSSProperties}
     >
       {tiles.map(({ url, action, onClick, label, badge, isUploading }) => (
@@ -60,7 +63,7 @@ export function AssetTiles({
 
       {onAdd && (
         <button
-          className="mina-tiles__tile button"
+          className="mina-tiles__tile mina-tiles__add-tile button"
           type="button"
           aria-label="Add image"
           onClick={() => fileInput.current?.click()}
