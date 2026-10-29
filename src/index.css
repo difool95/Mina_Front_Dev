@@ -102,6 +102,7 @@
   --mina-anim-layout: 420ms; /* layout toggle worm scroll */
   --mina-anim-modal: 160ms;  /* panels/modals slide-in */
   --mina-anim-block-step: 100ms; /* one beat of the studio prompt block entrance */
+  --mina-anim-unblur: 400ms; /* brand memory pictures sharpening as the strip opens */
   --mina-backdrop-blur: 14px;
   --mina-accent-green: 	var(--mina-green); /* Mina talking / generating */
   --mina-accent-pink: #EA578F66; /* Mina's Upload Error messages in the brief */

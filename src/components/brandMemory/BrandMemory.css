@@ -4,3 +4,15 @@
   gap: var(--mina-space-xl);
   padding-top: var(--mina-space-xl);
 }
+
+/* As the strip opens, each picture starts blurred and sharpens. Uploading
+   pictures are left out so they keep their own flashing. */
+.mina-brand-memory .mina-tiles__tile:not([data-uploading]) img {
+  animation: mina-brand-memory-unblur var(--mina-anim-unblur) ease-out;
+}
+
+@keyframes mina-brand-memory-unblur {
+  from {
+    filter: blur(calc(var(--mina-backdrop-blur) * 0.5));
+  }
+}
