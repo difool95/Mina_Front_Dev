@@ -110,9 +110,14 @@ export function BrandingAssetsPanel({ memory, onClose }: { memory: BrandMemory; 
   }
 
   return (
-    <dialog className="mina-assets" ref={ref} onCancel={(event) => event.preventDefault()}>
+    <dialog
+      className="mina-assets"
+      ref={ref}
+      onCancel={(event) => event.preventDefault()}
+      onClick={(event) => event.target === event.currentTarget && onClose()}
+    >
       <Table className="mina-assets__table">
-        <Row className="mina-assets__lead" valign="bottom">
+        <Row className="mina-assets__lead">
           <h2 className="mina-assets__title h3">{BRANDING_ASSETS_PANEL.title}</h2>
           <button className="mina-assets__close button" type="button" aria-label="Close" onClick={onClose}>
             <span className="mina-assets__close-icon" aria-hidden="true" />

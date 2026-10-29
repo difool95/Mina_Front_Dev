@@ -50,6 +50,7 @@
 /* The svg draws in `currentColor`, which an <img> cannot pick up, so it is a
    mask filled with the button's own colour. */
 .mina-assets__close-icon {
+  flex: none;
   width: 10px;
   height: 10px;
   background: currentColor;
@@ -95,6 +96,16 @@
   outline: none;
   background: none;
   resize: none;
+}
+
+/* Still scrolls, without a bar, and its last line fades out into the panel. */
+.mina-assets__description {
+  scrollbar-width: none;
+  mask-image: linear-gradient(to bottom, #000 60%, transparent);
+}
+
+.mina-assets__description::-webkit-scrollbar {
+  display: none;
 }
 
 .mina-assets__foot {
