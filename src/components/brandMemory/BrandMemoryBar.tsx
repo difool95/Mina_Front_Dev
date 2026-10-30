@@ -95,14 +95,15 @@ export function BrandMemoryBar() {
           isAddFirst
           // At the cap the "+" goes away.
           onAdd={memories.length + previews.length < BRAND_MEMORY_MAX ? addFiles : undefined}
+          // Uploading ones first, where their memories will land: the newest leads the bar.
           tiles={[
+            ...previews.map((url) => ({ url, action: 'Uploading', label: '', isUploading: true, onClick: () => {} })),
             ...memories.map((memory) => ({
               url: memory.mg_mma_vars.thumb_url,
               action: `Open ${memory.mg_prompt}`,
               label: memory.mg_prompt,
               onClick: () => setOpenId(memory.mg_id),
             })),
-            ...previews.map((url) => ({ url, action: 'Uploading', label: '', isUploading: true, onClick: () => {} })),
           ]}
         />
         {isDragging && <p className="mina-brand-memory-bar__hint body-text">{BRAND_MEMORY_DROP_HINT}</p>}

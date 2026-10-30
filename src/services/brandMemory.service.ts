@@ -5,7 +5,7 @@ import { apiPost } from './api.client'
 import { supabase } from './supabase.client'
 
 /**
- * This user's brand memories, oldest first. Only the ones the scanner read:
+ * This user's brand memories, newest first. Only the ones the scanner read:
  * a memory whose scan failed stays as an `error` row and never shows.
  */
 export async function getBrandMemories(userId: string) {
@@ -15,7 +15,10 @@ export async function getBrandMemories(userId: string) {
     .eq('mg_pass_id', `pass:user:${userId}`)
     .eq('mg_record_type', 'product')
     .eq('mg_status', 'done')
-    .order('mg_created_at', { ascending: true })
+    // Highest sort_order first, so the newest memory leads the bar. Several added
+    // together can share one sort_order; among those, the latest saved goes first.
+    .order('mg_mma_vars->sort_order', { ascending: false })
+    .order('mg_created_at', { ascending: false })
     .limit(BRAND_MEMORY_MAX)
 
   if (error) throw new Error(error.message)
