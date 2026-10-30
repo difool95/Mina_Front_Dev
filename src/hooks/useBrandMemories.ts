@@ -39,15 +39,25 @@ export function useUpdateBrandMemory(userId: string | undefined) {
   })
 }
 
-/** The row goes first, then its pictures leave R2 the way a removed studio picture does. */
-export function useDeleteBrandMemory(userId: string | undefined) {
+/**
+ * Deletes one memory or several together, as a single mutation: it is pending
+ * until the last one is gone. For each, the row goes first, then its pictures
+ * leave R2 the way a removed studio picture does.
+ *
+ * The list refreshes once at the end, whether or not every delete worked, so
+ * it shows what is really left.
+ */
+export function useDeleteBrandMemories(userId: string | undefined) {
   const client = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ token, memory }: { token: string; memory: BrandMemory }) => {
-      await deleteBrandMemory(memory.mg_id)
-      await Promise.all(memory.mg_mma_vars.images.map((url) => deleteStudioImage(token, url)))
-    },
-    onSuccess: () => client.invalidateQueries({ queryKey: queryKeys.brandMemories(userId ?? '') }),
+    mutationFn: ({ token, memories }: { token: string; memories: BrandMemory[] }) =>
+      Promise.all(
+        memories.map(async (memory) => {
+          await deleteBrandMemory(memory.mg_id)
+          await Promise.all(memory.mg_mma_vars.images.map((url) => deleteStudioImage(token, url)))
+        }),
+      ),
+    onSettled: () => client.invalidateQueries({ queryKey: queryKeys.brandMemories(userId ?? '') }),
   })
 }

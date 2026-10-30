@@ -1,5 +1,6 @@
-import { useRef, type CSSProperties } from 'react'
+import type { CSSProperties } from 'react'
 
+import { useLongPress } from '@/hooks/useLongPress'
 import { RATIO_HOLD_MS, RATIO_ICONS, STUDIO_RATIOS, studioRatio } from '@/lib/studio'
 
 import './MinaBlockPills.css'
@@ -19,39 +20,22 @@ export function MinaBlockRatioPill({
   onNext: () => void
   onFlip: () => void
 }) {
-  const holdTimer = useRef<number | undefined>(undefined)
-  // A hold that flipped the orientation must not also cycle on the click its release fires.
-  const wasHeld = useRef(false)
+  const hold = useLongPress(RATIO_HOLD_MS)
   const ratio = STUDIO_RATIOS[ratioIndex]!
   const ratioValue = studioRatio(ratioIndex, isLandscape)
-
-  const startHold = () => {
-    wasHeld.current = false
-    holdTimer.current = window.setTimeout(() => {
-      wasHeld.current = true
-      onFlip()
-    }, RATIO_HOLD_MS)
-  }
-
-  const endHold = () => window.clearTimeout(holdTimer.current)
 
   return (
     <button
       className="mina-pills__pill mina-pills__pill--ratio paragraph-title-button pill"
       type="button"
       data-tooltip="Tap to cycle · Hold to flip landscape"
-      onPointerDown={startHold}
-      onPointerUp={endHold}
-      onPointerLeave={endHold}
+      onPointerDown={() => hold.start(onFlip)}
+      onPointerUp={hold.end}
+      onPointerLeave={hold.end}
       // A long press on touch would otherwise open the system menu.
       onContextMenu={(event) => event.preventDefault()}
-      onClick={() => {
-        if (wasHeld.current) {
-          wasHeld.current = false
-          return
-        }
-        onNext()
-      }}
+      // A hold that flipped the orientation must not also cycle.
+      onClick={() => !hold.wasHeld() && onNext()}
     >
       <span className="mina-pills__icon" aria-hidden="true">
         <span

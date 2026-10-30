@@ -22,6 +22,24 @@
   transform: none;
 }
 
+/* ── selecting ── */
+
+/* "N selected", then Select all and Delete on a row of their own. */
+.mina-brand-memory-bar__select {
+  --table-gap-y: var(--mina-space-xl);
+}
+
+.mina-brand-memory-bar__delete {
+  color: var(--mina-delete-red);
+}
+
+/* Nothing picked yet, or already deleting: faded, and no hover to suggest it
+   can be pressed (the same as the panel's Delete). */
+.mina-brand-memory-bar .mina-brand-memory-bar__delete:disabled {
+  opacity: var(--mina-opacity-muted);
+  cursor: default;
+}
+
 /* ── dragging pictures over the strip ── */
 
 /* The outline sits outside the strip, so nothing moves when it shows. */

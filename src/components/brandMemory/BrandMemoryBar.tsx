@@ -1,6 +1,6 @@
 import { Fragment, useState } from 'react'
 
-import { useBrandMemories, useCreateBrandMemory } from '@/hooks/useBrandMemories'
+import { useBrandMemories, useCreateBrandMemory, useDeleteBrandMemories } from '@/hooks/useBrandMemories'
 import { useUploadStudioImage } from '@/hooks/useStudioUploads'
 import { BRAND_MEMORY_DROP_HINT, BRAND_MEMORY_MAX, BRAND_MEMORY_TILE_TOOLTIP } from '@/lib/brandMemory'
 import { prepareStudioImage } from '@/lib/media'
@@ -23,6 +23,10 @@ import './BrandMemoryBar.css'
  * Pictures can also be dragged onto the strip. Dropped ones aren't uploaded
  * straight away: they wait in a list under the strip, where any can be taken
  * out, until "Add" sends them through the same path as the "+".
+ *
+ * Holding a memory down starts selecting, with that memory picked: the "+"
+ * turns into a red "×" that stops it, a click picks or unpicks a memory, and
+ * the row under the strip selects all and deletes the picked ones together.
  */
 export function BrandMemoryBar() {
   const { session } = useAuth()
@@ -37,6 +41,42 @@ export function BrandMemoryBar() {
   const [isDragging, setIsDragging] = useState(false)
   // The dropped pictures, waiting for "Add" or "Cancel".
   const [dropped, setDropped] = useState<File[]>([])
+  // The picked memories' ids while selecting; null when not selecting.
+  const [selected, setSelected] = useState<string[] | null>(null)
+  const isSelecting = selected !== null
+  const isAllSelected = memories.length > 0 && selected?.length === memories.length
+  const deleteMemories = useDeleteBrandMemories(userId)
+
+  // Picks the memory, or unpicks it if it already was.
+  const toggleSelected = (mgId: string) => {
+    setSelected((previousList) => {
+      // Not selecting yet: start from an empty list.
+      const list = previousList ?? []
+
+      const isAlreadySelected = list.includes(mgId)
+
+      if (isAlreadySelected) {
+        // Unpick: keep every id except this one.
+        return list.filter((id) => id !== mgId)
+      }
+
+      // Pick: the same list with this id added at the end.
+      return [...list, mgId]
+    })
+  }
+
+  // Deletes every picked memory in one go, then leaves select mode, even if some failed.
+  const deleteSelected = () => {
+    if (!session || !selected) return
+
+    // The full memories behind the picked ids: the delete needs each one's pictures too.
+    const pickedMemories = memories.filter((memory) => selected.includes(memory.mg_id))
+
+    deleteMemories.mutate(
+      { token: session.access_token, memories: pickedMemories },
+      { onSettled: () => setSelected(null) },
+    )
+  }
 
   const add = async (file: File) => {
     if (!session) return
@@ -93,8 +133,9 @@ export function BrandMemoryBar() {
           size={48}
           isScroll
           isAddFirst
-          // At the cap the "+" goes away.
+          // At the cap the "+" goes away; while selecting, it is the "×" that stops it.
           onAdd={memories.length + previews.length < BRAND_MEMORY_MAX ? addFiles : undefined}
+          onCancel={isSelecting ? () => setSelected(null) : undefined}
           // Uploading ones first, where their memories will land: the newest leads the bar.
           tiles={[
             ...previews.map((url) => ({ url, action: 'Uploading', label: '', isUploading: true, onClick: () => {} })),
@@ -102,14 +143,45 @@ export function BrandMemoryBar() {
               url: memory.mg_mma_vars.thumb_url,
               action: `Open ${memory.mg_prompt}`,
               label: memory.mg_prompt,
-              tooltip: BRAND_MEMORY_TILE_TOOLTIP,
-              onClick: () => setOpenId(memory.mg_id),
+              // While selecting, a click picks instead of opening, so the tooltip would mislead.
+              tooltip: isSelecting ? undefined : BRAND_MEMORY_TILE_TOOLTIP,
+              isSelected: selected?.includes(memory.mg_id),
+              onLongPress: isSelecting ? undefined : () => setSelected([memory.mg_id]),
+              onClick: () => (isSelecting ? toggleSelected(memory.mg_id) : setOpenId(memory.mg_id)),
             })),
           ]}
         />
         {isDragging && <p className="mina-brand-memory-bar__hint body-text">{BRAND_MEMORY_DROP_HINT}</p>}
       </div>
       <Rule />
+
+      {selected && (
+        <>
+          <Table className="mina-brand-memory-bar__select">
+            <Row anchor="left">
+              <span className="body-text-button">{selected.length} selected</span>
+            </Row>
+            <Row anchor="left">
+              <button
+                className="body-text muted button"
+                type="button"
+                onClick={() => setSelected(isAllSelected ? [] : memories.map((memory) => memory.mg_id))}
+              >
+                {isAllSelected ? 'Deselect all' : 'Select all'}
+              </button>
+              <button
+                className="mina-brand-memory-bar__delete body-text-button underline button"
+                type="button"
+                disabled={selected.length === 0 || deleteMemories.isPending}
+                onClick={deleteSelected}
+              >
+                {deleteMemories.isPending ? 'Deleting...' : `Delete ${selected.length}`}
+              </button>
+            </Row>
+          </Table>
+          <Rule />
+        </>
+      )}
 
       {dropped.length > 0 && (
         <Table className="mina-brand-memory-bar__dropped">

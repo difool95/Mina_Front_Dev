@@ -52,6 +52,27 @@
   place-items: center;
 }
 
+/* Selected, and the "×" that leaves selecting: washed in the delete red like
+   a creation card waiting to be deleted (CreationCard.css), but stronger, as
+   these pictures are small. */
+.mina-tiles__tile[data-selected] .mina-tiles__picture::after {
+  position: absolute;
+  inset: 0;
+  opacity: 0.15;
+  background: var(--mina-delete-red);
+  content: '';
+  pointer-events: none;
+}
+
+/* The svg draws in `currentColor`, which an <img> cannot pick up, so it is a
+   mask filled with the delete red. */
+.mina-tiles__cancel-icon {
+  width: 8px;
+  height: 8px;
+  background: var(--mina-delete-red);
+  mask: url('/assets/icons/remove.svg') center / contain no-repeat;
+}
+
 .mina-tiles__badge {
   position: absolute;
   bottom: 4px;

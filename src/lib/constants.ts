@@ -53,3 +53,6 @@ export const MATCHA_RATES = [
 /** Where the price of a matcha goes, revealed by "Price Transparency". */
 export const PRICE_BREAKDOWN =
   'Cost €35 - New features €14 - Marketing & Branding €14 - Profit €7'
+
+/** How long a picture tile must be held to start selecting. */
+export const TILE_HOLD_MS = 500

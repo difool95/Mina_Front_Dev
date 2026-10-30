@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
-import { useDeleteBrandMemory, useUpdateBrandMemory } from '@/hooks/useBrandMemories'
+import { useDeleteBrandMemories, useUpdateBrandMemory } from '@/hooks/useBrandMemories'
 import { useDeleteStudioImage, useUploadStudioImage } from '@/hooks/useStudioUploads'
 import {
   BRAND_MEMORY_CATEGORIES,
@@ -43,7 +43,7 @@ export function BrandingAssetsPanel({ memory, onClose }: { memory: BrandMemory; 
   //This hook is called for update/delete a brand memory
   const updateMemory = useUpdateBrandMemory(userId)
   //This hook is called to delete a brand memory from the database
-  const deleteMemory = useDeleteBrandMemory(userId)
+  const deleteMemories = useDeleteBrandMemories(userId)
 
 
   // Save only wakes up once the user changed something: the category, name or description in the draft differs from the saved memory.
@@ -204,12 +204,12 @@ export function BrandingAssetsPanel({ memory, onClose }: { memory: BrandMemory; 
           <button
             className="mina-assets__delete body-text-button button"
             type="button"
-            disabled={deleteMemory.isPending}
+            disabled={deleteMemories.isPending}
             onClick={() =>
-              session && deleteMemory.mutate({ token: session.access_token, memory }, { onSuccess: onClose })
+              session && deleteMemories.mutate({ token: session.access_token, memories: [memory] }, { onSuccess: onClose })
             }
           >
-            {deleteMemory.isPending ? 'Deleting...' : 'Delete'}
+            {deleteMemories.isPending ? 'Deleting...' : 'Delete'}
           </button>
           <button
             className="mina-assets__save h3 underline button"
