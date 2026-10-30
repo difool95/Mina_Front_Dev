@@ -56,3 +56,6 @@ export const PRICE_BREAKDOWN =
 
 /** How long a picture tile must be held to start selecting. */
 export const TILE_HOLD_MS = 500
+
+/** How far, in px, a press must wander before it is a drag rather than a click. */
+export const DRAG_SLOP = 4

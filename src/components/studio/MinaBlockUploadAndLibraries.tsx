@@ -1,13 +1,8 @@
-import { useRef } from 'react'
-
+import { useDragMouse } from '@/hooks/useDragMouse'
 import { cfImage, imageWidthFor } from '@/lib/media'
 import type { StudioUpload } from '@/types'
 
 import './MinaBlockUploadAndLibraries.css'
-
-//This constant is used to determine the distance in pixels that the user must drag an image before it is considered a drag instead of a click.
-//If the user drags an image less than this distance, it will be considered a click and the image will be removed from the list of uploads.
-const DRAG_SLOP = 4
 
 /**
  * The upload row: what to add, a "+" to add it, and — when there is a library
@@ -39,9 +34,8 @@ export function MinaBlockUploadAndLibraries({
   onMove?: (url: string, target: string) => void
   library?: { label: string; previewUrls: string[]; onBrowse?: () => void }
 }) {
-  // The picture held down, and where the press began — so a press that wanders
-  // past DRAG_SLOP is a drag, and its release no longer deletes.
-  const drag = useRef<{ url: string; x: number; y: number; isDragging: boolean } | null>(null)
+  // A press that wanders is a drag, and its release no longer deletes.
+  const drag = useDragMouse()
 
   return (
     <div className="mina-uploads">
@@ -55,34 +49,18 @@ export function MinaBlockUploadAndLibraries({
             type="button"
             aria-label="Remove image"
             data-tooltip={isUploading ? 'Uploading · Click to cancel' : 'Drag to reorder · Click to delete'}
-            data-url={url}
+            data-drag-id={url}
             data-uploading={isUploading || undefined}
-            //THIS HANDLES THE POINTER DOWN EVENT, IT SETS THE DRAG REFERENCE TO THE URL OF THE IMAGE AND THE X AND Y COORDINATES OF THE POINTER
-            onPointerDown={(event) => {
-              drag.current = { url, x: event.clientX, y: event.clientY, isDragging: false }
-              // Keeps the moves coming even once the pointer leaves this picture.
-              event.currentTarget.setPointerCapture(event.pointerId)
-            }}
-            // THIS HANDLES THE POINTER MOVE EVENT, IT CHECKS IF THE USER HAS DRAGGED THE IMAGE PAST THE DRAG_SLOP THRESHOLD AND IF SO,
-            //  IT CALLS THE ONMOVE METHD TO REORDER THE UPLOADS IN THE PARENT COMPONENT (STUDIOPAGE)
+            onPointerDown={(event) => drag.start(event, url)}
+            // Swaps live: the dragged picture takes the place of whichever it is over.
             onPointerMove={(event) => {
-              const held = drag.current
-              if (!held) return
-              if (Math.hypot(event.clientX - held.x, event.clientY - held.y) > DRAG_SLOP) held.isDragging = true
-
-              const target = document
-                .elementFromPoint(event.clientX, event.clientY)
-                ?.closest<HTMLElement>('.mina-uploads__image')?.dataset.url
-              if (held.isDragging && target && target !== held.url) onMove?.(held.url, target)
+              const over = drag.move(event)
+              if (over?.target && over.target !== over.id) onMove?.(over.id, over.target)
             }}
+            onPointerUp={drag.drop}
+            onPointerCancel={drag.drop}
             // Still a click for the keyboard; only the release that ends a drag is skipped.
-            onClick={() => {
-              if (!drag.current?.isDragging) onRemove?.(url)
-              drag.current = null
-            }}
-            onPointerCancel={() => {
-              drag.current = null
-            }}
+            onClick={() => !drag.wasDragged() && onRemove?.(url)}
           >
             <img src={cfImage(url, imageWidthFor(72))} alt="" draggable={false} />
           </button>

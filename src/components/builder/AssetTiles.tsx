@@ -1,5 +1,6 @@
 import { useRef, type CSSProperties } from 'react'
 
+import { useDragMouse } from '@/hooks/useDragMouse'
 import { useLongPress } from '@/hooks/useLongPress'
 import { TILE_HOLD_MS } from '@/lib/constants'
 import { cfImage, imageWidthFor } from '@/lib/media'
@@ -25,6 +26,8 @@ export interface AssetTile {
   onLongPress?: () => void
   /** Washed in the delete red, like a creation card waiting to be deleted. */
   isSelected?: boolean
+  /** Given, the tile can be dragged onto another tile that has one (`onReorder`). */
+  dragId?: string
 }
 
 /**
@@ -40,6 +43,7 @@ export function AssetTiles({
   isAddFirst,
   onAdd,
   onCancel,
+  onReorder,
 }: {
   tiles: AssetTile[]
   /** Each picture's side, in px. */
@@ -50,16 +54,19 @@ export function AssetTiles({
   onAdd?: (files: File[]) => void
   /** Given, the "+" becomes a red "×" that calls it. */
   onCancel?: () => void
+  /** Runs once a tile dragged by its `dragId` is released over another's `targetId`. */
+  onReorder?: (dragId: string, targetId: string) => void
 }) {
   const fileInput = useRef<HTMLInputElement>(null)
   const hold = useLongPress(TILE_HOLD_MS)
+  const drag = useDragMouse()
 
   return (
     <div
       className={`mina-tiles${isScroll ? ' mina-tiles--scroll' : ''}${isAddFirst ? ' mina-tiles--add-first' : ''}`}
       style={{ '--tile': `${size}px` } as CSSProperties}
     >
-      {tiles.map(({ url, action, onClick, label, badge, hover, tooltip, isUploading, onLongPress, isSelected }) => (
+      {tiles.map(({ url, action, onClick, label, badge, hover, tooltip, isUploading, onLongPress, isSelected, dragId }) => (
         <button
           className="mina-tiles__tile button"
           type="button"
@@ -69,13 +76,25 @@ export function AssetTiles({
           data-tooltip={tooltip}
           data-uploading={isUploading || undefined}
           data-selected={isSelected || undefined}
-          onPointerDown={onLongPress && (() => hold.start(onLongPress))}
-          onPointerUp={hold.end}
+          data-drag-id={dragId}
+          onPointerDown={(event) => {
+            if (onLongPress) hold.start(onLongPress)
+            if (dragId) drag.start(event, dragId)
+          }}
+          // Once the press is a drag, it is no longer a hold.
+          onPointerMove={(event) => drag.move(event) && hold.end()}
+          // The order only changes on release, over a tile other than the dragged one.
+          onPointerUp={() => {
+            hold.end()
+            const dropped = drag.drop()
+            if (dropped?.target && dropped.target !== dropped.id) onReorder?.(dropped.id, dropped.target)
+          }}
+          onPointerCancel={drag.drop}
           onPointerLeave={hold.end}
           // A long press on touch would otherwise open the system menu.
           onContextMenu={onLongPress && ((event) => event.preventDefault())}
-          // A hold already did its work; the click its release fires does nothing.
-          onClick={() => !hold.wasHeld() && onClick()}
+          // A hold or a drag already did its work; the click its release fires does nothing.
+          onClick={() => !hold.wasHeld() && !drag.wasDragged() && onClick()}
         >
           <span className="mina-tiles__picture">
             <img src={cfImage(url, imageWidthFor(size))} alt="" draggable={false} />

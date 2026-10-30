@@ -1,6 +1,11 @@
 import { Fragment, useRef, useState } from 'react'
 
-import { useBrandMemories, useCreateBrandMemory, useDeleteBrandMemories } from '@/hooks/useBrandMemories'
+import {
+  useBrandMemories,
+  useCreateBrandMemory,
+  useDeleteBrandMemories,
+  useUpdateBrandMemory,
+} from '@/hooks/useBrandMemories'
 import { useUploadStudioImage } from '@/hooks/useStudioUploads'
 import { BRAND_MEMORY_DROP_HINT, BRAND_MEMORY_MAX, BRAND_MEMORY_TILE_TOOLTIP } from '@/lib/brandMemory'
 import { prepareStudioImage } from '@/lib/media'
@@ -28,6 +33,8 @@ import './BrandMemoryBar.css'
  * Holding a memory down starts selecting, with that memory picked: the "+"
  * turns into a red "×" that stops it, a click picks or unpicks a memory, and
  * the row under the strip selects all and deletes the picked ones together.
+ *
+ * Dragging a memory onto another and letting go puts it in that one's place.
  */
 export function BrandMemoryBar() {
   const { session } = useAuth()
@@ -49,6 +56,22 @@ export function BrandMemoryBar() {
   const isSelecting = selected !== null
   const isAllSelected = memories.length > 0 && selected?.length === memories.length
   const deleteMemories = useDeleteBrandMemories(userId)
+  const updateMemory = useUpdateBrandMemory(userId)
+
+  // Puts the dragged memory in the target's place. Only its sort_order changes: halfway between its new neighbours, or one past the end it lands on
+  // (the left end holds the highest).
+  const moveMemory = (mgId: string, targetId: string) => {
+    const memory = memories.find((entry) => entry.mg_id === mgId)!
+    const list = memories.filter((entry) => entry !== memory)
+    list.splice(memories.findIndex((entry) => entry.mg_id === targetId), 0, memory)
+
+    const at = list.indexOf(memory)
+    const left = list[at - 1]?.mg_mma_vars.sort_order
+    const right = list[at + 1]?.mg_mma_vars.sort_order
+    const sortOrder = left === undefined ? right! + 1 : right === undefined ? left - 1 : (left + right) / 2
+
+    updateMemory.mutate({ mgId, vars: { ...memory.mg_mma_vars, sort_order: sortOrder } })
+  }
 
   // Picks the memory, or unpicks it if it already was.
   const toggleSelected = (mgId: string) => {
@@ -152,6 +175,7 @@ export function BrandMemoryBar() {
           // At the cap the "+" goes away; while selecting, it is the "×" that stops it.
           onAdd={memories.length + previews.length < BRAND_MEMORY_MAX ? pickFiles : undefined}
           onCancel={isSelecting ? () => setSelected(null) : undefined}
+          onReorder={moveMemory}
           // Uploading ones first, where their memories will land: the newest leads the bar.
           tiles={[
             ...previews.map((url) => ({ url, action: 'Uploading', label: '', isUploading: true, onClick: () => {} })),
@@ -163,6 +187,7 @@ export function BrandMemoryBar() {
               tooltip: isSelecting ? undefined : BRAND_MEMORY_TILE_TOOLTIP,
               isSelected: selected?.includes(memory.mg_id),
               onLongPress: isSelecting ? undefined : () => setSelected([memory.mg_id]),
+              dragId: isSelecting ? undefined : memory.mg_id,
               onClick: () => (isSelecting ? toggleSelected(memory.mg_id) : setOpenId(memory.mg_id)),
             })),
           ]}
