@@ -25,8 +25,8 @@ export function useCreateBrandMemory(userId: string | undefined) {
   const client = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ token, url, sortOrder }: { token: string; url: string; sortOrder: number }) =>
-      createBrandMemory(token, url, sortOrder),
+    mutationFn: ({ token, urls, sortOrder }: { token: string; urls: string[]; sortOrder: number }) =>
+      createBrandMemory(token, urls, sortOrder),
     onSuccess: () => client.invalidateQueries({ queryKey: queryKeys.brandMemories(userId ?? '') }),
   })
 }

@@ -8,8 +8,10 @@ import {
 } from '@/hooks/useBrandMemories'
 import { useUploadStudioImage } from '@/hooks/useStudioUploads'
 import { BRAND_MEMORY_DROP_HINT, BRAND_MEMORY_MAX, BRAND_MEMORY_TILE_TOOLTIP } from '@/lib/brandMemory'
+import { pendingFromDrop, pendingFromFiles } from '@/lib/brandMemoryImport'
 import { prepareStudioImage } from '@/lib/media'
 import { useAuth } from '@/providers/AuthProvider'
+import type { PendingBrandMemory } from '@/types'
 
 import { AssetTiles } from '../builder/AssetTiles'
 import { Row, Rule, Table } from '../builder/Table'
@@ -25,7 +27,9 @@ import './BrandMemoryBar.css'
  * preview flashes until the memory is in the list, and simply leaves if any of
  * that fails. A tile opens its memory in the Branding Assets panel.
  *
- * Pictures can also be dragged onto the strip. Dropped ones, like several
+ * Pictures and folders can also be dragged onto the strip. A folder's own
+ * pictures make memories of up to five each, and its subfolders are read the
+ * same way (lib/brandMemoryImport). Dropped memories, like several pictures
  * picked at once from the "+", aren't uploaded straight away: they wait in a
  * list under the strip, where any can be taken out, until "Add" uploads them
  * the way a single picture from the "+" is.
@@ -49,8 +53,8 @@ export function BrandMemoryBar() {
   const openMemory = memories.find((memory) => memory.mg_id === openId)
   // True while pictures are dragged over the strip.
   const [isDragging, setIsDragging] = useState(false)
-  // Pictures dropped, or picked several at once from the "+", waiting for "Add" or "Cancel".
-  const [pending, setPending] = useState<File[]>([])
+  // Memories dropped, or picked several at once from the "+", waiting for "Add" or "Cancel".
+  const [pending, setPending] = useState<PendingBrandMemory[]>([])
   // The picked memories' ids while selecting; null when not selecting.
   const [selected, setSelected] = useState<string[] | null>(null)
   const isSelecting = selected !== null
@@ -104,17 +108,24 @@ export function BrandMemoryBar() {
     )
   }
 
-  const add = async (file: File, sortOrder: number) => {
+  // One memory with all its pictures; its cover's preview stands for it while it uploads.
+  const add = async (memory: PendingBrandMemory, sortOrder: number) => {
     if (!session) return
 
     let preview = ''
     try {
-      const image = await prepareStudioImage(file)
-      preview = URL.createObjectURL(image)
+      const images = await Promise.all(memory.files.map(prepareStudioImage))
+      preview = URL.createObjectURL(images[0])
       setPreviews((list) => [...list, preview])
-      const { url } = await uploadImage.mutateAsync({ token: session.access_token, image })
+      const uploaded = await Promise.all(
+        images.map((image) => uploadImage.mutateAsync({ token: session.access_token, image })),
+      )
       // Resolves once the list has refetched, so the memory takes the preview's place without a gap.
-      await createMemory.mutateAsync({ token: session.access_token, url, sortOrder })
+      await createMemory.mutateAsync({
+        token: session.access_token,
+        urls: uploaded.map(({ url }) => url),
+        sortOrder,
+      })
     } catch {
       // Nothing is said: the preview leaves and no memory is added.
     } finally {
@@ -123,28 +134,29 @@ export function BrandMemoryBar() {
     }
   }
 
-  // Uploads the pictures; a batch past the cap keeps only what still fits.
+  // Uploads the memories; a batch past the cap keeps only what still fits.
   // Each is numbered above the current top before any upload starts, the first
-  // picked highest so it leads the bar. The list only knows a number once its
+  // listed highest so it leads the bar. The list only knows a number once its
   // memory is saved, so the last one handed out counts too: a second batch
   // started while the first still uploads goes above it rather than onto it.
-  const addFiles = (files: File[]) => {
+  const addMemories = (list: PendingBrandMemory[]) => {
     const room = BRAND_MEMORY_MAX - memories.length - previews.length
-    const kept = files.slice(0, room)
+    const kept = list.slice(0, room)
     const top = Math.max(memories[0]?.mg_mma_vars.sort_order ?? 0, lastSortOrder.current)
     lastSortOrder.current = top + kept.length
-    kept.forEach((file, index) => void add(file, top + kept.length - index))
+    kept.forEach((memory, index) => void add(memory, top + kept.length - index))
   }
 
   const addPending = () => {
-    addFiles(pending)
+    addMemories(pending)
     setPending([])
   }
 
   // One picture from the "+" goes straight up; several wait in the list, the same as a drop.
   const pickFiles = (files: File[]) => {
-    if (files.length > 1) setPending((list) => [...list, ...files])
-    else addFiles(files)
+    const picked = pendingFromFiles(files)
+    if (picked.length > 1) setPending((list) => [...list, ...picked])
+    else addMemories(picked)
   }
 
   return (
@@ -164,8 +176,7 @@ export function BrandMemoryBar() {
         onDrop={(event) => {
           event.preventDefault()
           setIsDragging(false)
-          const images = [...event.dataTransfer.files].filter((file) => file.type.startsWith('image/'))
-          setPending((list) => [...list, ...images])
+          void pendingFromDrop(event.dataTransfer).then((dropped) => setPending((list) => [...list, ...dropped]))
         }}
       >
         <AssetTiles
@@ -226,24 +237,27 @@ export function BrandMemoryBar() {
 
       {pending.length > 0 && (
         <Table className="mina-brand-memory-bar__pending">
-          {pending.map((file, index) => (
-            <Fragment key={`${index}-${file.name}`}>
-              <Row className="mina-brand-memory-bar__file">
-                {/* The file's name without its extension. */}
-                <span className="paragraph-title">{file.name.replace(/\.[^.]+$/, '')}</span>
-                <span className="body-text muted">1 image</span>
-                <button
-                  className="mina-brand-memory-bar__remove button"
-                  type="button"
-                  aria-label={`Remove ${file.name}`}
-                  onClick={() => setPending((list) => list.filter((_, at) => at !== index))}
-                >
-                  <span className="mina-brand-memory-bar__remove-icon" aria-hidden="true" />
-                </button>
-              </Row>
-              <Rule />
-            </Fragment>
-          ))}
+          <div className="mina-brand-memory-bar__files">
+            {pending.map((memory, index) => (
+              <Fragment key={`${index}-${memory.name}`}>
+                <Row className="mina-brand-memory-bar__file">
+                  <span className="paragraph-title">{memory.name}</span>
+                  <span className="body-text muted">
+                    {memory.files.length} {memory.files.length === 1 ? 'image' : 'images'}
+                  </span>
+                  <button
+                    className="mina-brand-memory-bar__remove button"
+                    type="button"
+                    aria-label={`Remove ${memory.name}`}
+                    onClick={() => setPending((list) => list.filter((_, at) => at !== index))}
+                  >
+                    <span className="mina-brand-memory-bar__remove-icon" aria-hidden="true" />
+                  </button>
+                </Row>
+                <Rule />
+              </Fragment>
+            ))}
+          </div>
           <Row>
             <button className="paragraph-title underline button" type="button" onClick={addPending}>
               Add {pending.length} {pending.length === 1 ? 'asset' : 'assets'}

@@ -35,6 +35,12 @@ export interface BrandMemoryVars {
   memory_enabled: boolean
 }
 
+/** A brand memory waiting under the bar for "Add": its pictures, and the name the list shows. */
+export interface PendingBrandMemory {
+  name: string
+  files: File[]
+}
+
 /** A `mega_generations` row whose `mg_record_type` is `product`: one brand memory. */
 export interface BrandMemory {
   mg_id: string

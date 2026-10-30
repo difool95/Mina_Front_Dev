@@ -16,8 +16,9 @@ export const BRAND_MEMORY_MAX = 1000;
 /** Shown when hovering a memory in the bar. */
 export const BRAND_MEMORY_TILE_TOOLTIP = 'Click to edit · long-press to select · drag to reorder'
 
-/** Shown over the strip while pictures are dragged onto it. */
-export const BRAND_MEMORY_DROP_HINT = 'Drop images — each one becomes a brand asset'
+/** Shown over the strip while pictures or folders are dragged onto it. */
+export const BRAND_MEMORY_DROP_HINT =
+  'Drop images, a folder, a .zip or a .csv — each folder (and sub-folder) becomes a product'
 
 export const BRANDING_ASSETS_PANEL = {
   title: 'Branding Assets',

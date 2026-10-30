@@ -1,5 +1,11 @@
 export type { SavedAccount } from './account.types'
-export type { BrandMemory, BrandMemoryCategory, BrandMemoryItem, BrandMemoryVars } from './brandMemory.types'
+export type {
+  BrandMemory,
+  BrandMemoryCategory,
+  BrandMemoryItem,
+  BrandMemoryVars,
+  PendingBrandMemory,
+} from './brandMemory.types'
 export type { Currency } from './currency.types'
 export type { OnboardContent } from './onboardContent.types'
 export type { CreditLot, CustomerRole, MegaCustomer, MmaPreferences } from './customer.types'

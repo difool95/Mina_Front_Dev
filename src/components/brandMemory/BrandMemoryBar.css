@@ -75,6 +75,19 @@
   --table-gap-y: 0;
 }
 
+/* Four rows at most, each with its rule; the rest scroll, without a bar. */
+.mina-brand-memory-bar__files {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(4 * (var(--table-row-h) + 1px));
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.mina-brand-memory-bar__files::-webkit-scrollbar {
+  display: none;
+}
+
 /* Name left, "1 image" in the exact middle, × right. */
 .mina-brand-memory-bar__file {
   display: grid;

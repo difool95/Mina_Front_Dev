@@ -25,9 +25,12 @@ export async function getBrandMemories(userId: string) {
   return (data ?? []) as BrandMemory[]
 }
 
-/** Asks the API to scan a picture already on R2 and save it as a new brand memory at `sortOrder`. */
-export function createBrandMemory(token: string, url: string, sortOrder: number) {
-  return apiPost<{ id: string }>('/api/brand-memories', token, { url, sort_order: sortOrder })
+/**
+ * Asks the API to save pictures already on R2 (up to five, the first scanned
+ * and the cover) as a new brand memory at `sortOrder`.
+ */
+export function createBrandMemory(token: string, urls: string[], sortOrder: number) {
+  return apiPost<{ id: string }>('/api/brand-memories', token, { urls, sort_order: sortOrder })
 }
 
 /** Saves a memory's vars, its name going to `mg_prompt` as well. */
