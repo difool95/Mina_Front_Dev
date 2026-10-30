@@ -15,8 +15,7 @@ export async function getBrandMemories(userId: string) {
     .eq('mg_pass_id', `pass:user:${userId}`)
     .eq('mg_record_type', 'product')
     .eq('mg_status', 'done')
-    // Highest sort_order first, so the newest memory leads the bar. Several added
-    // together can share one sort_order; among those, the latest saved goes first.
+    // Highest sort_order first, so the newest memory leads the bar.
     .order('mg_mma_vars->sort_order', { ascending: false })
     .order('mg_created_at', { ascending: false })
     .limit(BRAND_MEMORY_MAX)
@@ -26,9 +25,9 @@ export async function getBrandMemories(userId: string) {
   return (data ?? []) as BrandMemory[]
 }
 
-/** Asks the API to scan a picture already on R2 and save it as a new brand memory. */
-export function createBrandMemory(token: string, url: string) {
-  return apiPost<{ id: string }>('/api/brand-memories', token, { url })
+/** Asks the API to scan a picture already on R2 and save it as a new brand memory at `sortOrder`. */
+export function createBrandMemory(token: string, url: string, sortOrder: number) {
+  return apiPost<{ id: string }>('/api/brand-memories', token, { url, sort_order: sortOrder })
 }
 
 /** Saves a memory's vars, its name going to `mg_prompt` as well. */

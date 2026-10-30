@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react'
+import { Fragment, useRef, useState } from 'react'
 
 import { useBrandMemories, useCreateBrandMemory, useDeleteBrandMemories } from '@/hooks/useBrandMemories'
 import { useUploadStudioImage } from '@/hooks/useStudioUploads'
@@ -36,6 +36,8 @@ export function BrandMemoryBar() {
   const uploadImage = useUploadStudioImage()
   const createMemory = useCreateBrandMemory(userId)
   const [previews, setPreviews] = useState<string[]>([])
+  // The highest sort_order handed to an upload so far.
+  const lastSortOrder = useRef(0)
   const [openId, setOpenId] = useState<string | null>(null)
   const openMemory = memories.find((memory) => memory.mg_id === openId)
   // True while pictures are dragged over the strip.
@@ -79,7 +81,7 @@ export function BrandMemoryBar() {
     )
   }
 
-  const add = async (file: File) => {
+  const add = async (file: File, sortOrder: number) => {
     if (!session) return
 
     let preview = ''
@@ -89,7 +91,7 @@ export function BrandMemoryBar() {
       setPreviews((list) => [...list, preview])
       const { url } = await uploadImage.mutateAsync({ token: session.access_token, image })
       // Resolves once the list has refetched, so the memory takes the preview's place without a gap.
-      await createMemory.mutateAsync({ token: session.access_token, url })
+      await createMemory.mutateAsync({ token: session.access_token, url, sortOrder })
     } catch {
       // Nothing is said: the preview leaves and no memory is added.
     } finally {
@@ -99,9 +101,16 @@ export function BrandMemoryBar() {
   }
 
   // Uploads the pictures; a batch past the cap keeps only what still fits.
+  // Each is numbered above the current top before any upload starts, the first
+  // picked highest so it leads the bar. The list only knows a number once its
+  // memory is saved, so the last one handed out counts too: a second batch
+  // started while the first still uploads goes above it rather than onto it.
   const addFiles = (files: File[]) => {
     const room = BRAND_MEMORY_MAX - memories.length - previews.length
-    files.slice(0, room).forEach((file) => void add(file))
+    const kept = files.slice(0, room)
+    const top = Math.max(memories[0]?.mg_mma_vars.sort_order ?? 0, lastSortOrder.current)
+    lastSortOrder.current = top + kept.length
+    kept.forEach((file, index) => void add(file, top + kept.length - index))
   }
 
   const addPending = () => {
