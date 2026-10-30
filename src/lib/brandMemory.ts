@@ -13,6 +13,9 @@ export const BRAND_MEMORY_MAX_IMAGES = 5
 
 /** The most brand memories one user can keep; the backend refuses any past it. */
 export const BRAND_MEMORY_MAX = 1000;
+/** Shown over the strip while pictures are dragged onto it. */
+export const BRAND_MEMORY_DROP_HINT = 'Drop images — each one becomes a brand asset'
+
 export const BRANDING_ASSETS_PANEL = {
   title: 'Branding Assets',
   subtitle: 'Save your models, products, design and all branding assets here',

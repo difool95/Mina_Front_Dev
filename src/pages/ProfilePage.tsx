@@ -5,7 +5,7 @@ import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { AccountMenu } from '@/components/AccountMenu'
 import { AppFooter } from '@/components/AppFooter'
 import { AutoMatchaPanel } from '@/components/AutoMatchaPanel'
-import { BrandMemory } from '@/components/brandMemory/BrandMemory'
+import { BrandMemoryBar } from '@/components/brandMemory/BrandMemoryBar'
 import { CreationCard } from '@/components/CreationCard'
 import { CreationFullScreen } from '@/components/CreationFullScreen'
 import { CreationSkeleton } from '@/components/CreationSkeleton'
@@ -303,7 +303,7 @@ export function ProfilePage() {
         <Rule />
       </Table>
 
-      {isBrandMemoryOpen && <BrandMemory />}
+      {isBrandMemoryOpen && <BrandMemoryBar />}
 
       <div className="mina-profile__archive-head">
         <div>
