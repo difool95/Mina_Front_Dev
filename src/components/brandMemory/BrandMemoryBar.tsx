@@ -2,7 +2,7 @@ import { Fragment, useState } from 'react'
 
 import { useBrandMemories, useCreateBrandMemory } from '@/hooks/useBrandMemories'
 import { useUploadStudioImage } from '@/hooks/useStudioUploads'
-import { BRAND_MEMORY_DROP_HINT, BRAND_MEMORY_MAX } from '@/lib/brandMemory'
+import { BRAND_MEMORY_DROP_HINT, BRAND_MEMORY_MAX, BRAND_MEMORY_TILE_TOOLTIP } from '@/lib/brandMemory'
 import { prepareStudioImage } from '@/lib/media'
 import { useAuth } from '@/providers/AuthProvider'
 
@@ -102,6 +102,7 @@ export function BrandMemoryBar() {
               url: memory.mg_mma_vars.thumb_url,
               action: `Open ${memory.mg_prompt}`,
               label: memory.mg_prompt,
+              tooltip: BRAND_MEMORY_TILE_TOOLTIP,
               onClick: () => setOpenId(memory.mg_id),
             })),
           ]}

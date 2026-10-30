@@ -15,6 +15,8 @@ export interface AssetTile {
   badge?: string
   /** A word shown over the darkened picture while it is hovered, like "Remove". */
   hover?: string
+  /** The app's usual hover tooltip (`data-tooltip`, index.css). */
+  tooltip?: string
   /** Still on its way to R2: the picture flashes until it lands (index.css). */
   isUploading?: boolean
 }
@@ -46,12 +48,13 @@ export function AssetTiles({
       className={`mina-tiles${isScroll ? ' mina-tiles--scroll' : ''}${isAddFirst ? ' mina-tiles--add-first' : ''}`}
       style={{ '--tile': `${size}px` } as CSSProperties}
     >
-      {tiles.map(({ url, action, onClick, label, badge, hover, isUploading }) => (
+      {tiles.map(({ url, action, onClick, label, badge, hover, tooltip, isUploading }) => (
         <button
           className="mina-tiles__tile button"
           type="button"
           key={url}
           aria-label={action}
+          data-tooltip={tooltip}
           data-uploading={isUploading || undefined}
           onClick={onClick}
         >

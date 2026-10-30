@@ -13,6 +13,9 @@ export const BRAND_MEMORY_MAX_IMAGES = 5
 
 /** The most brand memories one user can keep; the backend refuses any past it. */
 export const BRAND_MEMORY_MAX = 1000;
+/** Shown when hovering a memory in the bar. */
+export const BRAND_MEMORY_TILE_TOOLTIP = 'Click to edit · long-press to select · drag to reorder'
+
 /** Shown over the strip while pictures are dragged onto it. */
 export const BRAND_MEMORY_DROP_HINT = 'Drop images — each one becomes a brand asset'
 

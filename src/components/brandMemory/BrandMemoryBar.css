@@ -5,6 +5,23 @@
   padding-top: var(--mina-space-xl);
 }
 
+/* ── tooltips ── */
+
+/* The strip scrolls sideways, which clips anything hanging below it: room is
+   made under the tiles for the tooltip, then taken back so nothing moves. */
+.mina-brand-memory-bar .mina-tiles--scroll {
+  padding-bottom: 40px;
+  margin-bottom: -40px;
+}
+
+/* Run rightwards from each tile's left edge rather than centred on it: the
+   tooltip is wider than a 48px tile, and centring would cut the first ones
+   at the strip's left edge. */
+.mina-brand-memory-bar .mina-tiles [data-tooltip]::after {
+  left: 0;
+  transform: none;
+}
+
 /* ── dragging pictures over the strip ── */
 
 /* The outline sits outside the strip, so nothing moves when it shows. */
