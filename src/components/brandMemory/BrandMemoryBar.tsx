@@ -20,9 +20,10 @@ import './BrandMemoryBar.css'
  * preview flashes until the memory is in the list, and simply leaves if any of
  * that fails. A tile opens its memory in the Branding Assets panel.
  *
- * Pictures can also be dragged onto the strip. Dropped ones aren't uploaded
- * straight away: they wait in a list under the strip, where any can be taken
- * out, until "Add" sends them through the same path as the "+".
+ * Pictures can also be dragged onto the strip. Dropped ones, like several
+ * picked at once from the "+", aren't uploaded straight away: they wait in a
+ * list under the strip, where any can be taken out, until "Add" uploads them
+ * the way a single picture from the "+" is.
  *
  * Holding a memory down starts selecting, with that memory picked: the "+"
  * turns into a red "×" that stops it, a click picks or unpicks a memory, and
@@ -39,8 +40,8 @@ export function BrandMemoryBar() {
   const openMemory = memories.find((memory) => memory.mg_id === openId)
   // True while pictures are dragged over the strip.
   const [isDragging, setIsDragging] = useState(false)
-  // The dropped pictures, waiting for "Add" or "Cancel".
-  const [dropped, setDropped] = useState<File[]>([])
+  // Pictures dropped, or picked several at once from the "+", waiting for "Add" or "Cancel".
+  const [pending, setPending] = useState<File[]>([])
   // The picked memories' ids while selecting; null when not selecting.
   const [selected, setSelected] = useState<string[] | null>(null)
   const isSelecting = selected !== null
@@ -97,15 +98,21 @@ export function BrandMemoryBar() {
     }
   }
 
-  // Shared by the "+" and the dropped list's "Add": a batch past the cap keeps only what still fits.
+  // Uploads the pictures; a batch past the cap keeps only what still fits.
   const addFiles = (files: File[]) => {
     const room = BRAND_MEMORY_MAX - memories.length - previews.length
     files.slice(0, room).forEach((file) => void add(file))
   }
 
-  const addDropped = () => {
-    addFiles(dropped)
-    setDropped([])
+  const addPending = () => {
+    addFiles(pending)
+    setPending([])
+  }
+
+  // One picture from the "+" goes straight up; several wait in the list, the same as a drop.
+  const pickFiles = (files: File[]) => {
+    if (files.length > 1) setPending((list) => [...list, ...files])
+    else addFiles(files)
   }
 
   return (
@@ -126,7 +133,7 @@ export function BrandMemoryBar() {
           event.preventDefault()
           setIsDragging(false)
           const images = [...event.dataTransfer.files].filter((file) => file.type.startsWith('image/'))
-          setDropped((list) => [...list, ...images])
+          setPending((list) => [...list, ...images])
         }}
       >
         <AssetTiles
@@ -134,7 +141,7 @@ export function BrandMemoryBar() {
           isScroll
           isAddFirst
           // At the cap the "+" goes away; while selecting, it is the "×" that stops it.
-          onAdd={memories.length + previews.length < BRAND_MEMORY_MAX ? addFiles : undefined}
+          onAdd={memories.length + previews.length < BRAND_MEMORY_MAX ? pickFiles : undefined}
           onCancel={isSelecting ? () => setSelected(null) : undefined}
           // Uploading ones first, where their memories will land: the newest leads the bar.
           tiles={[
@@ -183,9 +190,9 @@ export function BrandMemoryBar() {
         </>
       )}
 
-      {dropped.length > 0 && (
-        <Table className="mina-brand-memory-bar__dropped">
-          {dropped.map((file, index) => (
+      {pending.length > 0 && (
+        <Table className="mina-brand-memory-bar__pending">
+          {pending.map((file, index) => (
             <Fragment key={`${index}-${file.name}`}>
               <Row className="mina-brand-memory-bar__file">
                 {/* The file's name without its extension. */}
@@ -195,7 +202,7 @@ export function BrandMemoryBar() {
                   className="mina-brand-memory-bar__remove button"
                   type="button"
                   aria-label={`Remove ${file.name}`}
-                  onClick={() => setDropped((list) => list.filter((_, at) => at !== index))}
+                  onClick={() => setPending((list) => list.filter((_, at) => at !== index))}
                 >
                   <span className="mina-brand-memory-bar__remove-icon" aria-hidden="true" />
                 </button>
@@ -204,10 +211,10 @@ export function BrandMemoryBar() {
             </Fragment>
           ))}
           <Row>
-            <button className="paragraph-title underline button" type="button" onClick={addDropped}>
-              Add {dropped.length} {dropped.length === 1 ? 'asset' : 'assets'}
+            <button className="paragraph-title underline button" type="button" onClick={addPending}>
+              Add {pending.length} {pending.length === 1 ? 'asset' : 'assets'}
             </button>
-            <button className="body-text muted button" type="button" onClick={() => setDropped([])}>
+            <button className="body-text muted button" type="button" onClick={() => setPending([])}>
               Cancel
             </button>
           </Row>

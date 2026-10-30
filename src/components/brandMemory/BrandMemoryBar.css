@@ -67,9 +67,9 @@
   pointer-events: none;
 }
 
-/* ── the dropped pictures, waiting for Add or Cancel ── */
+/* ── the pictures waiting for Add or Cancel (dropped, or several from the "+") ── */
 
-.mina-brand-memory-bar__dropped {
+.mina-brand-memory-bar__pending {
   --table-row-h: 44px;
   /* Each rule sits flush under the row it closes. */
   --table-gap-y: 0;
