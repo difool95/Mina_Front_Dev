@@ -60,6 +60,14 @@ export function AssetTiles({
   const fileInput = useRef<HTMLInputElement>(null)
   const hold = useLongPress(TILE_HOLD_MS)
   const drag = useDragMouse()
+  // A faded copy of the dragged picture under the pointer. It sits on the body,
+  // so the scrolling row doesn't clip it.
+  const ghost = useRef<HTMLImageElement | null>(null)
+
+  const removeGhost = () => {
+    ghost.current?.remove()
+    ghost.current = null
+  }
 
   return (
     <div
@@ -81,15 +89,30 @@ export function AssetTiles({
             if (onLongPress) hold.start(onLongPress)
             if (dragId) drag.start(event, dragId)
           }}
-          // Once the press is a drag, it is no longer a hold.
-          onPointerMove={(event) => drag.move(event) && hold.end()}
+          // Once the press is a drag, it is no longer a hold, and the copy follows the pointer.
+          onPointerMove={(event) => {
+            if (!drag.move(event)) return
+            hold.end()
+            if (!ghost.current) {
+              ghost.current = document.body.appendChild(
+                event.currentTarget.querySelector('img')!.cloneNode() as HTMLImageElement,
+              )
+              ghost.current.className = 'mina-tiles__ghost'
+              ghost.current.style.width = `${size}px`
+            }
+            ghost.current.style.translate = `${event.clientX}px ${event.clientY}px`
+          }}
           // The order only changes on release, over a tile other than the dragged one.
           onPointerUp={() => {
             hold.end()
+            removeGhost()
             const dropped = drag.drop()
             if (dropped?.target && dropped.target !== dropped.id) onReorder?.(dropped.id, dropped.target)
           }}
-          onPointerCancel={drag.drop}
+          onPointerCancel={() => {
+            removeGhost()
+            drag.drop()
+          }}
           onPointerLeave={hold.end}
           // A long press on touch would otherwise open the system menu.
           onContextMenu={onLongPress && ((event) => event.preventDefault())}
