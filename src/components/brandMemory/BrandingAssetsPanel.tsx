@@ -21,7 +21,8 @@ import './BrandingAssetsPanel.css'
  * One brand memory, open for editing.
  *
  * Its pictures and the Mina vision switch save the moment they change: a "+"
- * adds pictures up to five, a click on one removes it (all but the last). The
+ * adds pictures up to five, a click on one removes it (all but the last), and
+ * dragging one onto another puts it there, the first being the cover. The
  * category, name and description are drafts until Save, which only wakes once
  * one of them differs. Delete takes the memory and its pictures for good.
  *
@@ -85,6 +86,29 @@ export function BrandingAssetsPanel({ memory, onClose }: { memory: BrandMemory; 
     }
   }
 
+  // Puts the dragged picture in the target's place. withImages reorders images
+  // and asset_items to match, and the first picture becomes the cover (thumb_url).
+  const movePicture = (url: string, targetUrl: string) => {
+    // Where the target picture sits now: the dragged one takes this spot.
+    const targetIndex = vars.images.indexOf(targetUrl)
+
+    // Step 1: every picture except the dragged one, in their current order.
+    const remainingImages = vars.images.filter((image) => image !== url)
+
+    // Step 2: put the dragged picture back in at the target's spot. Dragged
+    // left, it lands before the target; dragged right, after it, since taking
+    // it out moved everything after it one place left.
+    const reorderedImages = [...remainingImages]
+    reorderedImages.splice(targetIndex, 0, url)
+
+    // Step 3: the memory's vars rebuilt in that order: images, source_urls and
+    // asset_items follow it, and the first picture becomes the cover (thumb_url).
+    const nextVars = withImages(vars, reorderedImages)
+
+    // Step 4: save it, which refreshes the panel and the bar.
+    save(nextVars)
+  }
+
   const removePicture = (url: string) => {
     // Deleting the file from R2 needs the user's token, so nothing happens signed out.
     if (!session) return
@@ -130,6 +154,7 @@ export function BrandingAssetsPanel({ memory, onClose }: { memory: BrandMemory; 
         <AssetTiles
           size={92}
           onAdd={vars.images.length + previews.length < BRAND_MEMORY_MAX_IMAGES ? addPicturesUnderSameAssetPanel : undefined}
+          onReorder={movePicture}
           tiles={[
             ...vars.images.map((url, index) => ({
               url,
@@ -138,6 +163,7 @@ export function BrandingAssetsPanel({ memory, onClose }: { memory: BrandMemory; 
               // The last picture can't be removed, so it doesn't offer to.
               hover: vars.images.length > 1 ? 'Remove' : undefined,
               onClick: () => vars.images.length > 1 && removePicture(url),
+              dragId: url,
             })),
             ...previews.map((url) => ({ url, action: 'Uploading', isUploading: true, onClick: () => {} })),
           ]}

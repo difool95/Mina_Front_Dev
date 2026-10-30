@@ -61,7 +61,8 @@ export function AssetTiles({
   const hold = useLongPress(TILE_HOLD_MS)
   const drag = useDragMouse()
   // A faded copy of the dragged picture under the pointer. It sits on the body,
-  // so the scrolling row doesn't clip it.
+  // so the scrolling row doesn't clip it, or in the modal dialog holding the
+  // tiles, which draws over the whole page, body included.
   const ghost = useRef<HTMLImageElement | null>(null)
 
   const removeGhost = () => {
@@ -94,7 +95,7 @@ export function AssetTiles({
             if (!drag.move(event)) return
             hold.end()
             if (!ghost.current) {
-              ghost.current = document.body.appendChild(
+              ghost.current = (event.currentTarget.closest('dialog') ?? document.body).appendChild(
                 event.currentTarget.querySelector('img')!.cloneNode() as HTMLImageElement,
               )
               ghost.current.className = 'mina-tiles__ghost'
