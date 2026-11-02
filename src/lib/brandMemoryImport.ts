@@ -1,3 +1,5 @@
+import { unzip, type Unzipped } from 'fflate'
+
 import { BRAND_MEMORY_MAX_IMAGES } from '@/lib/brandMemory'
 import type { PendingBrandMemory } from '@/types'
 
@@ -5,6 +7,21 @@ import type { PendingBrandMemory } from '@/types'
 // would make, listed under the bar until "Add".
 
 const isImage = (file: File) => file.type.startsWith('image/')
+
+// As a file explorer orders names: "assets 2" before "assets 10".
+const byName = (a: string, b: string) => a.localeCompare(b, undefined, { numeric: true })
+
+// A zip holds bytes, not typed files, so a picture's type comes from its extension.
+const ZIP_IMAGE_TYPES: Record<string, string> = {
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  png: 'image/png',
+  webp: 'image/webp',
+  gif: 'image/gif',
+  avif: 'image/avif',
+}
+
+const zipImageType = (path: string) => ZIP_IMAGE_TYPES[path.split('.').pop()!.toLowerCase()]
 
 /** Each picture as a memory of its own, named after its file without the extension. */
 export function pendingFromFiles(files: File[]): PendingBrandMemory[] {
@@ -39,7 +56,7 @@ async function folderEntries(folder: FileSystemDirectoryEntry) {
     entries.push(...batch)
   }
 
-  return entries.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }))
+  return entries.sort((a, b) => byName(a.name, b.name))
 }
 
 const entryFile = (entry: FileSystemFileEntry) =>
@@ -61,9 +78,44 @@ async function readFolder(folder: FileSystemDirectoryEntry): Promise<PendingBran
   return [...folderMemories(folder.name, files.filter(isImage)), ...subfolders.flat()]
 }
 
+// A zip read like a dropped folder of its own name: the pictures at its root
+// make that folder's memories, and every folder inside it makes its own from
+// the pictures directly in it. Only pictures are unpacked, and the copies
+// macOS tucks under __MACOSX/ are left out.
+async function readZip(zip: File): Promise<PendingBrandMemory[]> {
+  const bytes = new Uint8Array(await zip.arrayBuffer())
+  const unzipped = await new Promise<Unzipped>((resolve, reject) =>
+    unzip(
+      bytes,
+      { filter: (file) => Boolean(zipImageType(file.name)) && !file.name.startsWith('__MACOSX/') },
+      (error, data) => (error ? reject(error) : resolve(data)),
+    ),
+  )
+
+  // Each folder's path inside the zip, with the pictures directly in it.
+  const folders = new Map<string, File[]>()
+  for (const [path, data] of Object.entries(unzipped)) {
+    const parts = [zip.name.replace(/\.zip$/i, ''), ...path.split('/')]
+    const fileName = parts.pop()!
+    const folderPath = parts.join('/')
+    const picture = new File([data], fileName, { type: zipImageType(fileName) })
+    folders.set(folderPath, [...(folders.get(folderPath) ?? []), picture])
+  }
+
+  // A folder comes before the folders inside it, as when reading a dropped one.
+  return [...folders.keys()]
+    .sort(byName)
+    .flatMap((folderPath) =>
+      folderMemories(
+        folderPath.split('/').pop()!,
+        folders.get(folderPath)!.sort((a, b) => byName(a.name, b.name)),
+      ),
+    )
+}
+
 /**
  * What was dropped on the bar: a loose picture is a memory of its own, and a
- * folder is read inside out as above.
+ * folder or a zip is read inside out as above.
  */
 export async function pendingFromDrop(dataTransfer: DataTransfer): Promise<PendingBrandMemory[]> {
   // The browser only gives the entries while the drop event runs, so they are
@@ -73,11 +125,12 @@ export async function pendingFromDrop(dataTransfer: DataTransfer): Promise<Pendi
     .filter((entry) => entry !== null)
 
   const memories = await Promise.all(
-    entries.map(async (entry) =>
-      entry.isDirectory
-        ? readFolder(entry as FileSystemDirectoryEntry)
-        : pendingFromFiles([await entryFile(entry as FileSystemFileEntry)]),
-    ),
+    entries.map(async (entry) => {
+      if (entry.isDirectory) return readFolder(entry as FileSystemDirectoryEntry)
+
+      const file = await entryFile(entry as FileSystemFileEntry)
+      return /\.zip$/i.test(file.name) ? readZip(file) : pendingFromFiles([file])
+    }),
   )
 
   return memories.flat()
