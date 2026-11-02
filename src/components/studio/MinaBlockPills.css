@@ -90,6 +90,69 @@
   mask: var(--icon) center / contain no-repeat;
 }
 
+/* ── the brand memory pill and its list ── */
+
+.mina-pills__memory {
+  position: relative;
+}
+
+/* Brand memory turned off from a hold: the pill stays, faded, to be held on again. */
+.mina-pills__pill[data-off] {
+  opacity: var(--mina-opacity-muted);
+}
+
+.mina-pills__memories {
+  position: absolute;
+  top: calc(100% + var(--mina-space-xs));
+  left: 0;
+  z-index: 2;
+  width: 280px;
+  max-height: 210px;
+  margin: 0;
+  padding: var(--mina-space-3);
+  overflow-y: auto;
+  list-style: none;
+  background: var(--mina-bg);
+  box-shadow: 0 8px 24px rgba(var(--mina-ink-rgb, 8, 10, 0), 0.08);
+  scrollbar-width: none;
+}
+
+.mina-pills__memories::-webkit-scrollbar {
+  display: none;
+}
+
+.mina-pills__memory-row {
+  display: flex;
+  align-items: center;
+  gap: var(--mina-space-m);
+  width: 100%;
+  padding: var(--mina-space-xs) var(--mina-space-s);
+  border: 0;
+  background: none;
+  text-align: left;
+  transition: background var(--mina-anim-fade) ease;
+}
+
+.mina-pills__memory-row[aria-pressed='true'],
+.mina-pills__memory-row:hover {
+  background: var(--mina-ink-5);
+}
+
+.mina-pills__memory-row img {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  object-fit: cover;
+}
+
+.mina-pills__memory-name {
+  flex: 1;
+}
+
+.mina-pills__memory-check {
+  opacity: var(--mina-opacity-soft);
+}
+
 /* One line that swipes sideways instead of wrapping onto a second. */
 @media (width < 768px) {
   .mina-pills {

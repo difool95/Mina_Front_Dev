@@ -32,6 +32,8 @@ import {
   canAffordGeneration,
   studioSetup,
 } from '@/lib/studio'
+import { useBrandMemoryOn, useSetBrandMemoryOn } from '@/hooks/useAccounts'
+import { useBrandMemoryPicks } from '@/hooks/useBrandMemoryPicks'
 import { useImportPromptFile } from '@/hooks/usePromptFiles'
 import { useDeleteStudioImage, useUploadStudioImage } from '@/hooks/useStudioUploads'
 import { prepareStudioImage } from '@/lib/media'
@@ -50,6 +52,7 @@ import type {
 
 import { Rule } from '../builder/Table'
 import { StudioLibrary } from '../studioLibrary/StudioLibrary'
+import { MinaBlockBrandMemoryPill } from './MinaBlockBrandMemoryPill'
 import { MinaBlockPillsAnimate } from './MinaBlockPillsAnimate'
 import { MinaBlockPillsCreate } from './MinaBlockPillsCreate'
 import { MinaBlockMinaBrief } from './MinaBlockMinaBrief'
@@ -93,6 +96,7 @@ export function MinaBlock({
   onMinaEnd: () => void
   ref?: Ref<MinaBlockHandle>
 }) {
+  //When we setUpload with a new value the component re renders and the upload row is updated to show the new upload kind selected
   const [upload, setUpload] = useState<UploadKind>('scene')
   // The file input is outside the pills so it can be reused for every pill, the ref is used to trigger the file picker when the user clicks on the "+" button of a pill
   const fileInput = useRef<HTMLInputElement>(null)
@@ -108,11 +112,30 @@ export function MinaBlock({
   const uploadImage = useUploadStudioImage()
   const deleteImage = useDeleteStudioImage()
   const importPromptFile = useImportPromptFile()
-  // Whether the brief has nothing to send, typed or locked: Create then asks for more instead.
-  const [isBriefEmpty, setIsBriefEmpty] = useState(() => {
-    const { brief, locked } = studioSession.read()
-    return !brief?.trim() && !locked
+
+  // This is updated from the MinaBlockUserbrief component when the user types in the brief or locks a passage, we setBriefText with the updated values so the parent
+  // can re update everything that depends on them (brand memory picks, the prompt file, the still generation) (any variable that has useState when we update it's setter
+  // all the components that use that variable will re render with the new value)
+  const [briefText, setBriefText] = useState(() => {
+    const { brief = '', locked = '' } = studioSession.read()
+    return { brief, locked }
   })
+  // Nothing to send, typed or locked: Create then asks for more instead.
+  const isBriefEmpty = !briefText.brief.trim() && !briefText.locked
+
+  // Brand memory: the account's switch, shared with the profile, and the memories the brief uses.
+  const userId = session?.user.id
+  const { data: isBrandMemoryOn = true } = useBrandMemoryOn(userId)
+  const setBrandMemoryOn = useSetBrandMemoryOn(userId)
+  const brandMemory = useBrandMemoryPicks(userId, briefText.brief, briefText.locked)
+  // Set when a hold on the pill turned brand memory off: the pill then stays, greyed, to be held on again.
+  const [isOffFromPill, setIsOffFromPill] = useState(false)
+  const toggleBrandMemory = (isFromPill: boolean) => {
+    setIsOffFromPill(isFromPill && isBrandMemoryOn)
+    setBrandMemoryOn.mutate(!isBrandMemoryOn)
+  }
+  // Only while a memory is ticked; turned off, only when a hold on the pill did it.
+  const isBrandMemoryPillShown = brandMemory.ticked.length > 0 && (isBrandMemoryOn || isOffFromPill)
   // What Mina says over the brief (a picture refused, a prompt file loaded), until the user goes back to the brief.
   const [minaNote, setMinaNote] = useState<MinaNote | null>(null)
   const sayWarning = (line: string) => setMinaNote({ line, tone: 'warning' })
@@ -443,6 +466,18 @@ export function MinaBlock({
             laneLabel={lane.label}
             onNextLane={() => setLaneIndex((index) => (index + 1) % STILL_LANES.length)}
             ratioPill={ratioPill}
+            brandMemoryPill={
+              isBrandMemoryPillShown && (
+                <MinaBlockBrandMemoryPill
+                  ticked={brandMemory.ticked}
+                  dropdown={brandMemory.dropdown}
+                  isOff={!isBrandMemoryOn}
+                  onTick={brandMemory.tick}
+                  onUntick={brandMemory.untick}
+                  onHold={() => toggleBrandMemory(true)}
+                />
+              )
+            }
           />
         ))}
       <div ref={brief} className="mina-block__brief" onFocus={openLong}>
@@ -454,7 +489,8 @@ export function MinaBlock({
             placeholder={BRIEF_PLACEHOLDERS[mode]}
             minaNote={minaNote}
             onClearMinaNote={() => setMinaNote(null)}
-            onIsEmptyChange={setIsBriefEmpty}
+            onTextChange={setBriefText}
+            nameRanges={isBrandMemoryOn ? brandMemory.nameRanges : []}
           />
         )}
       </div>
@@ -484,7 +520,7 @@ export function MinaBlock({
           </div>
           <div className="mina-block__group mina-block__group--actions">
             <Rule />
-            <MinaBlockVisionIntelligence />
+            <MinaBlockVisionIntelligence isOn={isBrandMemoryOn} onToggle={() => toggleBrandMemory(false)} />
             {!canAfford ? (
               <MinaBlockCTA
                 label={NEED_MATCHA_LABEL}
@@ -535,11 +571,10 @@ export function MinaBlock({
   )
 }
 
-function MinaBlockVisionIntelligence() {
-  const [isOn, setIsOn] = useState(true)
-
+/** The account's brand memory switch, the same one as the profile's Brand Memory ON/OFF. */
+function MinaBlockVisionIntelligence({ isOn, onToggle }: { isOn: boolean; onToggle: () => void }) {
   return (
-    <button className="mina-block__vision comment-button button" type="button" onClick={() => setIsOn((was) => !was)}>
+    <button className="mina-block__vision comment-button button" type="button" onClick={onToggle}>
       Mina vision intelligence: {isOn ? 'ON' : 'OFF'}
     </button>
   )

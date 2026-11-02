@@ -4,6 +4,7 @@ export type {
   BrandMemoryCategory,
   BrandMemoryItem,
   BrandMemoryVars,
+  BriefRange,
   PendingBrandMemory,
 } from './brandMemory.types'
 export type { Currency } from './currency.types'

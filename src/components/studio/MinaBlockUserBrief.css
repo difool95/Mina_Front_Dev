@@ -37,6 +37,40 @@
   display: none;
 }
 
+/* The textarea and the copy that draws its text, stacked in the same box. */
+.mina-brief__field {
+  position: relative;
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+/* Laid out exactly as the textarea wraps its text, so each word sits where
+   the caret expects it; it scrolls only by following the textarea. */
+.mina-brief__mirror {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  color: var(--mina-text);
+  line-height: normal;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  pointer-events: none;
+}
+
+/* Its text is drawn by the mirror; only the caret and the selection show. */
+.mina-brief__typed {
+  position: relative;
+  line-height: normal;
+  color: transparent;
+  caret-color: var(--mina-text);
+}
+
+/* A brand memory's full name. */
+.mina-brief__name {
+  color: var(--mina-purple);
+}
+
 /* `.h1` sets 32px; the type steps down from there to the body size as the
    brief grows. Qualified by the block so it outranks `.h1` from index.css. */
 .mina-brief .mina-brief__input {

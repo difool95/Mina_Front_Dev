@@ -44,6 +44,12 @@ export interface PendingBrandMemory {
   files: (File | string)[]
 }
 
+/** A stretch of the brief, by character offsets: where a memory's full name was typed. */
+export interface BriefRange {
+  start: number
+  end: number
+}
+
 /** A `mega_generations` row whose `mg_record_type` is `product`: one brand memory. */
 export interface BrandMemory {
   mg_id: string

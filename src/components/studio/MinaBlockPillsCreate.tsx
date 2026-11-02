@@ -14,6 +14,7 @@ export function MinaBlockPillsCreate({
   laneLabel,
   onNextLane,
   ratioPill,
+  brandMemoryPill,
 }: {
   upload: UploadKind
   uploads: StudioUpload[]
@@ -24,6 +25,8 @@ export function MinaBlockPillsCreate({
   onNextLane: () => void
   /** Built by `MinaBlock`, which holds the ratio for both modes. */
   ratioPill: ReactNode
+  /** Built by `MinaBlock`, which reads the brief; absent while no brand memory is in play. */
+  brandMemoryPill: ReactNode
 }) {
   return (
     <div className="mina-pills">
@@ -64,6 +67,7 @@ export function MinaBlockPillsCreate({
       </button>
 
       {ratioPill}
+      {brandMemoryPill}
     </div>
   )
 }

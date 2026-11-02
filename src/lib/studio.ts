@@ -130,7 +130,10 @@ export function studioSetup({
   lane,
   aspectRatio = '',
   uploads,
-}: StudioSetup): Omit<StudioSession, 'studioSessionId' | 'generations'> {
+}: StudioSetup): Omit<
+  StudioSession,
+  'studioSessionId' | 'generations' | 'brandMemoryPicked' | 'brandMemoryDismissed' | 'isBrandMemoryGuessQuiet'
+> {
   const flipped = aspectRatio.split(':').reverse().join(':')
   const ratioIndex = Math.max(
     0,

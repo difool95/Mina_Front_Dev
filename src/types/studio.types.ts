@@ -49,6 +49,12 @@ export interface StudioSession {
   studioSessionId: string
   /** The R2 URLs of the pictures this tab's Creates made, newest first. */
   generations: string[]
+  /** Brand memory ids ticked by hand in the pill's list. */
+  brandMemoryPicked: string[]
+  /** Brand memory ids unticked in the pill's list: the brief no longer attaches them, even by full name. */
+  brandMemoryDismissed: string[]
+  /** True once anything was unticked: the brief stops guessing for the rest of the tab. */
+  isBrandMemoryGuessQuiet: boolean
 }
 
 /**

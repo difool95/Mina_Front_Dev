@@ -1,8 +1,17 @@
-import { useEffect, useImperativeHandle, useRef, useState, type CSSProperties, type Ref } from 'react'
+import {
+  useEffect,
+  useImperativeHandle,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+  type Ref,
+} from 'react'
 
 import { BRIEF_CHARS_PER_PX, BRIEF_MAX_LENGTH, BRIEF_SHRINK_FROM } from '@/lib/studio'
 import { studioSession } from '@/lib/sessionStorage/studioSession'
-import type { MinaBlockUserBriefHandle, MinaNote } from '@/types'
+import type { BriefRange, MinaBlockUserBriefHandle, MinaNote } from '@/types'
 
 import { MinaBlockMinaBrief } from './MinaBlockMinaBrief'
 
@@ -17,12 +26,17 @@ import './MinaBlockUserBrief.css'
  * pill back, and clicking it then appends the locked text to the brief again.
  * Only one passage is locked at a time, and Ctrl+Z (⌘Z) undoes the last lock
  * as long as nothing has been typed since.
+ *
+ * A brand memory's full name typed in the brief shows purple. A textarea
+ * cannot colour part of its text, so its own text is transparent and a copy
+ * laid out the same way, under it, draws it.
  */
 export function MinaBlockUserBrief({
   placeholder,
   minaNote,
   onClearMinaNote,
-  onIsEmptyChange,
+  onTextChange,
+  nameRanges,
   ref,
 }: {
   placeholder: string
@@ -33,11 +47,14 @@ export function MinaBlockUserBrief({
    */
   minaNote: MinaNote | null
   onClearMinaNote: () => void
-  /** Told whether there is anything to send, typed or locked, so the call to action can ask for more. */
-  onIsEmptyChange: (isEmpty: boolean) => void
+  /** Told the brief and its locked passage whenever either changes. */
+  onTextChange: (text: { brief: string; locked: string }) => void
+  /** Where brand memories' full names stand in the brief, drawn purple. */
+  nameRanges: BriefRange[]
   ref?: Ref<MinaBlockUserBriefHandle>
 }) {
   const input = useRef<HTMLTextAreaElement>(null)
+  const mirror = useRef<HTMLDivElement>(null)
   const [brief, setBrief] = useState(() => studioSession.read().brief ?? '')
   const [locked, setLocked] = useState(() => studioSession.read().locked ?? '')
   useEffect(() => studioSession.save({ brief, locked }), [brief, locked])
@@ -84,45 +101,51 @@ export function MinaBlockUserBrief({
     focus: () => input.current?.focus(),
   }))
 
-  useEffect(() => onIsEmptyChange(!brief.trim() && !locked), [brief, locked, onIsEmptyChange])
+// Whenever the brief or its locked passage changes, tell the parent so it can re update everything that depends on them (brand memory picks, the prompt file,
+// the still generation).
+  useLayoutEffect(() => onTextChange({ brief, locked }), [brief, locked, onTextChange])
+
+  const shrink = { '--brief-shrink': Math.max(0, brief.length - BRIEF_SHRINK_FROM) / BRIEF_CHARS_PER_PX } as CSSProperties
 
   return (
     <div className="mina-brief" data-mina-note={minaNote ? '' : undefined}>
-      <textarea
-        ref={input}
-        className="mina-brief__input h1 placeholder-faint"
-        value={brief}
-        maxLength={BRIEF_MAX_LENGTH}
-        placeholder={placeholder}
-        onChange={(event) => {
-          setBrief(event.target.value)
-          setBeforeLock(null)
-        }}
-        onPointerDown={onClearMinaNote}
-        onKeyDown={(event) => {
-          onClearMinaNote()
-          if (beforeLock === null || event.shiftKey || !(event.ctrlKey || event.metaKey)) return
-          if (event.key.toLowerCase() !== 'z') return
-
-          event.preventDefault()
-          setBrief(beforeLock)
-          setLocked('')
-          setBeforeLock(null)
-        }}
-        onSelect={(event) => readSelection(event.currentTarget)}
-        // Leaving the tab blurs the brief but keeps its selection; reading it
-        // again on the way back brings the pill back with it.
-        onFocus={(event) => {
-          onClearMinaNote()
-          readSelection(event.currentTarget)
-        }}
-        onBlur={() => setSelection(null)}
-        style={
-          {
-            '--brief-shrink': Math.max(0, brief.length - BRIEF_SHRINK_FROM) / BRIEF_CHARS_PER_PX,
-          } as CSSProperties
-        }
-      />
+      <div className="mina-brief__field">
+        <div ref={mirror} className="mina-brief__input mina-brief__mirror h1" aria-hidden="true" style={shrink}>
+          {withNames(brief, nameRanges)}
+        </div>
+        <textarea
+          ref={input}
+          className="mina-brief__input mina-brief__typed h1 placeholder-faint"
+          value={brief}
+          maxLength={BRIEF_MAX_LENGTH}
+          placeholder={placeholder}
+          onChange={(event) => {
+            setBrief(event.target.value)
+            setBeforeLock(null)
+          }}
+          onPointerDown={onClearMinaNote}
+          onKeyDown={(event) => {
+            onClearMinaNote()
+            if (beforeLock === null || event.shiftKey || !(event.ctrlKey || event.metaKey)) return
+            if (event.key.toLowerCase() !== 'z') return
+  
+            event.preventDefault()
+            setBrief(beforeLock)
+            setLocked('')
+            setBeforeLock(null)
+          }}
+          onSelect={(event) => readSelection(event.currentTarget)}
+          // Leaving the tab blurs the brief but keeps its selection; reading it
+          // again on the way back brings the pill back with it.
+          onFocus={(event) => {
+            onClearMinaNote()
+            readSelection(event.currentTarget)
+          }}
+          onBlur={() => setSelection(null)}
+          onScroll={(event) => mirror.current && (mirror.current.scrollTop = event.currentTarget.scrollTop)}
+          style={shrink}
+        />
+      </div>
 
       {(locked || selection) && (
         <div className="mina-brief__bottom" data-locked={locked ? '' : undefined}>
@@ -144,4 +167,29 @@ export function MinaBlockUserBrief({
       {minaNote && <MinaBlockMinaBrief note={minaNote} />}
     </div>
   )
+}
+
+// The brief with each range wrapped in a purple span. Ranges can overlap when
+// one name holds another ("Leather" in "Leather Clutch"), so a covered stretch
+// is drawn once. The trailing space keeps a last empty line as tall as the
+// textarea's, so both scroll the same.
+function withNames(brief: string, ranges: BriefRange[]) {
+  const parts: ReactNode[] = []
+  let at = 0
+
+  for (const { start, end } of [...ranges].sort((a, b) => a.start - b.start)) {
+    if (end <= at) continue
+
+    const from = Math.max(start, at)
+    parts.push(
+      brief.slice(at, from),
+      <span key={from} className="mina-brief__name">
+        {brief.slice(from, end)}
+      </span>,
+    )
+    at = end
+  }
+  parts.push(`${brief.slice(at)} `)
+
+  return parts
 }
