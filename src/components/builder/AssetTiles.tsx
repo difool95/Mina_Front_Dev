@@ -42,6 +42,7 @@ export function AssetTiles({
   isScroll,
   isAddFirst,
   onAdd,
+  accept = 'image/*',
   onCancel,
   onReorder,
 }: {
@@ -52,6 +53,8 @@ export function AssetTiles({
   isAddFirst?: boolean
   /** The pictures picked from the "+"; left out, there is no "+". */
   onAdd?: (files: File[]) => void
+  /** What the "+" lets the user pick, as the file input's `accept`. */
+  accept?: string
   /** Given, the "+" becomes a red "×" that calls it. */
   onCancel?: () => void
   /** Runs once a tile dragged by its `dragId` is released over another's `targetId`. */
@@ -153,7 +156,7 @@ export function AssetTiles({
             <input
               ref={fileInput}
               type="file"
-              accept="image/*"
+              accept={accept}
               multiple
               hidden
               onChange={(event) => {

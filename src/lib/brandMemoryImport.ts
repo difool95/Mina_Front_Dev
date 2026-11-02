@@ -23,11 +23,6 @@ const ZIP_IMAGE_TYPES: Record<string, string> = {
 
 const zipImageType = (path: string) => ZIP_IMAGE_TYPES[path.split('.').pop()!.toLowerCase()]
 
-/** Each picture as a memory of its own, named after its file without the extension. */
-export function pendingFromFiles(files: File[]): PendingBrandMemory[] {
-  return files.filter(isImage).map((file) => ({ name: file.name.replace(/\.[^.]+$/, ''), files: [file] }))
-}
-
 // A folder's pictures, BRAND_MEMORY_MAX_IMAGES per memory: "assets5" holds the
 // first five, "assets5 2" the next ones, and so on.
 function folderMemories(name: string, images: PendingBrandMemory['files']): PendingBrandMemory[] {
@@ -182,6 +177,16 @@ async function readCsv(csv: File): Promise<PendingBrandMemory[]> {
 }
 
 /**
+ * A file picked from the "+" or dropped: a zip or a CSV read as above, a
+ * picture as a memory of its own named after the file, anything else nothing.
+ */
+export async function pendingFromFile(file: File): Promise<PendingBrandMemory[]> {
+  if (/\.zip$/i.test(file.name)) return readZip(file)
+  if (/\.csv$/i.test(file.name)) return readCsv(file)
+  return isImage(file) ? [{ name: file.name.replace(/\.[^.]+$/, ''), files: [file] }] : []
+}
+
+/**
  * What was dropped on the bar: a loose picture is a memory of its own, and a
  * folder, a zip or a CSV is read inside out as above.
  */
@@ -196,10 +201,7 @@ export async function pendingFromDrop(dataTransfer: DataTransfer): Promise<Pendi
     entries.map(async (entry) => {
       if (entry.isDirectory) return readFolder(entry as FileSystemDirectoryEntry)
 
-      const file = await entryFile(entry as FileSystemFileEntry)
-      if (/\.zip$/i.test(file.name)) return readZip(file)
-      if (/\.csv$/i.test(file.name)) return readCsv(file)
-      return pendingFromFiles([file])
+      return pendingFromFile(await entryFile(entry as FileSystemFileEntry))
     }),
   )
 

@@ -8,7 +8,7 @@ import {
 } from '@/hooks/useBrandMemories'
 import { useDownloadPicture, useUploadStudioImage } from '@/hooks/useStudioUploads'
 import { BRAND_MEMORY_DROP_HINT, BRAND_MEMORY_MAX, BRAND_MEMORY_TILE_TOOLTIP } from '@/lib/brandMemory'
-import { pendingFromDrop, pendingFromFiles } from '@/lib/brandMemoryImport'
+import { pendingFromDrop, pendingFromFile } from '@/lib/brandMemoryImport'
 import { prepareStudioImage } from '@/lib/media'
 import { useAuth } from '@/providers/AuthProvider'
 import type { PendingBrandMemory } from '@/types'
@@ -158,9 +158,9 @@ export function BrandMemoryBar() {
     setPending([])
   }
 
-  // One picture from the "+" goes straight up; several wait in the list, the same as a drop.
-  const pickFiles = (files: File[]) => {
-    const picked = pendingFromFiles(files)
+  // One memory from the "+" goes straight up; several wait in the list, the same as a drop.
+  const pickFiles = async (files: File[]) => {
+    const picked = (await Promise.all(files.map(pendingFromFile))).flat()
     if (picked.length > 1) setPending((list) => [...list, ...picked])
     else addMemories(picked)
   }
@@ -190,7 +190,8 @@ export function BrandMemoryBar() {
           isScroll
           isAddFirst
           // At the cap the "+" goes away; while selecting, it is the "×" that stops it.
-          onAdd={memories.length + previews.length < BRAND_MEMORY_MAX ? pickFiles : undefined}
+          onAdd={memories.length + previews.length < BRAND_MEMORY_MAX ? (files) => void pickFiles(files) : undefined}
+          accept="image/*,.zip,.csv"
           onCancel={isSelecting ? () => setSelected(null) : undefined}
           onReorder={moveMemory}
           // Uploading ones first, where their memories will land: the newest leads the bar.
