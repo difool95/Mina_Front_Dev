@@ -6,7 +6,7 @@ import {
   useDeleteBrandMemories,
   useUpdateBrandMemory,
 } from '@/hooks/useBrandMemories'
-import { useUploadStudioImage } from '@/hooks/useStudioUploads'
+import { useDownloadPicture, useUploadStudioImage } from '@/hooks/useStudioUploads'
 import { BRAND_MEMORY_DROP_HINT, BRAND_MEMORY_MAX, BRAND_MEMORY_TILE_TOOLTIP } from '@/lib/brandMemory'
 import { pendingFromDrop, pendingFromFiles } from '@/lib/brandMemoryImport'
 import { prepareStudioImage } from '@/lib/media'
@@ -27,9 +27,10 @@ import './BrandMemoryBar.css'
  * preview flashes until the memory is in the list, and simply leaves if any of
  * that fails. A tile opens its memory in the Branding Assets panel.
  *
- * Pictures and folders can also be dragged onto the strip. A folder's own
- * pictures make memories of up to five each, and its subfolders are read the
- * same way (lib/brandMemoryImport). Dropped memories, like several pictures
+ * Pictures, folders, zips and Shopify product CSVs can also be dragged onto
+ * the strip. A folder's own pictures make memories of up to five each, and its
+ * subfolders are read the same way; a CSV's products are read like folders,
+ * their pictures downloaded on "Add" (lib/brandMemoryImport). Dropped memories, like several pictures
  * picked at once from the "+", aren't uploaded straight away: they wait in a
  * list under the strip, where any can be taken out, until "Add" uploads them
  * the way a single picture from the "+" is.
@@ -45,6 +46,7 @@ export function BrandMemoryBar() {
   const userId = session?.user.id
   const { data: memories = [] } = useBrandMemories(userId)
   const uploadImage = useUploadStudioImage()
+  const downloadPicture = useDownloadPicture()
   const createMemory = useCreateBrandMemory(userId)
   const [previews, setPreviews] = useState<string[]>([])
   // The highest sort_order handed to an upload so far.
@@ -114,7 +116,11 @@ export function BrandMemoryBar() {
 
     let preview = ''
     try {
-      const images = await Promise.all(memory.files.map(prepareStudioImage))
+      const images = await Promise.all(
+        memory.files.map(async (file) =>
+          prepareStudioImage(typeof file === 'string' ? await downloadPicture.mutateAsync(file) : file),
+        ),
+      )
       preview = URL.createObjectURL(images[0])
       setPreviews((list) => [...list, preview])
       const uploaded = await Promise.all(

@@ -30,7 +30,7 @@ export function pendingFromFiles(files: File[]): PendingBrandMemory[] {
 
 // A folder's pictures, BRAND_MEMORY_MAX_IMAGES per memory: "assets5" holds the
 // first five, "assets5 2" the next ones, and so on.
-function folderMemories(name: string, images: File[]): PendingBrandMemory[] {
+function folderMemories(name: string, images: PendingBrandMemory['files']): PendingBrandMemory[] {
   const memories: PendingBrandMemory[] = []
 
   for (let start = 0; start < images.length; start += BRAND_MEMORY_MAX_IMAGES) {
@@ -113,9 +113,77 @@ async function readZip(zip: File): Promise<PendingBrandMemory[]> {
     )
 }
 
+// A CSV's rows and fields. A quoted field can hold commas, line breaks and
+// doubled quotes, which a product description often does.
+function csvRows(text: string) {
+  const rows: string[][] = []
+  let row: string[] = []
+  let field = ''
+  let isQuoted = false
+
+  for (let at = 0; at < text.length; at++) {
+    const char = text.charAt(at)
+    if (isQuoted) {
+      if (char === '"' && text.charAt(at + 1) === '"') {
+        field += '"'
+        at++
+      } else if (char === '"') isQuoted = false
+      else field += char
+    } else if (char === '"') isQuoted = true
+    else if (char === ',') {
+      row.push(field)
+      field = ''
+    } else if (char === '\n') {
+      rows.push([...row, field])
+      row = []
+      field = ''
+    } else if (char !== '\r') field += char
+  }
+  if (field || row.length > 0) rows.push([...row, field])
+
+  return rows
+}
+
+// A product export as Shopify writes it: one row per picture, the rows of a
+// product sharing its handle and only the first carrying its title. Each
+// product is read like a folder named after its title, its pictures in their
+// "Image position" order; one without pictures makes none. Columns are found by
+// name, current or older, since stores export them in different sets and orders.
+async function readCsv(csv: File): Promise<PendingBrandMemory[]> {
+  const [header = [], ...rows] = csvRows((await csv.text()).replace(/^﻿/, ''))
+  const names = header.map((name) => name.trim().toLowerCase())
+  const column = (...candidates: string[]) => names.findIndex((name) => candidates.includes(name))
+  const handleAt = column('url handle', 'handle')
+  const titleAt = column('title')
+  const imageAt = column('product image url', 'image src')
+  const positionAt = column('image position')
+
+  const titles = new Map<string, string>()
+  const products = new Map<string, { url: string; position: number }[]>()
+  for (const row of rows) {
+    const handle = row[handleAt]
+    if (!handle) continue
+
+    const title = row[titleAt]
+    if (title && !titles.has(handle)) titles.set(handle, title)
+
+    const images = products.get(handle) ?? []
+    products.set(handle, images)
+    const url = row[imageAt]
+    if (url) images.push({ url, position: Number(row[positionAt]) || images.length + 1 })
+  }
+
+  return [...products].flatMap(([handle, images]) =>
+    folderMemories(
+      titles.get(handle) ?? handle,
+      images.sort((a, b) => a.position - b.position).map(({ url }) => url),
+    ),
+  )
+}
+
 /**
  * What was dropped on the bar: a loose picture is a memory of its own, and a
- * folder or a zip is read inside out as above.
+ * folder, a zip or a CSV is read inside out as above.
  */
 export async function pendingFromDrop(dataTransfer: DataTransfer): Promise<PendingBrandMemory[]> {
   // The browser only gives the entries while the drop event runs, so they are
@@ -129,7 +197,9 @@ export async function pendingFromDrop(dataTransfer: DataTransfer): Promise<Pendi
       if (entry.isDirectory) return readFolder(entry as FileSystemDirectoryEntry)
 
       const file = await entryFile(entry as FileSystemFileEntry)
-      return /\.zip$/i.test(file.name) ? readZip(file) : pendingFromFiles([file])
+      if (/\.zip$/i.test(file.name)) return readZip(file)
+      if (/\.csv$/i.test(file.name)) return readCsv(file)
+      return pendingFromFiles([file])
     }),
   )
 

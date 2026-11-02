@@ -1,6 +1,10 @@
 import { useMutation } from '@tanstack/react-query'
 
-import { deleteStudioImage, uploadStudioImage } from '@/services/studioUploads.service'
+import { deleteStudioImage, downloadPicture, uploadStudioImage } from '@/services/studioUploads.service'
+
+export function useDownloadPicture() {
+  return useMutation({ mutationFn: downloadPicture })
+}
 
 export function useUploadStudioImage() {
   return useMutation({
