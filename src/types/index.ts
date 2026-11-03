@@ -3,6 +3,7 @@ export type {
   BrandMemory,
   BrandMemoryCategory,
   BrandMemoryItem,
+  PickedBrandMemoryPictures,
   BrandMemoryVars,
   BriefRange,
   PendingBrandMemory,

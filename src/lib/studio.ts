@@ -181,6 +181,9 @@ export const UPLOAD_KINDS: { kind: UploadKind; label: string; tooltip: string; t
 /** How many pictures each "+" pill holds; its "+" card goes once that many are in. */
 export const UPLOAD_LIMITS: Record<UploadKind, number> = { scene: 1, logo: 4, product: 8 }
 
+/** The most pictures one Create sends: every pill full. Brand memories get what the uploads leave. */
+export const CREATE_MAX_PICTURES = UPLOAD_LIMITS.scene + UPLOAD_LIMITS.logo + UPLOAD_LIMITS.product
+
 /**
  * How a picked picture is prepared before it is uploaded. Past the hard
  * limits it is refused; past `reduceAbove` it is re-encoded (WebP when it has

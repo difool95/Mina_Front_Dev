@@ -1,6 +1,7 @@
 import { isMotion } from '@/lib/generations'
 import type {
   AspectRatio,
+  PickedBrandMemoryPictures,
   GenerationProgress,
   MmaPlatform,
   MmaStatus,
@@ -26,6 +27,7 @@ export function startStillGeneration(
     lane: StillLane
     brief: string
     uploads: Pick<StudioUpload, 'kind' | 'url' | 'origin'>[]
+    brandMemories: PickedBrandMemoryPictures[]
   },
 ) {
   return apiPost<StillGenerationResult>('/api/mma/still', token, body)

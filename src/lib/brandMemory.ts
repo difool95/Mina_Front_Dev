@@ -1,4 +1,4 @@
-import type { BrandMemory, BrandMemoryCategory, BrandMemoryVars } from '@/types'
+import type { BrandMemory, BrandMemoryCategory, PickedBrandMemoryPictures, BrandMemoryVars } from '@/types'
 
 /** The categories the panel's dropdown offers, in its order. */
 export const BRAND_MEMORY_CATEGORIES: { category: BrandMemoryCategory; label: string }[] = [
@@ -35,6 +35,38 @@ export const recentFirst = (memories: BrandMemory[]) => [
   ...memories.filter(isRecentlyUsed),
   ...memories.filter((memory) => !isRecentlyUsed(memory)),
 ]
+
+//This method returns the brand memory pictures that will be sent to the backend when creating a generation with brand memory.
+export function pickBrandMemoryPictures(memories: BrandMemory[], room: number): PickedBrandMemoryPictures[] {
+  let placesLeft = room
+  const picked: PickedBrandMemoryPictures[] = []
+
+  // Round 1: each memory's cover, in the pill's order, while there are places left.
+  // The memories that get no place are not sent at all.
+  for (const memory of memories) {
+    if (placesLeft <= 0) break
+
+    // A memory always has at least one picture, its cover.
+    const cover = memory.mg_mma_vars.images[0]!
+    picked.push({ id: memory.mg_id, images: [cover] })
+    placesLeft = placesLeft - 1
+  }
+
+  // Round 2: the places still left go to the other pictures, all of one memory's before the next one's.
+  for (const entry of picked) {
+    const memory = memories.find((candidate) => candidate.mg_id === entry.id)!
+    const otherPictures = memory.mg_mma_vars.images.slice(1)
+
+    for (const picture of otherPictures) {
+      if (placesLeft <= 0) break
+
+      entry.images.push(picture)
+      placesLeft = placesLeft - 1
+    }
+  }
+
+  return picked
+}
 
 /** Shown when hovering a memory in the bar. */
 export const BRAND_MEMORY_TILE_TOOLTIP = 'Click to edit · long-press to select · drag to reorder'

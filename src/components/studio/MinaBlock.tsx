@@ -14,6 +14,7 @@ import {
   ANIMATE_RESOLUTIONS,
   ANIMATE_UPLOAD_TITLE,
   BRIEF_PLACEHOLDERS,
+  CREATE_MAX_PICTURES,
   DESCRIBE_MORE_LABEL,
   CONTENT_LIBRARY_PREVIEW_URLS,
   LIBRARY_PREVIEW_URLS,
@@ -36,10 +37,12 @@ import { useBrandMemoryOn, useSetBrandMemoryOn } from '@/hooks/useAccounts'
 import { useBrandMemoryPicks } from '@/hooks/useBrandMemoryPicks'
 import { useImportPromptFile } from '@/hooks/usePromptFiles'
 import { useDeleteStudioImage, useUploadStudioImage } from '@/hooks/useStudioUploads'
+import { pickBrandMemoryPictures } from '@/lib/brandMemory'
 import { prepareStudioImage } from '@/lib/media'
 import { studioSession } from '@/lib/sessionStorage/studioSession'
 import { useAuth } from '@/providers/AuthProvider'
 import type {
+  PickedBrandMemoryPictures,
   MinaBlockHandle,
   MinaBlockUserBriefHandle,
   MinaNote,
@@ -87,8 +90,8 @@ export function MinaBlock({
   mode: StudioMode
   credits: number | undefined
   onNeedMatcha: () => void
-  /** Create mode's call to action; Animate's is not wired yet. */
-  onCreate: () => void
+  /** Create mode's call to action, with the brand memory pictures that fit; Animate's is not wired yet. */
+  onCreate: (brandMemories: PickedBrandMemoryPictures[]) => void
   uploads: StudioUpload[]
   onUploads: Dispatch<SetStateAction<StudioUpload[]>>
   /** The running Create's step, while Mina types in the brief's place; undefined the rest of the time. */
@@ -537,7 +540,16 @@ export function MinaBlock({
               <MinaBlockCTA
                 label={isUploading ? UPLOADING_LABEL : STUDIO_CTA_LABELS[mode]}
                 isDisabled={isUploading || Boolean(minaStatus)}
-                onClick={mode === 'create' ? onCreate : undefined}
+                onClick={
+                  mode === 'create'
+                    ? () =>
+                        onCreate(
+                          isBrandMemoryOn
+                            ? pickBrandMemoryPictures(brandMemory.ticked, CREATE_MAX_PICTURES - uploads.length)
+                            : [],
+                        )
+                    : undefined
+                }
               />
             )}
           </div>

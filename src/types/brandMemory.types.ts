@@ -50,6 +50,12 @@ export interface BriefRange {
   end: number
 }
 
+//this is the type for the brand memory pictures that will be sent to the backend when creating a generation with brand memory
+export interface PickedBrandMemoryPictures {
+  id: string
+  images: string[]
+}
+
 /** A `mega_generations` row whose `mg_record_type` is `product`: one brand memory. */
 export interface BrandMemory {
   mg_id: string
