@@ -20,6 +20,13 @@ export const BRAND_MEMORY_RECENT_MS = 7 * 24 * 60 * 60 * 1000
 export const isRecentlyUsed = (memory: BrandMemory) =>
   Date.now() - Date.parse(memory.mg_mma_vars.last_used_at) < BRAND_MEMORY_RECENT_MS
 
+/** How long a memory can go unused (or, never used, since its creation) before the bar shows it inactive. */
+export const BRAND_MEMORY_INACTIVE_MS = 30 * 24 * 60 * 60 * 1000
+
+/** Not used for thirty days or more. A memory with no date yet is not. */
+export const isInactive = (memory: BrandMemory) =>
+  Date.now() - Date.parse(memory.mg_mma_vars.last_used_at) >= BRAND_MEMORY_INACTIVE_MS
+
 /**
  * The bar's order: the recently used memories lead it, ahead of every other
  * whatever their sort_order; each group keeps the sort_order it was fetched in.

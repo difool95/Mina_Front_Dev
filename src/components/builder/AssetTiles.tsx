@@ -26,6 +26,8 @@ export interface AssetTile {
   onLongPress?: () => void
   /** Washed in the delete red, like a creation card waiting to be deleted. */
   isSelected?: boolean
+  /** Faded, picture and label, as if switched off (`data-inactive`, styled by the caller). */
+  isInactive?: boolean
   /** Given, the tile can be dragged onto another tile that has one (`onReorder`). */
   dragId?: string
 }
@@ -78,7 +80,7 @@ export function AssetTiles({
       className={`mina-tiles${isScroll ? ' mina-tiles--scroll' : ''}${isAddFirst ? ' mina-tiles--add-first' : ''}`}
       style={{ '--tile': `${size}px` } as CSSProperties}
     >
-      {tiles.map(({ url, action, onClick, label, badge, hover, tooltip, isUploading, onLongPress, isSelected, dragId }) => (
+      {tiles.map(({ url, action, onClick, label, badge, hover, tooltip, isUploading, onLongPress, isSelected, isInactive, dragId }) => (
         <button
           className="mina-tiles__tile button"
           type="button"
@@ -88,6 +90,7 @@ export function AssetTiles({
           data-tooltip={tooltip}
           data-uploading={isUploading || undefined}
           data-selected={isSelected || undefined}
+          data-inactive={isInactive || undefined}
           data-drag-id={dragId}
           onPointerDown={(event) => {
             if (onLongPress) hold.start(onLongPress)

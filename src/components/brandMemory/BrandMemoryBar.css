@@ -22,6 +22,11 @@
   transform: none;
 }
 
+/* Not used for thirty days: faded, as if switched off, but still opens and drags as any other. */
+.mina-brand-memory-bar .mina-tiles__tile[data-inactive] {
+  opacity: var(--mina-opacity-muted);
+}
+
 /* ── selecting ── */
 
 /* "N selected", then Select all and Delete on a row of their own. */

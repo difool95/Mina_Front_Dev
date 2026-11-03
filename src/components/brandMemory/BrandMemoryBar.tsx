@@ -7,7 +7,7 @@ import {
   useUpdateBrandMemory,
 } from '@/hooks/useBrandMemories'
 import { useDownloadPicture, useUploadStudioImage } from '@/hooks/useStudioUploads'
-import { BRAND_MEMORY_DROP_HINT, BRAND_MEMORY_MAX, BRAND_MEMORY_TILE_TOOLTIP, isRecentlyUsed } from '@/lib/brandMemory'
+import { BRAND_MEMORY_DROP_HINT, BRAND_MEMORY_MAX, BRAND_MEMORY_TILE_TOOLTIP, isInactive, isRecentlyUsed } from '@/lib/brandMemory'
 import { pendingFromDrop, pendingFromFile } from '@/lib/brandMemoryImport'
 import { prepareStudioImage } from '@/lib/media'
 import { useAuth } from '@/providers/AuthProvider'
@@ -212,6 +212,7 @@ export function BrandMemoryBar() {
               // While selecting, a click picks instead of opening, so the tooltip would mislead.
               tooltip: isSelecting ? undefined : BRAND_MEMORY_TILE_TOOLTIP,
               isSelected: selected?.includes(memory.mg_id),
+              isInactive: isInactive(memory),
               onLongPress: isSelecting ? undefined : () => setSelected([memory.mg_id]),
               dragId: isSelecting ? undefined : memory.mg_id,
               onClick: () => (isSelecting ? toggleSelected(memory.mg_id) : setOpenId(memory.mg_id)),
