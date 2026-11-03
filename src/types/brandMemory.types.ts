@@ -1,11 +1,14 @@
 /** What a brand memory is filed under. The scanner picks one; the user can change it. */
 export type BrandMemoryCategory = 'logo' | 'illustration' | 'model' | 'product'
 
+/** How a brand memory was made: added by the user, or saved from a picture a Create used. */
+export type BrandMemoryOrigin = 'upload' | 'create'
+
 /** One picture of a brand memory. */
 export interface BrandMemoryItem {
   url: string
   roles: string[]
-  origin: 'upload'
+  origin: BrandMemoryOrigin
   aliases: string[]
   has_face: boolean
   has_person: boolean
@@ -19,7 +22,9 @@ export interface BrandMemoryVars {
   tags: string[]
   /** The pictures' URLs, the first being the cover. `source_urls` and `asset_items` follow it. */
   images: string[]
-  origin: 'upload'
+  origin: BrandMemoryOrigin
+  /** Only with `origin` "create": the upload its picture was copied from, so a later Create sending it again saves no second memory. */
+  source_upload_url?: string
   aliases: string[]
   category: BrandMemoryCategory
   /** True once the scanner has read the picture. */
