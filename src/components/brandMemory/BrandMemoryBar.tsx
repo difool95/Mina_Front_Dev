@@ -7,7 +7,7 @@ import {
   useUpdateBrandMemory,
 } from '@/hooks/useBrandMemories'
 import { useDownloadPicture, useUploadStudioImage } from '@/hooks/useStudioUploads'
-import { BRAND_MEMORY_DROP_HINT, BRAND_MEMORY_MAX, BRAND_MEMORY_TILE_TOOLTIP } from '@/lib/brandMemory'
+import { BRAND_MEMORY_DROP_HINT, BRAND_MEMORY_MAX, BRAND_MEMORY_TILE_TOOLTIP, isRecentlyUsed } from '@/lib/brandMemory'
 import { pendingFromDrop, pendingFromFile } from '@/lib/brandMemoryImport'
 import { prepareStudioImage } from '@/lib/media'
 import { useAuth } from '@/providers/AuthProvider'
@@ -66,14 +66,21 @@ export function BrandMemoryBar() {
 
   // Puts the dragged memory in the target's place. Only its sort_order changes: halfway between its new neighbours, or one past the end it lands on
   // (the left end holds the highest).
+  // Recently used memories lead the bar whatever their sort_order, so the
+  // neighbours are taken from the memory's own group: dropped across the line,
+  // it stays in its group, at that end of it.
   const moveMemory = (mgId: string, targetId: string) => {
     const memory = memories.find((entry) => entry.mg_id === mgId)!
     const list = memories.filter((entry) => entry !== memory)
     list.splice(memories.findIndex((entry) => entry.mg_id === targetId), 0, memory)
 
-    const at = list.indexOf(memory)
-    const left = list[at - 1]?.mg_mma_vars.sort_order
-    const right = list[at + 1]?.mg_mma_vars.sort_order
+    const group = list.filter((entry) => isRecentlyUsed(entry) === isRecentlyUsed(memory))
+    // Alone in its group, it has nowhere else to go.
+    if (group.length === 1) return
+
+    const at = group.indexOf(memory)
+    const left = group[at - 1]?.mg_mma_vars.sort_order
+    const right = group[at + 1]?.mg_mma_vars.sort_order
     const sortOrder = left === undefined ? right! + 1 : right === undefined ? left - 1 : (left + right) / 2
 
     updateMemory.mutate({ mgId, vars: { ...memory.mg_mma_vars, sort_order: sortOrder } })
@@ -148,7 +155,8 @@ export function BrandMemoryBar() {
   const addMemories = (list: PendingBrandMemory[]) => {
     const room = BRAND_MEMORY_MAX - memories.length - previews.length
     const kept = list.slice(0, room)
-    const top = Math.max(memories[0]?.mg_mma_vars.sort_order ?? 0, lastSortOrder.current)
+    // The first one isn't always the highest any more: a recently used memory can lead with a lower sort_order.
+    const top = Math.max(0, ...memories.map((memory) => memory.mg_mma_vars.sort_order), lastSortOrder.current)
     lastSortOrder.current = top + kept.length
     kept.forEach((memory, index) => void add(memory, top + kept.length - index))
   }

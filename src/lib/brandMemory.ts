@@ -1,4 +1,4 @@
-import type { BrandMemoryCategory, BrandMemoryVars } from '@/types'
+import type { BrandMemory, BrandMemoryCategory, BrandMemoryVars } from '@/types'
 
 /** The categories the panel's dropdown offers, in its order. */
 export const BRAND_MEMORY_CATEGORIES: { category: BrandMemoryCategory; label: string }[] = [
@@ -13,6 +13,22 @@ export const BRAND_MEMORY_MAX_IMAGES = 5
 
 /** The most brand memories one user can keep; the backend refuses any past it. */
 export const BRAND_MEMORY_MAX = 1000;
+/** How long a memory stays at the head of the bar after it was last used (or created). */
+export const BRAND_MEMORY_RECENT_MS = 7 * 24 * 60 * 60 * 1000
+
+/** Used, or created, in the last seven days. A memory with no date yet is not. */
+export const isRecentlyUsed = (memory: BrandMemory) =>
+  Date.now() - Date.parse(memory.mg_mma_vars.last_used_at) < BRAND_MEMORY_RECENT_MS
+
+/**
+ * The bar's order: the recently used memories lead it, ahead of every other
+ * whatever their sort_order; each group keeps the sort_order it was fetched in.
+ */
+export const recentFirst = (memories: BrandMemory[]) => [
+  ...memories.filter(isRecentlyUsed),
+  ...memories.filter((memory) => !isRecentlyUsed(memory)),
+]
+
 /** Shown when hovering a memory in the bar. */
 export const BRAND_MEMORY_TILE_TOOLTIP = 'Click to edit · long-press to select · drag to reorder'
 

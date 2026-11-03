@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
+import { recentFirst } from '@/lib/brandMemory'
 import { queryKeys } from '@/lib/queryKeys'
 import {
   createBrandMemory,
@@ -10,11 +11,15 @@ import {
 import { deleteStudioImage } from '@/services/studioUploads.service'
 import type { BrandMemory, BrandMemoryVars } from '@/types'
 
-/** The signed-in user's brand memories. Skipped until there is a user. */
+/**
+ * The signed-in user's brand memories, in the bar's order: the recently used
+ * first, then by sort_order. Skipped until there is a user.
+ */
 export function useBrandMemories(userId: string | undefined) {
   return useQuery({
     queryKey: queryKeys.brandMemories(userId ?? ''),
     queryFn: () => getBrandMemories(userId!),
+    select: recentFirst,
     enabled: Boolean(userId),
   })
 }
