@@ -48,7 +48,7 @@ export function pickBrandMemoryPictures(memories: BrandMemory[], room: number): 
 
     // A memory always has at least one picture, its cover.
     const cover = memory.mg_mma_vars.images[0]!
-    picked.push({ id: memory.mg_id, images: [cover] })
+    picked.push({ id: memory.mg_id, name: memory.mg_prompt, images: [cover] })
     placesLeft = placesLeft - 1
   }
 

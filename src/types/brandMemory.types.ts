@@ -53,6 +53,7 @@ export interface BriefRange {
 //this is the type for the brand memory pictures that will be sent to the backend when creating a generation with brand memory
 export interface PickedBrandMemoryPictures {
   id: string
+  name: string
   images: string[]
 }
 
