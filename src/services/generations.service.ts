@@ -76,8 +76,13 @@ export async function getGenerations(userId: string) {
   return (data ?? []) as unknown as MegaGeneration[]
 }
 
+
 export async function deleteGeneration(mgId: string) {
-  const { error } = await supabase.from('mega_generations').delete().eq('mg_id', mgId)
+  const at = new Date().toISOString()
+  const { error } = await supabase
+    .from('mega_generations')
+    .update({ mg_status: 'deleted', mg_mma_status: 'deleted', deleted_since: at, mg_updated_at: at })
+    .eq('mg_id', mgId)
 
   if (error) throw new Error(error.message)
 }
