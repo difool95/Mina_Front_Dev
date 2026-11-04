@@ -185,15 +185,14 @@ export const UPLOAD_LIMITS: Record<UploadKind, number> = { scene: 1, logo: 4, pr
 export const CREATE_MAX_PICTURES = UPLOAD_LIMITS.scene + UPLOAD_LIMITS.logo + UPLOAD_LIMITS.product
 
 /**
- * How a picked picture is prepared before it is uploaded. Past the hard
- * limits it is refused; past `reduceAbove` it is re-encoded (WebP when it has
- * transparency, JPEG otherwise) and shrunk to `targetSide`; under `minSide`
- * it is stretched to `upscaleSide` so the AI can read it. Sides are the
- * longest side, in pixels.
+ * How a picked picture is prepared before it is uploaded. Past `maxBytes` it
+ * is refused; past `reduceAbove` or `targetSide` it is re-encoded (WebP when
+ * it has transparency, JPEG otherwise) and shrunk to `targetSide`, however
+ * big it is; under `minSide` it is stretched to `upscaleSide` so the AI can
+ * read it. Sides are the longest side, in pixels.
  */
 export const UPLOAD_PREP = {
   maxBytes: 48 * 1024 * 1024,
-  maxSide: 4096,
   reduceAbove: 2 * 1024 * 1024,
   targetSide: 2160,
   minSide: 300,
@@ -206,7 +205,6 @@ export const UPLOAD_PREP = {
 /** Why a picked picture was refused, shown under its upload row. */
 export const UPLOAD_ERRORS = {
   tooHeavy: (name: string) => `${name} is over 48 MB — pick a lighter image.`,
-  tooLarge: (name: string) => `${name} is over 4096 px — pick a smaller image.`,
   unreadable: (name: string) => `${name} can't be read — try a JPEG, PNG or WebP.`,
   failed: (name: string) => `${name} could not be uploaded — try again.`,
   full: (limit: number) => `This panel is full (${limit} files). remove one to add another.`,

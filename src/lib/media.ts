@@ -175,12 +175,14 @@ export async function prepareStudioImage(file: File): Promise<Blob> {
   })
   const longest = Math.max(bitmap.width, bitmap.height)
 
-  if (longest > UPLOAD_PREP.maxSide) throw new Error(UPLOAD_ERRORS.tooLarge(file.name))
-
   const isTooSmall = longest < UPLOAD_PREP.minSide
-  // If the file is small enough to be uploaded as-is, and it is not too small, and it is of a type that we want to keep,
-  // then return the file as-is. Otherwise, we need to resize or re-encode the image.
-  if (!isTooSmall && file.size <= UPLOAD_PREP.reduceAbove && UPLOAD_PREP.keptTypes.includes(file.type)) return file
+  // A light file can still be huge in pixels, so it only goes as it is when it is also no bigger than `targetSide`.
+  const isAsIs =
+    !isTooSmall &&
+    longest <= UPLOAD_PREP.targetSide &&
+    file.size <= UPLOAD_PREP.reduceAbove &&
+    UPLOAD_PREP.keptTypes.includes(file.type)
+  if (isAsIs) return file
 
   const scale = isTooSmall ? UPLOAD_PREP.upscaleSide / longest : Math.min(1, UPLOAD_PREP.targetSide / longest)
   const canvas = document.createElement('canvas')
