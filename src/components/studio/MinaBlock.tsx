@@ -137,8 +137,8 @@ export function MinaBlock({
     setIsOffFromPill(isFromPill && isBrandMemoryOn)
     setBrandMemoryOn.mutate(!isBrandMemoryOn)
   }
-  // Only while a memory is ticked; turned off, only when a hold on the pill did it.
-  const isBrandMemoryPillShown = brandMemory.ticked.length > 0 && (isBrandMemoryOn || isOffFromPill)
+  const isBrandMemoryPillShown =
+    !isBriefEmpty && brandMemory.dropdown.length > 0 && (isBrandMemoryOn || isOffFromPill)
   // What Mina says over the brief (a picture refused, a prompt file loaded), until the user goes back to the brief.
   const [minaNote, setMinaNote] = useState<MinaNote | null>(null)
   const sayWarning = (line: string) => setMinaNote({ line, tone: 'warning' })

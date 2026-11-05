@@ -32,8 +32,8 @@ export function MinaBlockBrandMemoryPill({
   const hold = useLongPress(BRAND_MEMORY_PILL_HOLD_MS)
   const [isOpen, setIsOpen] = useState(false)
   const root = useRef<HTMLDivElement>(null)
-  // MinaBlock shows the pill only while a memory is ticked.
-  const first = ticked[0]!
+  // Undefined once every memory is unticked: the pill then asks for one.
+  const first = ticked[0]
 
   useEffect(() => {
     if (!isOpen) return
@@ -67,12 +67,13 @@ export function MinaBlockBrandMemoryPill({
         // A hold must not also open the list, and an off pill has nothing to choose.
         onClick={() => !hold.wasHeld() && !isOff && setIsOpen((wasOpen) => !wasOpen)}
       >
-        <span className="mina-pills__icon" aria-hidden="true">
-          <img src={cfImage(first.mg_mma_vars.thumb_url, imageWidthFor(22))} alt="" draggable={false} />
+        {/* A "+" like the upload pills' while nothing is ticked. */}
+        <span className="mina-pills__icon comment" aria-hidden="true">
+          {first ? <img src={cfImage(first.mg_mma_vars.thumb_url, imageWidthFor(22))} alt="" draggable={false} /> : '+'}
         </span>
-        <span className="mina-pills__muted comment muted">Using</span>
+        <span className="mina-pills__muted comment muted">{first ? 'Using' : 'Pick'}</span>
         <span className="comment">
-          {first.mg_mma_vars.name}
+          {first ? first.mg_mma_vars.name : 'your branding assets'}
           {ticked.length > 1 && ` +${ticked.length - 1}`}
         </span>
       </button>
