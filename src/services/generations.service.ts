@@ -33,17 +33,23 @@ export function startStillGeneration(
   return apiPost<StillGenerationResult>('/api/mma/still', token, body)
 }
 
-/** The step a generation's MMA pipeline is on, and its picture once it is done. */
+//this method returns the status of a generation, the output url, including the unused brand memories that were not used in the generation
 export async function getGenerationStatus(generationId: string): Promise<GenerationProgress> {
   const { data, error } = await supabase
     .from('mega_generations')
-    .select('mg_mma_status, mg_output_url')
+    .select('mg_mma_status, mg_output_url, unused_ids:mg_mma_vars->meta->product_memory_resolution->unused_ids')
     .eq('mg_id', `generation:${generationId}`)
     .single()
 
   if (error) throw new Error(error.message)
 
-  return { status: data.mg_mma_status as MmaStatus, outputUrl: data.mg_output_url ?? '' }
+  const unusedIds = (data.unused_ids ?? []) as string[]
+
+  return {
+    status: data.mg_mma_status as MmaStatus,
+    outputUrl: data.mg_output_url ?? '',
+    unusedMemoryIds: unusedIds.map((id) => `product:${id}`),
+  }
 }
 
 /** The columns the archive renders. `mega_generations` holds far more. */

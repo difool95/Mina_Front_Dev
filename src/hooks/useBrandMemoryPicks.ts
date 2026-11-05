@@ -46,6 +46,12 @@ export function useBrandMemoryPicks(userId: string | undefined, brief: string, l
     setIsGuessQuiet(true)
   }
 
+  // Mina unticks memories that were not used in the generation, so we need to untick them in the UI as well.
+  const untickByMina = (mgIds: string[]) => {
+    setPicked((list) => list.filter((id) => !mgIds.includes(id)))
+    setDismissed((list) => [...list, ...mgIds])
+  }
+
   return {
     ticked: ids.map((id) => memories.find((memory) => memory.mg_id === id)!),
     guessedId,
@@ -53,5 +59,6 @@ export function useBrandMemoryPicks(userId: string | undefined, brief: string, l
     nameRanges,
     tick,
     untick,
+    untickByMina,
   }
 }

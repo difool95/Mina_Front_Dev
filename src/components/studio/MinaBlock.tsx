@@ -438,6 +438,7 @@ export function MinaBlock({
       openLong()
       selectUploadKind('scene')
     },
+    untickMemories: brandMemory.untickByMina,
   }))
 
 //This shows the upload row depending on the mode and the kind of upload selected, if the mode is animate it shows the animate upload row,

@@ -55,6 +55,9 @@ export function StudioPage() {
   const shownGenerations = doneUrl ? [doneUrl, ...generations] : generations
   const endMina = () => {
     if (doneUrl) setGenerations(shownGenerations)
+  // When we get the generation, we also get the Id's of the brand memories that were not used in the generation. We then call the untickMemories
+  // method on the MinaBlock component to untick those memories in the UI so that they are not selected for next generation.
+    if (generation?.unusedMemoryIds.length) block.current?.untickMemories(generation.unusedMemoryIds)
     startGeneration.reset()
   }
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////

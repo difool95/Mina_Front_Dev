@@ -24,6 +24,8 @@ export interface MinaBlockHandle {
   removeUpload: (url: string) => void
   // Opens the block on the scene pill's upload row, as picking a scene does, without the file picker.
   showScene: () => void
+  // Mina unticks these brand memories in the pill, for a Create that sent them without using them.
+  untickMemories: (mgIds: string[]) => void
 }
 
 ///** One picture added under a "+" pill, in the order it was added. */
@@ -139,4 +141,6 @@ export interface GenerationProgress {
   status: MmaStatus
   /** Empty until the generation is done. */
   outputUrl: string
+  /** The brand memories the Create sent but step 1 left out. */
+  unusedMemoryIds: string[]
 }
