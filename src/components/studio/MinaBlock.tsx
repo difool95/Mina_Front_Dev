@@ -14,7 +14,6 @@ import {
   ANIMATE_RESOLUTIONS,
   ANIMATE_UPLOAD_TITLE,
   BRIEF_PLACEHOLDERS,
-  CREATE_MAX_PICTURES,
   DESCRIBE_MORE_LABEL,
   CONTENT_LIBRARY_PREVIEW_URLS,
   LIBRARY_PREVIEW_URLS,
@@ -37,11 +36,12 @@ import { useBrandMemoryOn, useSetBrandMemoryOn } from '@/hooks/useAccounts'
 import { useBrandMemoryPicks } from '@/hooks/useBrandMemoryPicks'
 import { useImportPromptFile } from '@/hooks/usePromptFiles'
 import { useDeleteStudioImage, useUploadStudioImage } from '@/hooks/useStudioUploads'
-import { pickBrandMemoryPictures } from '@/lib/brandMemory'
+import { pickCreatePictures } from '@/lib/brandMemory'
 import { prepareStudioImage } from '@/lib/media'
 import { studioSession } from '@/lib/sessionStorage/studioSession'
 import { useAuth } from '@/providers/AuthProvider'
 import type {
+  BrandMemory,
   PickedBrandMemoryPictures,
   MinaBlockHandle,
   MinaBlockUserBriefHandle,
@@ -90,8 +90,8 @@ export function MinaBlock({
   mode: StudioMode
   credits: number | undefined
   onNeedMatcha: () => void
-  /** Create mode's call to action, with the brand memory pictures that fit; Animate's is not wired yet. */
-  onCreate: (brandMemories: PickedBrandMemoryPictures[]) => void
+  /** Create mode's call to action, with the uploads and brand memory pictures that fit; Animate's is not wired yet. */
+  onCreate: (picked: { uploads: StudioUpload[]; brandMemories: PickedBrandMemoryPictures[] }) => void
   uploads: StudioUpload[]
   onUploads: Dispatch<SetStateAction<StudioUpload[]>>
   /** The running Create's step, while Mina types in the brief's place; undefined the rest of the time. */
@@ -142,6 +142,30 @@ export function MinaBlock({
   // What Mina says over the brief (a picture refused, a prompt file loaded), until the user goes back to the brief.
   const [minaNote, setMinaNote] = useState<MinaNote | null>(null)
   const sayWarning = (line: string) => setMinaNote({ line, tone: 'warning' })
+ //if the brand memory is on we get all the brand memory of the dropdown (ticked by user + guessed by Mina)
+  const memoriesInUse = isBrandMemoryOn ? brandMemory.ticked : []
+  // True only for the memory Mina guessed from the brief; guessedId is null when there is no guess.
+  function isGuessed(memory: BrandMemory) {
+    if (memory.mg_id === brandMemory.guessedId) {
+      return true
+    }
+
+    return false
+  }
+  //this line is responsible for picking the pictures that will be sent to the server when the user clicks on the create button following the priority set in the
+  //pickCreatePictures method
+  const createPictures = pickCreatePictures(
+    uploads,
+    memoriesInUse.filter((memory) => !isGuessed(memory)),
+    memoriesInUse.filter(isGuessed),
+  )
+  //If the number of pictures that will be sent to the server is greater than the limit set in the UPLOAD_LIMITS constant we show a warning to the user
+  //This event is detected in realtime while we are uploading pictures in the studio and we are adding brand memories
+  useEffect(() => {
+    if (createPictures.isOverLimit) sayWarning(UPLOAD_ERRORS.overLimit)
+  }, [createPictures.isOverLimit])
+
+
   // The list as it stands now, for an upload that lands after the render that started it.
   const latestUploads = useRef(uploads)
   useEffect(() => {
@@ -540,16 +564,7 @@ export function MinaBlock({
               <MinaBlockCTA
                 label={isUploading ? UPLOADING_LABEL : STUDIO_CTA_LABELS[mode]}
                 isDisabled={isUploading || Boolean(minaStatus)}
-                onClick={
-                  mode === 'create'
-                    ? () =>
-                        onCreate(
-                          isBrandMemoryOn
-                            ? pickBrandMemoryPictures(brandMemory.ticked, CREATE_MAX_PICTURES - uploads.length)
-                            : [],
-                        )
-                    : undefined
-                }
+                onClick={mode === 'create' ? () => onCreate(createPictures) : undefined}
               />
             )}
           </div>

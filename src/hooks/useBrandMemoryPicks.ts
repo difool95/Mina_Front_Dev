@@ -30,7 +30,7 @@ export function useBrandMemoryPicks(userId: string | undefined, brief: string, l
   )
 
   const memories = useMemo(() => data ?? [], [data])
-  const { ids, nameRanges } = useMemo(
+  const { ids, guessedId, nameRanges } = useMemo(
     () => briefBrandMemories({ brief, locked, memories, picked, dismissed, isGuessQuiet }),
     [brief, locked, memories, picked, dismissed, isGuessQuiet],
   )
@@ -48,6 +48,7 @@ export function useBrandMemoryPicks(userId: string | undefined, brief: string, l
 
   return {
     ticked: ids.map((id) => memories.find((memory) => memory.mg_id === id)!),
+    guessedId,
     dropdown: dropdownOrder(memories, ids),
     nameRanges,
     tick,

@@ -145,11 +145,8 @@ function guessMemory(text: string, candidates: BrandMemory[]) {
   return best?.memory.mg_id ?? null
 }
 
-/**
- * The memories the brief uses: picked by hand, then typed exactly (in the brief
- * or its locked passage), then the guess when nothing exact was typed and
- * guessing isn't quiet. `nameRanges` are the full names typed in the brief.
- */
+//This method is responsible of returning the ids of the memories that are relevant to the brief and locked text, as well as the guessed memory id and the name ranges
+//for highlighting in the UI. It filters out dismissed memories and prioritizes exact matches over guesses.
 export function briefBrandMemories({
   brief,
   locked,
@@ -176,7 +173,10 @@ export function briefBrandMemories({
   const known = picked.filter((id) => memories.some((memory) => memory.mg_id === id))
   const ids = [...new Set([...known, ...exactIds, ...(guess ? [guess] : [])])]
 
-  return { ids, nameRanges: inBrief.nameRanges }
+  // Mina's guess only when the user did not also pick it by hand.
+  const guessedId = guess && !known.includes(guess) ? guess : null
+
+  return { ids, guessedId, nameRanges: inBrief.nameRanges }
 }
 
 /** The pill's list: every memory, the ticked ones first, then the most used, then the rest in the bar's order. */

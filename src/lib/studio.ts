@@ -181,8 +181,8 @@ export const UPLOAD_KINDS: { kind: UploadKind; label: string; tooltip: string; t
 /** How many pictures each "+" pill holds; its "+" card goes once that many are in. */
 export const UPLOAD_LIMITS: Record<UploadKind, number> = { scene: 1, logo: 4, product: 8 }
 
-/** The most pictures one Create sends: every pill full. Brand memories get what the uploads leave. */
-export const CREATE_MAX_PICTURES = UPLOAD_LIMITS.scene + UPLOAD_LIMITS.logo + UPLOAD_LIMITS.product
+/** The most pictures one Create sends, uploads and brand memories together (lib/brandMemory's pickCreatePictures). */
+export const CREATE_MAX_PICTURES = 14
 
 /**
  * How a picked picture is prepared before it is uploaded. Past `maxBytes` it
@@ -208,6 +208,7 @@ export const UPLOAD_ERRORS = {
   unreadable: (name: string) => `${name} can't be read — try a JPEG, PNG or WebP.`,
   failed: (name: string) => `${name} could not be uploaded — try again.`,
   full: (limit: number) => `This panel is full (${limit} files). remove one to add another.`,
+  overLimit: `That's more than ${CREATE_MAX_PICTURES} pictures, a lot for me to take in at once. I'll work with the ${CREATE_MAX_PICTURES} that matter most and set the rest aside.`,
 }
 
 /** The Create call to action while pictures are still uploading. */

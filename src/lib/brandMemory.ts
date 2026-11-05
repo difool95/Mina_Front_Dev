@@ -1,4 +1,13 @@
-import type { BrandMemory, BrandMemoryCategory, PickedBrandMemoryPictures, BrandMemoryVars } from '@/types'
+import type {
+  BrandMemory,
+  BrandMemoryCategory,
+  PickedBrandMemoryPictures,
+  BrandMemoryVars,
+  StudioUpload,
+  UploadKind,
+} from '@/types'
+
+import { CREATE_MAX_PICTURES } from './studio'
 
 /** The categories the panel's dropdown offers, in its order. */
 export const BRAND_MEMORY_CATEGORIES: { category: BrandMemoryCategory; label: string }[] = [
@@ -36,7 +45,8 @@ export const recentFirst = (memories: BrandMemory[]) => [
   ...memories.filter((memory) => !isRecentlyUsed(memory)),
 ]
 
-//This method returns the brand memory pictures that will be sent to the backend when creating a generation with brand memory.
+//This method fills `room` places with the pictures of `memories`: each memory's cover first, in the list's order,
+//then the other pictures if places are left. pickCreatePictures calls it once for the chosen memories and once for the guessed one.
 export function pickBrandMemoryPictures(memories: BrandMemory[], room: number): PickedBrandMemoryPictures[] {
   let placesLeft = room
   const picked: PickedBrandMemoryPictures[] = []
@@ -66,6 +76,41 @@ export function pickBrandMemoryPictures(memories: BrandMemory[], room: number): 
   }
 
   return picked
+}
+
+//This method is responible to return the list of pictures that will be sent to the backend when creating a generation.
+//It prioritizes the pictures from scene then from logo then the chosen memories then the products then the guessed memories.
+export function pickCreatePictures(uploads: StudioUpload[], chosen: BrandMemory[], guessed: BrandMemory[]) {
+  const uploadsOf = (kind: UploadKind) => uploads.filter((upload) => upload.kind === kind)
+  const countOf = (picked: PickedBrandMemoryPictures[]) => picked.reduce((sum, entry) => sum + entry.images.length, 0)
+
+  let placesLeft = CREATE_MAX_PICTURES - uploadsOf('scene').length - uploadsOf('logo').length
+
+  // One place per chosen memory, for its cover, kept ahead of the products.
+  const coverCount = Math.min(placesLeft, chosen.length)
+  placesLeft = placesLeft - coverCount
+
+  const products = uploadsOf('product').slice(0, placesLeft)
+  placesLeft = placesLeft - products.length
+
+  // The same covers again, plus the places the products left for the other pictures.
+  const chosenPictures = pickBrandMemoryPictures(chosen, coverCount + placesLeft)
+  placesLeft = placesLeft - (countOf(chosenPictures) - coverCount)
+
+  const guessedPictures = pickBrandMemoryPictures(guessed, placesLeft)
+
+  // Every picture the user has in play, before anything is left out: all the uploads,
+  // plus every picture of every memory in use, chosen or guessed.
+  let offered = uploads.length
+  for (const memory of [...chosen, ...guessed]) {
+    offered = offered + memory.mg_mma_vars.images.length
+  }
+
+  return {
+    uploads: [...uploadsOf('scene'), ...uploadsOf('logo'), ...products],
+    brandMemories: [...chosenPictures, ...guessedPictures],
+    isOverLimit: offered > CREATE_MAX_PICTURES,
+  }
 }
 
 /** Shown when hovering a memory in the bar. */

@@ -64,7 +64,7 @@ export function StudioPage() {
 
   // The "Create" button is disabled while any upload is in progress, so the user cannot start a generation until all uploads are complete.
   // This prevents the user from starting a generation with incomplete or missing uploads, which could lead to errors or unexpected behavior.
-  const create = (brandMemories: PickedBrandMemoryPictures[]) => {
+  const create = (picked: { uploads: StudioUpload[]; brandMemories: PickedBrandMemoryPictures[] }) => {
     if (!session || minaStatus || uploads.some((entry) => entry.isUploading)) return
 
     const {
@@ -88,8 +88,8 @@ export function StudioPage() {
         brief: [brief, locked].filter(Boolean).join('\n'),
         //this line maps the uploads array to a new array of objects that only contain the kind, url, and origin properties. This is done to ensure that only
         //the necessary data is sent to the API for generation, and any additional properties that may be present in the uploads array are not included in the request body.
-        uploads: uploads.map(({ kind, url, origin }) => ({ kind, url, origin })),
-        brandMemories,
+        uploads: picked.uploads.map(({ kind, url, origin }) => ({ kind, url, origin })),
+        brandMemories: picked.brandMemories,
       },
       //This line updates the upload isSent state to true, this is done to indicate that the upload has been sent to the API for generation
       //and is no longer in the process of being uploaded. This is important for the user interface, as it allows the user to see which uploads
