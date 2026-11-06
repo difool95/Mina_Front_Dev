@@ -59,6 +59,7 @@ export interface BriefRange {
 export interface PickedBrandMemoryPictures {
   id: string
   name: string
+  category: BrandMemoryCategory
   images: string[]
 }
 
