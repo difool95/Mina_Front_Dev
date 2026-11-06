@@ -30,7 +30,6 @@ Greenfield. Built from scratch together with the user — assume nothing exists 
 | Server state | `@tanstack/react-query` |
 | DB / auth / storage | `@supabase/supabase-js` |
 | Styling | Plain CSS + the design tokens in `src/index.css` |
-| i18n | `i18next` + `react-i18next` |
 | Validation | `zod` |
 
 **Do not add a dependency outside this table without asking the user first.**
@@ -95,15 +94,13 @@ Nothing else goes directly in `src/` except `main.tsx`, `App.tsx`, `index.css` a
 
 ### `providers/`
 
-- **Put here** — context the whole app depends on to function: `QueryProvider`, `AuthProvider`, `I18nProvider`, `ThemeProvider`. Each exports the provider component and its `useXxx` context hook.
+- **Put here** — context the whole app depends on to function: `QueryProvider`, `AuthProvider`, `ThemeProvider`. Each exports the provider component and its `useXxx` context hook.
 - **Nesting order in `main.tsx`** — keep this order; each layer depends on the ones outside it:
 
 ```tsx
 <QueryProvider>      {/* Auth needs the query client */}
   <AuthProvider>     {/* routes need the session */}
-    <I18nProvider>
-      <RouterProvider router={router} />
-    </I18nProvider>
+    <RouterProvider router={router} />
   </AuthProvider>
 </QueryProvider>
 ```
@@ -209,6 +206,6 @@ Work bottom-up so each layer compiles against the one below. For a "Bookings" fe
 4. `hooks/useBookings.ts` — React Query wrapper over the service.
 5. `components/BookingCard.tsx` — presentational, props only.
 6. `pages/BookingsPage.tsx` — calls `useBookings`, renders `BookingCard`.
-7. Register the route in the router, and add i18n keys for any new copy.
+7. Register the route in the router.
 
 Before finishing, check the change against §6. If any import points upward or skips the hook layer, fix the placement.
