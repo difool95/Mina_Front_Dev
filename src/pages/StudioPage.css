@@ -100,7 +100,7 @@
   align-items: center;
   gap: 12px;
   background: var(--mina-surface-bar);
-  padding: 32px var(--mina-footer-pad-x);
+  padding: 26px var(--mina-footer-pad-x);
 }
 
 .mina-studio__action {
@@ -109,6 +109,101 @@
 
 .mina-studio__action--edit {
   margin-left: auto;
+}
+
+/* The edit menu spreads its tools across the whole bar. */
+.mina-studio__actions--edit {
+  justify-content: space-between;
+}
+
+/* A tool's own bar: what sits between the back arrow and the call to action. */
+.mina-studio__tool {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 24px;
+  padding-inline: 12px;
+}
+
+.mina-studio__tool--centered {
+  justify-content: center;
+}
+
+/* Prompt's input. */
+.mina-studio__tweak {
+  flex: 1;
+  border: 0;
+  outline: 0;
+  background: none;
+  padding: 0;
+  color: inherit;
+  font-family: inherit;
+}
+
+.mina-studio__ratio {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Expand and Erase: the picture on its own, whole, in the middle of the stage. */
+.mina-studio__alone {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  container-type: size;
+}
+
+/* As big as the stage allows in the picked ratio (`--ratio` is width / height, set inline). */
+.mina-studio__frame {
+  width: min(100cqw, 100cqh * var(--ratio));
+  aspect-ratio: var(--ratio);
+  outline: 2px solid var(--mina-frame-line);
+  background: var(--mina-frame-fill);
+}
+
+.mina-studio__picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.mina-studio__picture--erase {
+  cursor: crosshair;
+}
+
+.mina-studio__hint {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--mina-ink) 55%, transparent);
+  padding: 4px 10px;
+  color: var(--mina-bg);
+  /* Shown on opening Erase, then gone: it stays faded out once the animation ends. */
+  animation: mina-studio-hint-out var(--mina-anim-fade) ease var(--mina-hint-hold) forwards;
+  pointer-events: none;
+}
+
+@keyframes mina-studio-hint-out {
+  to {
+    opacity: 0;
+  }
+}
+
+/* Prompt, kept off the bar's right edge. */
+.mina-studio__actions--edit > :last-child {
+  margin-right: 12px;
+}
+
+/* The back arrow's 16px is taller than the text, so it would push the bar up. */
+.mina-studio__back {
+  display: flex;
+  margin-block: -3px;
 }
 
 /* Like, on anything that is not one of Mina's pictures.

@@ -16,6 +16,7 @@ export type { CreateCheckoutSessionResult } from './checkout.types'
 export type {
   AspectRatio,
   CarouselFingertips,
+  EditTool,
   Fingertip,
   GenerationProgress,
   MinaBlockHandle,

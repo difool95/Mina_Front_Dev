@@ -1,5 +1,8 @@
 export type StudioMode = 'create' | 'animate'
 
+/** Right Studio bottom bar tools */
+export type EditTool = 'Erase' | 'Expand' | 'No Background' | 'No Subject' | 'SVG' | 'Prompt'
+
 //** The kind of upload, which determines which library it can be picked from. */
 export type UploadKind = 'scene' | 'logo' | 'product'
 

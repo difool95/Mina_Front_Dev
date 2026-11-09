@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type CSSProperties } from 'react'
 
 import {
   useCopyLink,
@@ -10,11 +10,13 @@ import {
   useUnlikeGeneration,
 } from '@/hooks/useGenerations'
 import { filenameFromUrl, viewerLinkFor } from '@/lib/generations'
-import { PANEL_UPLOAD_LABELS } from '@/lib/studio'
+import { cfImageCarousel, imageWidthFor } from '@/lib/media'
+import { ERASE_HINT, PANEL_UPLOAD_LABELS, STUDIO_RATIOS } from '@/lib/studio'
 import { useAuth } from '@/providers/AuthProvider'
-import type { StudioMode, StudioUpload } from '@/types'
+import type { EditTool, Ratio, StudioMode, StudioUpload } from '@/types'
 
 import { Carousel } from '../Carousel'
+import { RightStudioEditBar } from './RightStudioEditBar'
 
 /**
  * The studio's right side: every picture added under the pills, stacked in
@@ -80,8 +82,14 @@ export function RightStudioPanel({
     if (isLiked) unlike.mutate(generationId)
     else like.mutate(generation)
   }
-  // Not built yet: the Edit button and the edit fingertip both land here.
-  const edit = () => {}
+  // The Edit button and the edit fingertip both open the edit menu in place of the bar, and each tool opens its own bar.
+  // null is the normal bar. The tools do nothing yet.
+  const [editing, setEditing] = useState<EditTool | 'menu' | null>(null)
+  const edit = () => setEditing('menu')
+  const [expandRatio, setExpandRatio] = useState<Ratio>(STUDIO_RATIOS[0]!.value)
+  const [ratioWidth, ratioHeight] = expandRatio.split(':').map(Number)
+  // if the user is inside Expand or erase mode we show the picture alone without the carousel and the fingertips.
+  const isPictureAlone = editing === 'Expand' || editing === 'Erase'
   ///////////////////////////////////we need to know the generation id from the currentUrl to check if it is liked or not. We get the userId from the session and use it to fetch all
 //generations and liked generations. and from that we know which url's in the carousel are generations and which are not. We also check if the current generation is liked
 //or not and set the button text accordingly.///////////////////////////////////////////////////////////////
@@ -91,7 +99,27 @@ export function RightStudioPanel({
       {shown.length ? (
         <>
           <div className="mina-studio__stage">
-            {/* Remounted whenever a picture comes or goes, so the page never points past the end. */}
+            {isPictureAlone && currentUrl ? (
+              <div className="mina-studio__alone">
+                {editing === 'Expand' ? (
+                  // The frame takes the picked ratio; the grey around the picture is what Expand will fill.
+                  <div className="mina-studio__frame" style={{ '--ratio': ratioWidth! / ratioHeight! } as CSSProperties}>
+                    <img className="mina-studio__picture" src={cfImageCarousel(currentUrl, imageWidthFor(1080))} alt="" />
+                  </div>
+                ) : (
+                  <>
+                    <img
+                      className="mina-studio__picture mina-studio__picture--erase"
+                      src={cfImageCarousel(currentUrl, imageWidthFor(1080))}
+                      alt=""
+                      draggable={false}
+                    />
+                    <p className="mina-studio__hint comment">{ERASE_HINT}</p>
+                  </>
+                )}
+              </div>
+            ) : (
+            /* Remounted whenever a picture comes or goes, so the page never points past the end. */
             <Carousel
               key={shown.length}
               onIndexChange={setCurrent}
@@ -116,9 +144,19 @@ export function RightStudioPanel({
                 onDelete: () => currentUrl && onRemove(currentUrl),
               }}
             />
+            )}
           </div>
 
           {/* Under the pictures on desktop, over them on a phone (StudioPage.css). */}
+          {editing ? (
+            <RightStudioEditBar
+              editing={editing}
+              onEditingChange={setEditing}
+              pictureCount={shown.length}
+              expandRatio={expandRatio}
+              onExpandRatio={setExpandRatio}
+            />
+          ) : (
           <div className="mina-studio__actions">
             <button
               className="mina-studio__action body-text-button button"
@@ -153,6 +191,7 @@ export function RightStudioPanel({
               Edit
             </button>
           </div>
+          )}
         </>
       ) : (
         <button

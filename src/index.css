@@ -96,6 +96,8 @@
   /* ── Studio ── */
   --mina-surface:#F2F2E9; /* the upload panel beside the prompt */
   --mina-surface-bar: #EEEEE2; /* the action bar under the studio pictures */
+  --mina-frame-line: #A9BCF5; /* Expand's frame around the studio picture */
+  --mina-frame-fill: #E2E3E1; /* the room inside that frame Expand will fill */
   /* ── Motion ── */
   --mina-talk-speed: 1ms;    /* Mina's typing — ms per letter, lower = faster */
   --mina-anim-zoom: 220ms;   /* media hover zoom */
@@ -103,6 +105,7 @@
   --mina-anim-modal: 160ms;  /* panels/modals slide-in */
   --mina-anim-block-step: 100ms; /* one beat of the studio prompt block entrance */
   --mina-anim-unblur: 400ms; /* brand memory pictures sharpening as the strip opens */
+  --mina-hint-hold: 2.5s; /* how long Erase's hint stays before it fades out */
   --mina-backdrop-blur: 14px;
   --mina-accent-green: 	var(--mina-green); /* Mina talking / generating */
   --mina-accent-pink: #EA578F66; /* Mina's Upload Error messages in the brief */

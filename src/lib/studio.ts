@@ -1,5 +1,6 @@
 import type {
   AspectRatio,
+  EditTool,
   Fingertip,
   MmaPlatform,
   Ratio,
@@ -29,6 +30,28 @@ export const PANEL_UPLOAD_LABELS: Record<StudioMode, string> = {
   create: '+ Upload image to edit',
   animate: '+ Upload image or video',
 }
+
+/** The right panel's edit menu, in groups split by a "|". */
+export const EDIT_TOOL_GROUPS: EditTool[][] = [['Erase'], ['Expand', 'No Background', 'No Subject', 'SVG'], ['Prompt']]
+
+/** Each tool's own bar: its button for every picture in the panel, when it has one, and its call to action. */
+export const EDIT_TOOL_BARS: Record<EditTool, { all?: string; cta: string }> = {
+  Erase: { cta: 'Erase' },
+  Expand: { cta: 'Expand' },
+  'No Background': { all: 'Remove all BG', cta: 'Remove BG' },
+  'No Subject': { all: 'Remove all Subject', cta: 'Remove Subject' },
+  SVG: { all: 'Vectorize All', cta: 'SVG' },
+  Prompt: { cta: 'Tweak' },
+}
+
+export const EDIT_PROMPT_PLACEHOLDER = 'Type your prompt and hit Tweak...'
+
+/** Tweak stays disabled until the prompt is longer than this. */
+export const EDIT_PROMPT_MIN_LENGTH = 3
+
+/** Shown over the picture while Erase is open. */
+export const ERASE_HINT =
+  'Tap an object to select it · Shift adds · Alt cuts · Scroll or pinch to zoom · Space+drag pans · Esc clears'
 
 /** The block's call to action, per mode. */
 export const STUDIO_CTA_LABELS: Record<StudioMode, string> = {
