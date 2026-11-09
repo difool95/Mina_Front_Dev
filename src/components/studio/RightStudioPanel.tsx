@@ -85,11 +85,13 @@ export function RightStudioPanel({
   // The Edit button and the edit fingertip both open the edit menu in place of the bar, and each tool opens its own bar.
   // null is the normal bar. The tools do nothing yet.
   const [editing, setEditing] = useState<EditTool | 'menu' | null>(null)
-  const edit = () => setEditing('menu')
+  // Editing shows the picture whole, as the zoom fingertip does, and it stays whole after leaving.
+  const edit = () => {
+    setEditing('menu')
+    setIsFitted(true)
+  }
   const [expandRatio, setExpandRatio] = useState<Ratio>(STUDIO_RATIOS[0]!.value)
   const [ratioWidth, ratioHeight] = expandRatio.split(':').map(Number)
-  // if the user is inside Expand or erase mode we show the picture alone without the carousel and the fingertips.
-  const isPictureAlone = editing === 'Expand' || editing === 'Erase'
   ///////////////////////////////////we need to know the generation id from the currentUrl to check if it is liked or not. We get the userId from the session and use it to fetch all
 //generations and liked generations. and from that we know which url's in the carousel are generations and which are not. We also check if the current generation is liked
 //or not and set the button text accordingly.///////////////////////////////////////////////////////////////
@@ -99,24 +101,13 @@ export function RightStudioPanel({
       {shown.length ? (
         <>
           <div className="mina-studio__stage">
-            {isPictureAlone && currentUrl ? (
+            {/* Expand shows the picture alone, without the carousel, in a frame of the picked ratio. */}
+            {editing === 'Expand' && currentUrl ? (
               <div className="mina-studio__alone">
-                {editing === 'Expand' ? (
-                  // The frame takes the picked ratio; the grey around the picture is what Expand will fill.
-                  <div className="mina-studio__frame" style={{ '--ratio': ratioWidth! / ratioHeight! } as CSSProperties}>
-                    <img className="mina-studio__picture" src={cfImageCarousel(currentUrl, imageWidthFor(1080))} alt="" />
-                  </div>
-                ) : (
-                  <>
-                    <img
-                      className="mina-studio__picture mina-studio__picture--erase"
-                      src={cfImageCarousel(currentUrl, imageWidthFor(1080))}
-                      alt=""
-                      draggable={false}
-                    />
-                    <p className="mina-studio__hint comment">{ERASE_HINT}</p>
-                  </>
-                )}
+                {/* The grey around the picture is what Expand will fill. */}
+                <div className="mina-studio__frame" style={{ '--ratio': ratioWidth! / ratioHeight! } as CSSProperties}>
+                  <img className="mina-studio__picture" src={cfImageCarousel(currentUrl, imageWidthFor(1080))} alt="" />
+                </div>
               </div>
             ) : (
             /* Remounted whenever a picture comes or goes, so the page never points past the end. */
@@ -134,7 +125,8 @@ export function RightStudioPanel({
               fingertips={{
                 canLike: Boolean(generation),
                 isLiked,
-                isFitted,
+                // Erase always shows the whole picture.
+                isFitted: isFitted || editing === 'Erase',
                 onZoom: () => setIsFitted(!isFitted),
                 onLike: toggleLike,
                 onDownload: saveFile,
@@ -145,6 +137,7 @@ export function RightStudioPanel({
               }}
             />
             )}
+            {editing === 'Erase' && <p className="mina-studio__hint comment">{ERASE_HINT}</p>}
           </div>
 
           {/* Under the pictures on desktop, over them on a phone (StudioPage.css). */}
