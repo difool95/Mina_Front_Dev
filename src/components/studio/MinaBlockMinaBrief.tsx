@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 
 import { MINA_LINE_MS, hasEnded, minaLine } from '@/lib/minaBrief'
-import type { MinaNote, MmaStatus } from '@/types'
+import type { MinaFlow, MinaNote, MmaStatus } from '@/types'
 
 import './MinaBlockMinaBrief.css'
 
@@ -15,18 +15,22 @@ import './MinaBlockMinaBrief.css'
  *   to the brief (MinaBlockUserBrief clears it then); pink when it is a warning.
  */
 export function MinaBlockMinaBrief(
-  props: { status: MmaStatus; onEnd: () => void } | { note: MinaNote },
+  props: { status: MmaStatus; flow: MinaFlow; onEnd: () => void } | { note: MinaNote },
 ) {
   return 'note' in props ? (
     <MinaTypedLine line={props.note.line} isNote tone={props.note.tone} />
   ) : (
-    <MinaGenerationLines status={props.status} onEnd={props.onEnd} />
+    <MinaGenerationLines status={props.status} flow={props.flow} onEnd={props.onEnd} />
   )
 }
 
-/** The green lines of a running Create, one every few seconds; a step that outlasts its own lines moves on to chitchat. */
-function MinaGenerationLines({ status, onEnd }: { status: MmaStatus; onEnd: () => void }) {
-  const [line, setLine] = useState(() => minaLine(status, 0, []))
+/**
+ * The green lines of a running Create or Tweak, one every few seconds; a step
+ * that outlasts its own lines moves on to chitchat. `flow` stays the same for
+ * the whole run.
+ */
+function MinaGenerationLines({ status, flow, onEnd }: { status: MmaStatus; flow: MinaFlow; onEnd: () => void }) {
+  const [line, setLine] = useState(() => minaLine(status, 0, [], flow))
   // The timer below runs once for the whole generation, so it reads the props from here.
   const latest = useRef({ status, onEnd })
   useEffect(() => {
@@ -43,13 +47,13 @@ function MinaGenerationLines({ status, onEnd }: { status: MmaStatus; onEnd: () =
 
       turn.nth = status === turn.status ? turn.nth + 1 : 0
       turn.status = status
-      const next = minaLine(status, turn.nth, turn.shown)
+      const next = minaLine(status, turn.nth, turn.shown, flow)
       turn.shown.push(next)
       setLine(next)
     }, MINA_LINE_MS)
 
     return () => clearInterval(timer)
-  }, [])
+  }, [flow])
 
   return <MinaTypedLine line={line} />
 }

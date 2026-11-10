@@ -45,6 +45,7 @@ import type {
   PickedBrandMemoryPictures,
   MinaBlockHandle,
   MinaBlockUserBriefHandle,
+  MinaFlow,
   MinaNote,
   MmaStatus,
   StudioMode,
@@ -84,6 +85,7 @@ export function MinaBlock({
   uploads,
   onUploads,
   minaStatus,
+  minaFlow,
   onMinaEnd,
   ref,
 }: {
@@ -96,6 +98,8 @@ export function MinaBlock({
   onUploads: Dispatch<SetStateAction<StudioUpload[]>>
   /** The running Create's step, while Mina types in the brief's place; undefined the rest of the time. */
   minaStatus: MmaStatus | undefined
+  /** Whether that run is a Create or an edit tool's Tweak, which picks Mina's lines. */
+  minaFlow: MinaFlow
   onMinaEnd: () => void
   ref?: Ref<MinaBlockHandle>
 }) {
@@ -439,6 +443,7 @@ export function MinaBlock({
       selectUploadKind('scene')
     },
     untickMemories: brandMemory.untickByMina,
+    sayWarning,
   }))
 
 //This shows the upload row depending on the mode and the kind of upload selected, if the mode is animate it shows the animate upload row,
@@ -510,7 +515,7 @@ export function MinaBlock({
         ))}
       <div ref={brief} className="mina-block__brief" onFocus={openLong}>
         {minaStatus ? (
-          <MinaBlockMinaBrief status={minaStatus} onEnd={onMinaEnd} />
+          <MinaBlockMinaBrief status={minaStatus} flow={minaFlow} onEnd={onMinaEnd} />
         ) : (
           <MinaBlockUserBrief
             ref={userBrief}

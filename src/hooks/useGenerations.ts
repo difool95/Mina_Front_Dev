@@ -49,7 +49,7 @@ export function useGenerationStatus(generationId: string | undefined, userId: st
     queryKey: queryKeys.generationStatus(generationId ?? ''),
     queryFn: () => getGenerationStatus(generationId!),
     enabled: Boolean(generationId),
-    //The refresh stops when the generation is done or errored, so the last status is always shown.
+    //This line is responsible of polling the generation status every GENERATION_POLL_MS milliseconds until the generation has ended. Once it has ended, it stops polling.
     refetchInterval: ({ state }) => (hasEnded(state.data?.status) ? false : GENERATION_POLL_MS),
   })
   const status = progress?.status

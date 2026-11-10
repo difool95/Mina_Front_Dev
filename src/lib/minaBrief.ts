@@ -1,4 +1,4 @@
-import type { MmaStatus } from '@/types'
+import type { MinaFlow, MmaStatus } from '@/types'
 
 /** How often the studio asks for a running generation's step. */
 export const GENERATION_POLL_MS = 5000
@@ -45,6 +45,13 @@ const MINA_LINES: Record<MmaStatus, string[][]> = {
   generating: [THINKING, RENDERING],
   done: [SAVED],
   error: [FAILED],
+}
+
+/** A Tweak's own lines: its start, and the prompt rewritten around the user's note. The other steps are a Create's. */
+const TWEAK_LINES: Record<MmaStatus, string[][]> = {
+  ...MINA_LINES,
+  progressing: [['got it lets refine that', 'okay making it even better', 'lets polish this up']],
+  prompting: [['rewriting the prompt around your note'], PROMPTING],
 }
 
 const CHITCHAT = [
@@ -100,9 +107,24 @@ const CHITCHAT = [
  * The `nth` line Mina types on `status`. `shown` is every line typed so far
  * in this generation, so chitchat only repeats once all of it has been used.
  */
-export function minaLine(status: MmaStatus, nth: number, shown: string[]) {
-  const fresh = CHITCHAT.filter((line) => !shown.includes(line))
-  const pool = MINA_LINES[status][nth] ?? (fresh.length ? fresh : CHITCHAT)
+export function minaLine(status: MmaStatus, nth: number, shown: string[], flow: MinaFlow = 'create') {
+  // A Tweak has its own lines; a Create uses the usual ones.
+  const linesByStatus = flow === 'tweak' ? TWEAK_LINES : MINA_LINES
 
-  return pool[Math.floor(Math.random() * pool.length)]!
+  // The groups of lines for the step the generation is on, e.g. prompting: [SCANNED, ONE_SHOT, PROMPTING].
+  const stepGroups = linesByStatus[status]
+
+  // The nth line of a step comes from its nth group: the 1st line from the 1st group, the 2nd from the 2nd…
+  let pool = stepGroups[nth]
+
+  // Once the step has used all its groups, Mina chitchats, picking lines she hasn't said yet in this generation.
+  if (!pool) {
+    const fresh = CHITCHAT.filter((line) => !shown.includes(line))
+    // Every chitchat line already said: start again from all of them.
+    pool = fresh.length ? fresh : CHITCHAT
+  }
+
+  // One line of the pool, at random.
+  const index = Math.floor(Math.random() * pool.length)
+  return pool[index]!
 }

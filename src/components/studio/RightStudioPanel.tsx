@@ -28,6 +28,8 @@ export function RightStudioPanel({
   mode,
   uploads,
   generations,
+  isBusy,
+  onTweak,
   onUpload,
   onSetScene,
   onRemove,
@@ -36,6 +38,10 @@ export function RightStudioPanel({
   uploads: StudioUpload[]
   /** The R2 URLs of the pictures Create made, newest first: they page before the uploads, so the carousel opens on the newest. */
   generations: string[]
+  /** While Mina is busy with a Create or an edit, which the edit tools wait for. */
+  isBusy: boolean
+  /** Tweak on a picture of the panel; false when it did not start (busy, or not enough matcha). */
+  onTweak: (imageUrl: string, brief: string) => boolean
   /** Create's button: picks the scene, as the "+ Scene" pill does. */
   onUpload: () => void
   /** Set Scene: makes the picture on show the scene upload. */
@@ -145,6 +151,8 @@ export function RightStudioPanel({
             <RightStudioEditBar
               editing={editing}
               onEditingChange={setEditing}
+              isBusy={isBusy}
+              onTweak={(brief) => Boolean(currentUrl) && onTweak(currentUrl!, brief)}
               pictureCount={shown.length}
               expandRatio={expandRatio}
               onExpandRatio={setExpandRatio}

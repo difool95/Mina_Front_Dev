@@ -19,6 +19,8 @@ import type { EditTool, Ratio } from '@/types'
 export function RightStudioEditBar({
   editing,
   onEditingChange,
+  isBusy,
+  onTweak,
   pictureCount,
   expandRatio,
   onExpandRatio,
@@ -26,6 +28,10 @@ export function RightStudioEditBar({
   editing: EditTool | 'menu'
   /** null goes back to the panel's normal bar. */
   onEditingChange: (next: EditTool | 'menu' | null) => void
+  /** While Mina is busy with a Create or an edit: the tools wait. */
+  isBusy: boolean
+  /** Tweak on the picture on show; false when it did not start. */
+  onTweak: (brief: string) => boolean
   /** The pictures in the panel, shown on the "all" buttons. */
   pictureCount: number
   /** Held by the panel, which draws Expand's frame in it. */
@@ -116,7 +122,10 @@ export function RightStudioEditBar({
         className="mina-studio__action body-text-button button underline"
         type="button"
         // Erase waits for a selection, which isn't built yet.
-        disabled={editing === 'Erase' || (editing === 'Prompt' && prompt.trim().length <= EDIT_PROMPT_MIN_LENGTH)}
+        disabled={
+          isBusy || editing === 'Erase' || (editing === 'Prompt' && prompt.trim().length <= EDIT_PROMPT_MIN_LENGTH)
+        }
+        onClick={editing === 'Prompt' ? () => onTweak(prompt.trim()) && setPrompt('') : undefined}
       >
         {cta}
       </button>

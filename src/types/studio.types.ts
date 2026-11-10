@@ -29,6 +29,23 @@ export interface MinaBlockHandle {
   showScene: () => void
   // Mina unticks these brand memories in the pill, for a Create that sent them without using them.
   untickMemories: (mgIds: string[]) => void
+  // Mina says this line in pink over the brief, as a warning.
+  sayWarning: (line: string) => void
+}
+
+/** What Mina is talking about while she types in the brief: a Create, or an edit tool's Tweak. */
+export type MinaFlow = 'create' | 'tweak'
+
+/** What an edit tool is sent (`POST /api/fingertips/<tool>`). */
+export interface FingertipsRequest {
+  /** The picture being edited, on our R2. */
+  imageUrl: string
+  /** Tweak's note: what to change. */
+  brief: string
+  lane: StillLane
+  /** The ratio pill's, for the picture's SEO only: the edit keeps the picture's own shape. */
+  aspectRatio: AspectRatio
+  platform: MmaPlatform
 }
 
 ///** One picture added under a "+" pill, in the order it was added. */

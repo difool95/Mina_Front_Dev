@@ -17,6 +17,8 @@ export type {
   AspectRatio,
   CarouselFingertips,
   EditTool,
+  FingertipsRequest,
+  MinaFlow,
   Fingertip,
   GenerationProgress,
   MinaBlockHandle,

@@ -44,6 +44,9 @@ export const EDIT_TOOL_BARS: Record<EditTool, { all?: string; cta: string }> = {
   Prompt: { cta: 'Tweak' },
 }
 
+/** The backend route of each edit tool that is wired (`/api/fingertips/<path>`). */
+export const FINGERTIPS_PATHS: Partial<Record<EditTool, string>> = { Prompt: 'tweak' }
+
 export const EDIT_PROMPT_PLACEHOLDER = 'Type your prompt and hit Tweak...'
 
 /** Tweak stays disabled until the prompt is longer than this. */

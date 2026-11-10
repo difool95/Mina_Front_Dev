@@ -4,7 +4,7 @@ import type { CreditLot, CustomerRole, MmaPreferences } from '@/types/customer.t
 
 import { supabase } from './supabase.client'
 
-/** The balance, expiry, auto-refill settings, credit lots and role the headers and profile show. */
+//This method returns the customer credits and the expiration date for the given user ID.
 export async function getCustomerCredits(userId: string) {
   const { data, error } = await supabase
     .from('mega_customers')
