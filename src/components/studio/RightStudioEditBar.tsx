@@ -129,12 +129,10 @@ export function RightStudioEditBar({
       <button
         className="mina-studio__action body-text-button button underline"
         type="button"
-        // Erase waits for a selection, which isn't built yet.
-        disabled={
-          isBusy || editing === 'Erase' || (editing === 'Prompt' && prompt.trim().length <= EDIT_PROMPT_MIN_LENGTH)
-        }
-        // Tweak, SVG, Remove Subject, Remove BG and Expand are wired so far; Tweak's note is cleared once it has been sent.
-        onClick={editing === 'Prompt' || editing === 'SVG' || editing === 'No Subject' || editing === 'No Background' || editing === 'Expand' ? () => onStartEditTool(editing, prompt.trim()) && setPrompt('') : undefined}
+        //The CTA button is disabled only when Mina is busy or when the user is in the prompt mode and the prompt is too short (less than 3 characters)
+        disabled={isBusy || (editing === 'Prompt' && prompt.trim().length <= EDIT_PROMPT_MIN_LENGTH)}
+        // The CTA button: Vectorize, Remove Subject, Remove Background, Expand, Erase, or Edit Prompt.
+        onClick={() => onStartEditTool(editing, prompt.trim()) && setPrompt('')}
       >
         {cta}
       </button>

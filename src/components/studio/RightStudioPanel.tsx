@@ -42,7 +42,14 @@ export function RightStudioPanel({
   /** While Mina is busy with a Create or an edit, which the edit tools wait for. */
   isBusy: boolean
   /** An edit tool on the picture on show (Tweak's note as `brief`); false when it did not start (busy, or not enough matcha). */
-  onFingertips: (tool: EditTool, imageUrl: string, brief?: string, imageUrls?: string[], expandRatio?: Ratio) => boolean
+  onFingertips: (
+    tool: EditTool,
+    imageUrl: string,
+    brief?: string,
+    imageUrls?: string[],
+    expandRatio?: Ratio,
+    eraseMask?: string,
+  ) => boolean
   /** Create's button: picks the scene, as the "+ Scene" pill does. */
   onUpload: () => void
   /** Set Scene: makes the picture on show the scene upload. */
@@ -98,6 +105,8 @@ export function RightStudioPanel({
     setIsFitted(true)
   }
   const [expandRatio, setExpandRatio] = useState<Ratio>(STUDIO_RATIOS[0]!.value)
+  // Erase's mask, drawn from the areas on the picture; null until there is one.
+  const [eraseMask, setEraseMask] = useState<string | null>(null)
   const [ratioWidth, ratioHeight] = expandRatio.split(':').map(Number)
   ///////////////////////////////////we need to know the generation id from the currentUrl to check if it is liked or not. We get the userId from the session and use it to fetch all
 //generations and liked generations. and from that we know which url's in the carousel are generations and which are not. We also check if the current generation is liked
@@ -118,7 +127,12 @@ export function RightStudioPanel({
               </div>
             ) : editing === 'Erase' && currentUrl ? (
               // Its areas belong to one picture: they start over on another.
-              <RightStudioErase key={currentUrl} imageUrl={currentUrl} onLeave={() => setEditing('menu')} />
+              <RightStudioErase
+                key={currentUrl}
+                imageUrl={currentUrl}
+                onLeave={() => setEditing('menu')}
+                onMaskChange={setEraseMask}
+              />
             ) : (
             /* Remounted whenever a picture comes or goes, so the page never points past the end. */
             <Carousel
@@ -158,7 +172,9 @@ export function RightStudioPanel({
               onEditingChange={setEditing}
               isBusy={isBusy}
               // The tool's "all" button edits every picture of the panel, but the CTA only edits the picture showing. The bar's "all" button is disabled while the CTA is busy.
-              onStartEditTool={(tool, brief, isAll) => Boolean(currentUrl) && onFingertips(tool, currentUrl!, brief, isAll ? shown : undefined, expandRatio)}
+              onStartEditTool={(tool, brief, isAll) =>
+                Boolean(currentUrl) && onFingertips(tool, currentUrl!, brief, isAll ? shown : undefined, expandRatio, eraseMask ?? undefined)
+              }
               pictureCount={shown.length}
               expandRatio={expandRatio}
               onExpandRatio={setExpandRatio}

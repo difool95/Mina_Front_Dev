@@ -97,7 +97,14 @@ export function StudioPage() {
 
   // An edit tool (Tweak, SVG) on the picture on show in the right panel, or Vectorize All on every picture (`imageUrls`).
   // Returns whether it started, so the edit bar only clears the note it was sent.
-  const startFingertips = (tool: EditTool, imageUrl: string, brief = '', imageUrls?: string[], expandRatio?: Ratio) => {
+  const startFingertips = (
+    tool: EditTool,
+    imageUrl: string,
+    brief = '',
+    imageUrls?: string[],
+    expandRatio?: Ratio,
+    eraseMask?: string,
+  ) => {
     if (!session || minaStatus) return false
 
     const { ratioIndex = 0, isLandscape = false, lane = 'niche' } = studioSession.read()
@@ -124,6 +131,8 @@ export function StudioPage() {
       // Expand grows the picture to the ratio picked in its bar; the other tools send the ratio pill's, for the SEO.
       aspectRatio: tool === 'Expand' && expandRatio ? expandRatio : studioRatio(ratioIndex, isLandscape),
       platform: STUDIO_RATIOS[ratioIndex]!.platform,
+      // Erase's areas, as the mask Bria erases.
+      mask: tool === 'Erase' ? eraseMask : undefined,
     })
     return true
   }

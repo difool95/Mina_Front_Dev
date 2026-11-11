@@ -1,6 +1,7 @@
 import type {
   AspectRatio,
   EditTool,
+  ErasePoint,
   Fingertip,
   MmaPlatform,
   Ratio,
@@ -45,10 +46,10 @@ export const EDIT_TOOL_BARS: Record<EditTool, { all?: string; cta: string }> = {
 }
 
 /** The backend route of each edit tool that is wired (`/api/fingertips/<path>`). */
-export const FINGERTIPS_PATHS: Partial<Record<EditTool, string>> = { Prompt: 'tweak', SVG: 'vectorize', 'No Subject': 'no-subject', 'No Background': 'no-background', Expand: 'expand' }
+export const FINGERTIPS_PATHS: Partial<Record<EditTool, string>> = { Prompt: 'tweak', SVG: 'vectorize', 'No Subject': 'no-subject', 'No Background': 'no-background', Expand: 'expand', Erase: 'erase' }
 
 /** What an edit tool costs per picture, in matchas. Tweak is priced by the lane instead, as a Create. */
-export const FINGERTIPS_MATCHAS: Partial<Record<EditTool, number>> = { SVG: 0.1, 'No Subject': 0.1, 'No Background': 0.1, Expand: 0.1 }
+export const FINGERTIPS_MATCHAS: Partial<Record<EditTool, number>> = { SVG: 0.1, 'No Subject': 0.1, 'No Background': 0.1, Expand: 0.1, Erase: 0.2 }
 
 export const EDIT_PROMPT_PLACEHOLDER = 'Type your prompt and hit Tweak...'
 
@@ -57,6 +58,27 @@ export const EDIT_PROMPT_MIN_LENGTH = 3
 
 /** Erase keeps at most this many areas: drawing one more drops the oldest. */
 export const ERASE_MAX_AREAS = 12
+
+//This method returns a mask for the Erase tool, based on the areas drawn by the user. The mask is a black and white image where the areas to be erased are white and the
+//rest is black. The mask is returned as a data URL that can be sent to the backend for processing.
+export function generateMask(areas: ErasePoint[][], width: number, height: number) {
+  const canvas = document.createElement('canvas')
+  canvas.width = width
+  canvas.height = height
+  const context = canvas.getContext('2d')!
+  context.fillStyle = 'black'
+  context.fillRect(0, 0, width, height)
+  context.fillStyle = 'white'
+
+  for (const area of areas) {
+    context.beginPath()
+    // The points are percentages of the picture; fill() closes the shape back to its start, as on screen.
+    for (const { x, y } of area) context.lineTo((x / 100) * width, (y / 100) * height)
+    context.fill()
+  }
+
+  return canvas.toDataURL('image/png')
+}
 
 /** How far Erase zooms out and in, from the picture's whole size (1). */
 export const ERASE_ZOOM_MIN = 0.5

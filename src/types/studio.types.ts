@@ -54,6 +54,8 @@ export interface FingertipsRequest {
   /** The ratio pill's, for the picture's SEO only: the edit keeps the picture's own shape. */
   aspectRatio: AspectRatio
   platform: MmaPlatform
+  /** Erase only: the mask drawn from its areas, as a PNG data URL. */
+  mask?: string
 }
 
 ///** One picture added under a "+" pill, in the order it was added. */

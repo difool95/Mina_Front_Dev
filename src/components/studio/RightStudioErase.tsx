@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type PointerEvent } from 'react'
 
 import { cfImageCarousel, imageWidthFor } from '@/lib/media'
-import { ERASE_MAX_AREAS, ERASE_ZOOM_MAX, ERASE_ZOOM_MIN, ERASE_ZOOM_SPEED } from '@/lib/studio'
+import { ERASE_MAX_AREAS, ERASE_ZOOM_MAX, ERASE_ZOOM_MIN, ERASE_ZOOM_SPEED, generateMask } from '@/lib/studio'
 import type { ErasePoint } from '@/types'
 
 const clamp = (value: number) => Math.min(100, Math.max(0, value))
@@ -39,8 +39,24 @@ const distance = ([a, b]: { x: number; y: number }[]) => Math.hypot(a!.x - b!.x,
  *
  * Its styles live in `StudioPage.css`, beside the rest of the studio's layout.
  */
-export function RightStudioErase({ imageUrl, onLeave }: { imageUrl: string; onLeave: () => void }) {
+export function RightStudioErase({
+  imageUrl,
+  onLeave,
+  onMaskChange,
+}: {
+  imageUrl: string
+  onLeave: () => void
+  /** The mask of the areas drawn, which the Erase button sends; null with no area. */
+  onMaskChange: (mask: string | null) => void
+}) {
   const [areas, setAreas] = useState<ErasePoint[][]>([])
+  const picture = useRef<HTMLImageElement>(null)
+
+  // Drawn at the picture's own size, so the mask has its ratio, as Bria asks.
+  useEffect(() => {
+    const { naturalWidth, naturalHeight } = picture.current!
+    onMaskChange(areas.length ? generateMask(areas, naturalWidth, naturalHeight) : null)
+  }, [areas, onMaskChange])
   // The area being drawn, while the button is held.
   const [drawing, setDrawing] = useState<ErasePoint[] | null>(null)
   const [view, setView] = useState<EraseView>({ scale: 1, x: 0, y: 0 })
@@ -169,6 +185,7 @@ export function RightStudioErase({ imageUrl, onLeave }: { imageUrl: string; onLe
         style={{ transform: `translate(${view.x}px, ${view.y}px) scale(${view.scale})` }}
       >
         <img
+          ref={picture}
           className="mina-studio__erase-picture"
           src={cfImageCarousel(imageUrl, imageWidthFor(1080))}
           alt=""
