@@ -33,14 +33,14 @@ export interface MinaBlockHandle {
   sayWarning: (line: string) => void
 }
 
-/** What Mina is talking about while she types in the brief: a Create, or an edit tool's Tweak. */
-export type MinaFlow = 'create' | 'tweak'
+/** What Mina is talking about while she types in the brief: a Create, or an edit tool (fingertips). */
+export type MinaFlow = 'create' | 'fingertips'
 
 /** What an edit tool is sent (`POST /api/fingertips/<tool>`). */
 export interface FingertipsRequest {
   /** The picture being edited, on our R2. */
   imageUrl: string
-  /** Tweak's note: what to change. */
+  /** Tweak's note: what to change. Ignored by the other tools. */
   brief: string
   lane: StillLane
   /** The ratio pill's, for the picture's SEO only: the edit keeps the picture's own shape. */

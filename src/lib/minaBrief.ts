@@ -47,8 +47,8 @@ const MINA_LINES: Record<MmaStatus, string[][]> = {
   error: [FAILED],
 }
 
-/** A Tweak's own lines: its start, and the prompt rewritten around the user's note. The other steps are a Create's. */
-const TWEAK_LINES: Record<MmaStatus, string[][]> = {
+/** The edit tools' own lines (Tweak, Vectorize…): their start, and Tweak's prompt rewritten around the note. The other steps are a Create's. */
+const FINGERTIPS_LINES: Record<MmaStatus, string[][]> = {
   ...MINA_LINES,
   progressing: [['got it lets refine that', 'okay making it even better', 'lets polish this up']],
   prompting: [['rewriting the prompt around your note'], PROMPTING],
@@ -108,8 +108,8 @@ const CHITCHAT = [
  * in this generation, so chitchat only repeats once all of it has been used.
  */
 export function minaLine(status: MmaStatus, nth: number, shown: string[], flow: MinaFlow = 'create') {
-  // A Tweak has its own lines; a Create uses the usual ones.
-  const linesByStatus = flow === 'tweak' ? TWEAK_LINES : MINA_LINES
+  // The edit tools (fingertips) have their own lines; a Create uses the usual ones.
+  const linesByStatus = flow === 'fingertips' ? FINGERTIPS_LINES : MINA_LINES
 
   // The groups of lines for the step the generation is on, e.g. prompting: [SCANNED, ONE_SHOT, PROMPTING].
   const stepGroups = linesByStatus[status]

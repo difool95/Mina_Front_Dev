@@ -13,9 +13,9 @@ import { useStartFingertips } from '@/hooks/useFingertips'
 import { useGenerationStatus, useStartStillGeneration } from '@/hooks/useGenerations'
 import { MINA_LOGO_URL } from '@/lib/constants'
 import { studioSession } from '@/lib/sessionStorage/studioSession'
-import { NEED_MATCHA_LINE, STILL_LANES, STUDIO_RATIOS, studioRatio, withScene } from '@/lib/studio'
+import { FINGERTIPS_MATCHAS, NEED_MATCHA_LINE, STILL_LANES, STUDIO_RATIOS, studioRatio, withScene } from '@/lib/studio'
 import { useAuth } from '@/providers/AuthProvider'
-import type { GenerationProgress, PickedBrandMemoryPictures, MinaBlockHandle, MmaStatus, StudioMode, StudioUpload } from '@/types'
+import type { EditTool, GenerationProgress, PickedBrandMemoryPictures, MinaBlockHandle, MmaStatus, StudioMode, StudioUpload } from '@/types'
 
 import './StudioPage.css'
 
@@ -88,15 +88,16 @@ export function StudioPage() {
   const editId = startEdit.data?.generationId
   const editProgress = useGenerationStatus(editId, session?.user.id)
 
-  // Tweak on a picture of the right panel, priced and rendered by the lane picked in the block.
+  // An edit tool (Tweak, SVG) on the picture on show in the right panel.
   // Returns whether it started, so the edit bar only clears the note it was sent.
-  const tweak = (imageUrl: string, brief: string) => {
+  const startFingertips = (tool: EditTool, imageUrl: string, brief = '') => {
     if (!session || minaStatus) return false
 
     const { ratioIndex = 0, isLandscape = false, lane = 'niche' } = studioSession.read()
 
     const balance = credits?.mg_credits ?? 0
-    const price = STILL_LANES.find((entry) => entry.lane === lane)!.matchas
+    // The tool's own price (SVG), or for Tweak the lane picked in the block, as a Create.
+    const price = FINGERTIPS_MATCHAS[tool] ?? STILL_LANES.find((entry) => entry.lane === lane)!.matchas
     // Only once the balance has loaded: before that, the API checks it anyway.
     const isShort = hasCredits && balance < price
     if (isShort) {
@@ -107,7 +108,7 @@ export function StudioPage() {
 
     startEdit.mutate({
       token: session.access_token,
-      tool: 'Prompt',
+      tool,
       imageUrl,
       brief,
       lane,
@@ -117,7 +118,7 @@ export function StudioPage() {
     return true
   }
 
-  // ─── Shared by both: the picture list, and what Mina shows while one runs ───
+  // ─── Shared by both (Edit tools + Create) ───
   //We get the generations from the studio session storage and set them to the state variable generations.
   const [generations, setGenerations] = useState<string[]>(() => studioSession.read().generations ?? [])
   //We save the generations to the session storage whenever the generations state changes. This ensures that the generations are persisted across page
@@ -130,7 +131,7 @@ export function StudioPage() {
     // A Create has an id: Mina talks about the Create.
     running = createProgress
   } else {
-    // No Create running: the Tweak's progress, or undefined when no Tweak is running either.
+    // No Create running: the edit's progress, or undefined when no edit is running either.
     running = editProgress
   }
   // A done picture shows the moment it is ready, and joins `generations` for good once Mina has finished talking.
@@ -224,7 +225,7 @@ export function StudioPage() {
             uploads={uploads}
             onUploads={setUploads}
             minaStatus={minaStatus}
-            minaFlow={isEditing ? 'tweak' : 'create'}
+            minaFlow={isEditing ? 'fingertips' : 'create'}
             onMinaEnd={endMina}
           />
         </main>
@@ -236,8 +237,10 @@ export function StudioPage() {
         mode={mode}
         uploads={uploads}
         generations={shownGenerations}
+        //This return true if the minaStatus is not undefined, which means that the MinaBlock is currently processing a request. 
+        //This disables the edit tools in the RightStudioPanel while Mina is busy.
         isBusy={Boolean(minaStatus)}
-        onTweak={tweak}
+        onFingertips={startFingertips}
         onUpload={() => block.current?.OpenFilePickerScene()}
         onSetScene={(url) => {
           //This line updates the uploads state to include the new scene upload. It filters out any existing scene uploads and adds the new scene upload

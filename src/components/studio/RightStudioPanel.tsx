@@ -29,7 +29,7 @@ export function RightStudioPanel({
   uploads,
   generations,
   isBusy,
-  onTweak,
+  onFingertips,
   onUpload,
   onSetScene,
   onRemove,
@@ -40,8 +40,8 @@ export function RightStudioPanel({
   generations: string[]
   /** While Mina is busy with a Create or an edit, which the edit tools wait for. */
   isBusy: boolean
-  /** Tweak on a picture of the panel; false when it did not start (busy, or not enough matcha). */
-  onTweak: (imageUrl: string, brief: string) => boolean
+  /** An edit tool on the picture on show (Tweak's note as `brief`); false when it did not start (busy, or not enough matcha). */
+  onFingertips: (tool: EditTool, imageUrl: string, brief?: string) => boolean
   /** Create's button: picks the scene, as the "+ Scene" pill does. */
   onUpload: () => void
   /** Set Scene: makes the picture on show the scene upload. */
@@ -152,7 +152,8 @@ export function RightStudioPanel({
               editing={editing}
               onEditingChange={setEditing}
               isBusy={isBusy}
-              onTweak={(brief) => Boolean(currentUrl) && onTweak(currentUrl!, brief)}
+              // The tool's "all" button edits every picture of the panel, but the CTA only edits the picture showing. The bar's "all" button is disabled while the CTA is busy.
+              onStartEditTool={(tool, brief) => Boolean(currentUrl) && onFingertips(tool, currentUrl!, brief)}
               pictureCount={shown.length}
               expandRatio={expandRatio}
               onExpandRatio={setExpandRatio}

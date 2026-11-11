@@ -20,7 +20,7 @@ export function RightStudioEditBar({
   editing,
   onEditingChange,
   isBusy,
-  onTweak,
+  onStartEditTool,
   pictureCount,
   expandRatio,
   onExpandRatio,
@@ -30,8 +30,8 @@ export function RightStudioEditBar({
   onEditingChange: (next: EditTool | 'menu' | null) => void
   /** While Mina is busy with a Create or an edit: the tools wait. */
   isBusy: boolean
-  /** Tweak on the picture on show; false when it did not start. */
-  onTweak: (brief: string) => boolean
+  /** Starts the tool on the picture on show; false when it did not start. */
+  onStartEditTool: (tool: EditTool, brief?: string) => boolean
   /** The pictures in the panel, shown on the "all" buttons. */
   pictureCount: number
   /** Held by the panel, which draws Expand's frame in it. */
@@ -125,7 +125,8 @@ export function RightStudioEditBar({
         disabled={
           isBusy || editing === 'Erase' || (editing === 'Prompt' && prompt.trim().length <= EDIT_PROMPT_MIN_LENGTH)
         }
-        onClick={editing === 'Prompt' ? () => onTweak(prompt.trim()) && setPrompt('') : undefined}
+        // Tweak and SVG are wired so far; Tweak's note is cleared once it has been sent.
+        onClick={editing === 'Prompt' || editing === 'SVG' ? () => onStartEditTool(editing, prompt.trim()) && setPrompt('') : undefined}
       >
         {cta}
       </button>
