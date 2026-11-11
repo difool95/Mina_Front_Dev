@@ -139,6 +139,21 @@
   transform: scale(1.03);
 }
 
+/* An edit tool's creation: the picture before the edit, laid over the result and
+   shown on hover. On the page's ground, so a result of another shape (Expand)
+   doesn't show around it. */
+.mina-creation__before {
+  position: absolute;
+  inset: 0;
+  transition: opacity var(--mina-anim-fade) ease;
+  opacity: 0;
+  background: var(--mina-bg);
+}
+
+.mina-creation:hover .mina-creation__before {
+  opacity: 1;
+}
+
 /* An edit tool's creation: the edit fingertip's icon on a light disc, bottom left.
    The svg draws in `currentColor`, so it is a mask filled with the disc's ink. */
 .mina-creation__fingertips {

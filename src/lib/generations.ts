@@ -1,6 +1,7 @@
 import { studioSetup } from '@/lib/studio'
 import type { StudioSetup } from '@/types'
 import type {
+  FingertipsMmaVars,
   MegaGeneration,
   ModeFilter,
   Ratio,
@@ -68,6 +69,13 @@ export function isMotion(generation: MegaGeneration) {
 /** Made by one of the studio's edit tools (Tweak, Erase, Expand…) rather than a Create. */
 export function isFingertips(generation: MegaGeneration) {
   return generation.mg_mma_mode === 'fingertips'
+}
+
+/** An edit tool's picture before the edit, from its own `mg_mma_vars` */
+export function beforeEditOf(generation: MegaGeneration) {
+  if (!isFingertips(generation)) return undefined
+
+  return (generation.mg_mma_vars as FingertipsMmaVars | null)?.inputs.image
 }
 
 /** The brief the user typed, buried in the studio's own blob of inputs. */

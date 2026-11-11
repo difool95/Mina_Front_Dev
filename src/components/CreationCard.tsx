@@ -2,7 +2,7 @@ import type { CSSProperties } from 'react'
 import { useState } from 'react'
 
 import { useInView } from '@/hooks/useInView'
-import { isFingertips, isMotion, promptOf } from '@/lib/generations'
+import { beforeEditOf, isFingertips, isMotion, promptOf } from '@/lib/generations'
 import type { MegaGeneration } from '@/types/generation.types'
 
 import { CreationMedia } from './CreationMedia'
@@ -43,6 +43,8 @@ export function CreationCard({
 
   const url = generation.mg_output_url ?? ''
   const prompt = promptOf(generation)
+  // An edit tool's picture before the edit, shown over the result on hover.
+  const before = beforeEditOf(generation)
 
   return (
     <article
@@ -104,6 +106,11 @@ export function CreationCard({
         onClick={onOpen}
       >
         <CreationMedia url={url} alt={prompt} motion={isMotion(generation)} />
+        {before && (
+          <span className="mina-creation__before">
+            <CreationMedia url={before} alt="" motion={false} />
+          </span>
+        )}
         {/* Made by an edit tool of the studio rather than a Create. */}
         {isFingertips(generation) && <span className="mina-creation__fingertips" aria-label="Edited with fingertips" />}
       </button>
