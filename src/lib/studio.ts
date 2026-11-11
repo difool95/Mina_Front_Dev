@@ -45,10 +45,10 @@ export const EDIT_TOOL_BARS: Record<EditTool, { all?: string; cta: string }> = {
 }
 
 /** The backend route of each edit tool that is wired (`/api/fingertips/<path>`). */
-export const FINGERTIPS_PATHS: Partial<Record<EditTool, string>> = { Prompt: 'tweak', SVG: 'vectorize' }
+export const FINGERTIPS_PATHS: Partial<Record<EditTool, string>> = { Prompt: 'tweak', SVG: 'vectorize', 'No Subject': 'no-subject' }
 
 /** What an edit tool costs per picture, in matchas. Tweak is priced by the lane instead, as a Create. */
-export const FINGERTIPS_MATCHAS: Partial<Record<EditTool, number>> = { SVG: 0.1 }
+export const FINGERTIPS_MATCHAS: Partial<Record<EditTool, number>> = { SVG: 0.1, 'No Subject': 0.1 }
 
 export const EDIT_PROMPT_PLACEHOLDER = 'Type your prompt and hit Tweak...'
 

@@ -132,8 +132,8 @@ export function RightStudioEditBar({
         disabled={
           isBusy || editing === 'Erase' || (editing === 'Prompt' && prompt.trim().length <= EDIT_PROMPT_MIN_LENGTH)
         }
-        // Tweak and SVG are wired so far; Tweak's note is cleared once it has been sent.
-        onClick={editing === 'Prompt' || editing === 'SVG' ? () => onStartEditTool(editing, prompt.trim()) && setPrompt('') : undefined}
+        // Tweak, SVG and Remove Subject are wired so far; Tweak's note is cleared once it has been sent.
+        onClick={editing === 'Prompt' || editing === 'SVG' || editing === 'No Subject' ? () => onStartEditTool(editing, prompt.trim()) && setPrompt('') : undefined}
       >
         {cta}
       </button>
