@@ -103,8 +103,8 @@ export function RightStudioEditBar({
             className="mina-studio__action body-text-button button"
             type="button"
             disabled={isBusy}
-            // The "all" buttons: only Vectorize All is wired so far (Remove all BG / Remove all Subject are not).
-            onClick={editing === 'SVG' ? () => onStartEditTool(editing, '', true) : undefined}
+            // The "all" buttons: Vectorize All and Remove all Subject are wired so far (Remove all BG is not).
+            onClick={editing === 'SVG' || editing === 'No Subject' ? () => onStartEditTool(editing, '', true) : undefined}
           >
             {all} ({pictureCount})
           </button>
