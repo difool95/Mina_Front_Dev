@@ -133,8 +133,8 @@ export function RightStudioEditBar({
         disabled={
           isBusy || editing === 'Erase' || (editing === 'Prompt' && prompt.trim().length <= EDIT_PROMPT_MIN_LENGTH)
         }
-        // Tweak, SVG, Remove Subject and Remove BG are wired so far; Tweak's note is cleared once it has been sent.
-        onClick={editing === 'Prompt' || editing === 'SVG' || editing === 'No Subject' || editing === 'No Background' ? () => onStartEditTool(editing, prompt.trim()) && setPrompt('') : undefined}
+        // Tweak, SVG, Remove Subject, Remove BG and Expand are wired so far; Tweak's note is cleared once it has been sent.
+        onClick={editing === 'Prompt' || editing === 'SVG' || editing === 'No Subject' || editing === 'No Background' || editing === 'Expand' ? () => onStartEditTool(editing, prompt.trim()) && setPrompt('') : undefined}
       >
         {cta}
       </button>

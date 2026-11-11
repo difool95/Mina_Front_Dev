@@ -16,7 +16,7 @@ import { hasEnded } from '@/lib/minaBrief'
 import { studioSession } from '@/lib/sessionStorage/studioSession'
 import { FINGERTIPS_MATCHAS, NEED_MATCHA_LINE, STILL_LANES, STUDIO_RATIOS, studioRatio, withScene } from '@/lib/studio'
 import { useAuth } from '@/providers/AuthProvider'
-import type { EditTool, GenerationProgress, PickedBrandMemoryPictures, MinaBlockHandle, MmaStatus, StudioMode, StudioUpload } from '@/types'
+import type { EditTool, GenerationProgress, Ratio, PickedBrandMemoryPictures, MinaBlockHandle, MmaStatus, StudioMode, StudioUpload } from '@/types'
 
 import './StudioPage.css'
 
@@ -97,7 +97,7 @@ export function StudioPage() {
 
   // An edit tool (Tweak, SVG) on the picture on show in the right panel, or Vectorize All on every picture (`imageUrls`).
   // Returns whether it started, so the edit bar only clears the note it was sent.
-  const startFingertips = (tool: EditTool, imageUrl: string, brief = '', imageUrls?: string[]) => {
+  const startFingertips = (tool: EditTool, imageUrl: string, brief = '', imageUrls?: string[], expandRatio?: Ratio) => {
     if (!session || minaStatus) return false
 
     const { ratioIndex = 0, isLandscape = false, lane = 'niche' } = studioSession.read()
@@ -121,7 +121,8 @@ export function StudioPage() {
       imageUrls,
       brief,
       lane,
-      aspectRatio: studioRatio(ratioIndex, isLandscape),
+      // Expand grows the picture to the ratio picked in its bar; the other tools send the ratio pill's, for the SEO.
+      aspectRatio: tool === 'Expand' && expandRatio ? expandRatio : studioRatio(ratioIndex, isLandscape),
       platform: STUDIO_RATIOS[ratioIndex]!.platform,
     })
     return true
