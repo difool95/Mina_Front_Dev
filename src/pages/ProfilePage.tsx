@@ -232,7 +232,8 @@ export function ProfilePage() {
             <Row>
               <span className="mina-profile__field mina-profile__field--matcha">
                 <span className="mina-profile__label paragraph-title">Matcha</span>
-                <span className="mina-profile__value paragraph-title muted">{credits?.mg_credits ?? 0}</span>
+                <span className="mina-profile__value paragraph-title muted">{/* Whole matchas only: 25.9 shows 25, since a Create needs whole ones. */}
+                  {Math.floor(credits?.mg_credits ?? 0)}</span>
               </span>
 
               <span className="mina-profile__field mina-profile__field--expiry">
