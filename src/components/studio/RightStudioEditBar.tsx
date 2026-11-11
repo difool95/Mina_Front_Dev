@@ -97,7 +97,8 @@ export function RightStudioEditBar({
             autoFocus
           />
         )}
-        {all && (
+        {/* The "all" buttons only show when there are multiple pictures */}
+        {all && pictureCount > 1 && (
           <button
             className="mina-studio__action body-text-button button"
             type="button"
