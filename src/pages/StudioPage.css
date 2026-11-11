@@ -172,6 +172,63 @@
   object-fit: contain;
 }
 
+/* Erase: as big as the fitted carousel picture, without Expand's room around its frame. */
+.mina-studio__alone--erase {
+  padding: 0;
+  /* Zoomed in, the picture stays inside the stage. */
+  overflow: hidden;
+  /* A pinch zooms the picture rather than the page. */
+  touch-action: none;
+}
+
+/* Space held: the pointer grabs the picture, over it or around it. */
+.mina-studio__alone--grab,
+.mina-studio__alone--grab .mina-studio__areas {
+  cursor: grab;
+}
+
+.mina-studio__alone--grab:active,
+.mina-studio__alone--grab:active .mina-studio__areas {
+  cursor: grabbing;
+}
+
+/* Shrinks to the picture, so the areas laid over it line up with it. */
+.mina-studio__erase {
+  position: relative;
+}
+
+.mina-studio__erase-picture {
+  display: block;
+  max-width: 100cqw;
+  max-height: 100cqh;
+  user-select: none;
+}
+
+.mina-studio__areas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+  /* The pointer draws rather than scrolling the page on a touch screen. */
+  touch-action: none;
+}
+
+.mina-studio__area {
+  fill: var(--mina-erase-fill);
+  stroke: var(--mina-erase-line);
+  stroke-width: 1;
+  stroke-dasharray: 4 3;
+  animation: mina-studio-march var(--mina-erase-march) linear infinite;
+}
+
+/* One dash and its gap (4 + 3), so the loop never jumps. */
+@keyframes mina-studio-march {
+  to {
+    stroke-dashoffset: -7;
+  }
+}
+
 .mina-studio__hint {
   position: absolute;
   bottom: 12px;

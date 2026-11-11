@@ -3,6 +3,12 @@ export type StudioMode = 'create' | 'animate'
 /** Right Studio bottom bar tools */
 export type EditTool = 'Erase' | 'Expand' | 'No Background' | 'No Subject' | 'SVG' | 'Prompt'
 
+/** One point of an Erase area, from 0 to 100 across and down the picture, so it keeps its place at any size. */
+export interface ErasePoint {
+  x: number
+  y: number
+}
+
 //** The kind of upload, which determines which library it can be picked from. */
 export type UploadKind = 'scene' | 'logo' | 'product'
 

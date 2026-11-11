@@ -55,9 +55,19 @@ export const EDIT_PROMPT_PLACEHOLDER = 'Type your prompt and hit Tweak...'
 /** Tweak stays disabled until the prompt is longer than this. */
 export const EDIT_PROMPT_MIN_LENGTH = 3
 
+/** Erase keeps at most this many areas: drawing one more drops the oldest. */
+export const ERASE_MAX_AREAS = 12
+
+/** How far Erase zooms out and in, from the picture's whole size (1). */
+export const ERASE_ZOOM_MIN = 0.5
+export const ERASE_ZOOM_MAX = 4
+
+/** How much one pixel of scroll zooms Erase: small, so a trackpad's many little scrolls stay smooth. */
+export const ERASE_ZOOM_SPEED = 0.002
+
 /** Shown over the picture while Erase is open. */
 export const ERASE_HINT =
-  'Tap an object to select it · Shift adds · Alt cuts · Scroll or pinch to zoom · Space+drag pans · Esc clears'
+  'Tap an object to select it · Shift adds · Scroll or pinch to zoom · Space+drag pans · Esc clears'
 
 /** The block's call to action, per mode. */
 export const STUDIO_CTA_LABELS: Record<StudioMode, string> = {

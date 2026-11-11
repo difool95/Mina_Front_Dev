@@ -17,6 +17,7 @@ import type { EditTool, Ratio, StudioMode, StudioUpload } from '@/types'
 
 import { Carousel } from '../Carousel'
 import { RightStudioEditBar } from './RightStudioEditBar'
+import { RightStudioErase } from './RightStudioErase'
 
 /**
  * The studio's right side: every picture added under the pills, stacked in
@@ -115,10 +116,15 @@ export function RightStudioPanel({
                   <img className="mina-studio__picture" src={cfImageCarousel(currentUrl, imageWidthFor(1080))} alt="" />
                 </div>
               </div>
+            ) : editing === 'Erase' && currentUrl ? (
+              // Its areas belong to one picture: they start over on another.
+              <RightStudioErase key={currentUrl} imageUrl={currentUrl} onLeave={() => setEditing('menu')} />
             ) : (
             /* Remounted whenever a picture comes or goes, so the page never points past the end. */
             <Carousel
               key={shown.length}
+              // Back from Expand or Erase on the picture they showed.
+              startIndex={current}
               onIndexChange={setCurrent}
               media={shown.map((url) => ({
                 id: url,
@@ -131,8 +137,7 @@ export function RightStudioPanel({
               fingertips={{
                 canLike: Boolean(generation),
                 isLiked,
-                // Erase always shows the whole picture.
-                isFitted: isFitted || editing === 'Erase',
+                isFitted,
                 onZoom: () => setIsFitted(!isFitted),
                 onLike: toggleLike,
                 onDownload: saveFile,

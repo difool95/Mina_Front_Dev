@@ -98,6 +98,9 @@
   --mina-surface-bar: #EEEEE2; /* the action bar under the studio pictures */
   --mina-frame-line: #A9BCF5; /* Expand's frame around the studio picture */
   --mina-frame-fill: #E2E3E1; /* the room inside that frame Expand will fill */
+  --mina-erase-line: var(--mina-red); /* the dashed border of an area Erase will erase */
+  --mina-erase-fill: #E9090926; /* the inside of that area */
+  --mina-erase-march: 250ms; /* one step of that dashed border moving round */
   /* ── Motion ── */
   --mina-talk-speed: 1ms;    /* Mina's typing — ms per letter, lower = faster */
   --mina-anim-zoom: 220ms;   /* media hover zoom */
