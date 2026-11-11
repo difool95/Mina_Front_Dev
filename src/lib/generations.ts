@@ -65,6 +65,11 @@ export function isMotion(generation: MegaGeneration) {
   return generation.mg_mma_mode?.toLowerCase() === 'video'
 }
 
+/** Made by one of the studio's edit tools (Tweak, Erase, Expand…) rather than a Create. */
+export function isFingertips(generation: MegaGeneration) {
+  return generation.mg_mma_mode === 'fingertips'
+}
+
 /** The brief the user typed, buried in the studio's own blob of inputs. */
 export function promptOf(generation: MegaGeneration) {
   return generation.mg_mma_vars?.inputs?.brief ?? generation.mg_prompt ?? ''

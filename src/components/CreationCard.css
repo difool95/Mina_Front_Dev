@@ -139,6 +139,30 @@
   transform: scale(1.03);
 }
 
+/* An edit tool's creation: the edit fingertip's icon on a light disc, bottom left.
+   The svg draws in `currentColor`, so it is a mask filled with the disc's ink. */
+.mina-creation__fingertips {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--mina-bg) 85%, transparent);
+  color: var(--mina-ink);
+  pointer-events: none;
+}
+
+.mina-creation__fingertips::before {
+  width: 12px;
+  height: 12px;
+  background: currentColor;
+  mask: url('/assets/icons/fingerprint-fingertips-edit-toolkit-opener.svg') center / contain no-repeat;
+  content: '';
+}
+
 /* Only the skeleton draws this now; a real creation carries the panel below. */
 .mina-creation__foot {
   display: flex;

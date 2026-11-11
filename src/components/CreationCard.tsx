@@ -2,7 +2,7 @@ import type { CSSProperties } from 'react'
 import { useState } from 'react'
 
 import { useInView } from '@/hooks/useInView'
-import { isMotion, promptOf } from '@/lib/generations'
+import { isFingertips, isMotion, promptOf } from '@/lib/generations'
 import type { MegaGeneration } from '@/types/generation.types'
 
 import { CreationMedia } from './CreationMedia'
@@ -104,6 +104,8 @@ export function CreationCard({
         onClick={onOpen}
       >
         <CreationMedia url={url} alt={prompt} motion={isMotion(generation)} />
+        {/* Made by an edit tool of the studio rather than a Create. */}
+        {isFingertips(generation) && <span className="mina-creation__fingertips" aria-label="Edited with fingertips" />}
       </button>
 
       <CreationOtherPanel generation={generation} isOpen={isPanelOpen} onToggle={onTogglePanel} />
