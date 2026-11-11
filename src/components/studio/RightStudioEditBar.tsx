@@ -71,6 +71,7 @@ export function RightStudioEditBar({
                 className="mina-studio__action body-text-button button"
                 type="button"
                 key={tool}
+                //this line changes the editting mode to the tool that was clicked on (it changes the editing state to the tool that was clicked on)
                 onClick={() => onEditingChange(tool)}
               >
                 {tool}
@@ -103,8 +104,8 @@ export function RightStudioEditBar({
             className="mina-studio__action body-text-button button"
             type="button"
             disabled={isBusy}
-            // The "all" buttons: Vectorize All and Remove all Subject are wired so far (Remove all BG is not).
-            onClick={editing === 'SVG' || editing === 'No Subject' ? () => onStartEditTool(editing, '', true) : undefined}
+            // The "all" buttons: Vectorize All, Remove all Subject and Remove all BG.
+            onClick={editing === 'SVG' || editing === 'No Subject' || editing === 'No Background' ? () => onStartEditTool(editing, '', true) : undefined}
           >
             {all} ({pictureCount})
           </button>
