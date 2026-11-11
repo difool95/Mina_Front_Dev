@@ -9,5 +9,8 @@ import { apiPost } from './api.client'
  * at once: the studio follows the generation as it does a Create's.
  */
 export function startFingertips(token: string, tool: EditTool, body: FingertipsRequest) {
-  return apiPost<StillGenerationResult>(`/api/fingertips/${FINGERTIPS_PATHS[tool]}`, token, body)
+  // Several pictures (Vectorize All) go to the tool's "all" route, which answers `generationIds`, one per picture.
+  const path = body.imageUrls ? `${FINGERTIPS_PATHS[tool]}-all` : FINGERTIPS_PATHS[tool]
+
+  return apiPost<StillGenerationResult & { generationIds?: string[] }>(`/api/fingertips/${path}`, token, body)
 }

@@ -30,8 +30,8 @@ export function RightStudioEditBar({
   onEditingChange: (next: EditTool | 'menu' | null) => void
   /** While Mina is busy with a Create or an edit: the tools wait. */
   isBusy: boolean
-  /** Starts the tool on the picture on show; false when it did not start. */
-  onStartEditTool: (tool: EditTool, brief?: string) => boolean
+  /** Starts the tool on the picture on show, or on every picture (`isAll`); false when it did not start. */
+  onStartEditTool: (tool: EditTool, brief?: string, isAll?: boolean) => boolean
   /** The pictures in the panel, shown on the "all" buttons. */
   pictureCount: number
   /** Held by the panel, which draws Expand's frame in it. */
@@ -98,7 +98,13 @@ export function RightStudioEditBar({
           />
         )}
         {all && (
-          <button className="mina-studio__action body-text-button button" type="button">
+          <button
+            className="mina-studio__action body-text-button button"
+            type="button"
+            disabled={isBusy}
+            // The "all" buttons: only Vectorize All is wired so far (Remove all BG / Remove all Subject are not).
+            onClick={editing === 'SVG' ? () => onStartEditTool(editing, '', true) : undefined}
+          >
             {all} ({pictureCount})
           </button>
         )}

@@ -40,6 +40,8 @@ export type MinaFlow = 'create' | 'fingertips'
 export interface FingertipsRequest {
   /** The picture being edited, on our R2. */
   imageUrl: string
+  /** Vectorize All: every picture of the carousel, sent to the tool's `-all` route instead. */
+  imageUrls?: string[]
   /** Tweak's note: what to change. Ignored by the other tools. */
   brief: string
   lane: StillLane

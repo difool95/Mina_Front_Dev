@@ -9,9 +9,10 @@ import { RightStudioPanel } from '@/components/studio/RightStudioPanel'
 import { RoleTagCard } from '@/components/RoleTagCard'
 import { useAccountSetup } from '@/hooks/useAccounts'
 import { useCustomerCredits } from '@/hooks/useCustomerCredits'
-import { useStartFingertips } from '@/hooks/useFingertips'
+import { useFingertipsStatuses, useStartFingertips } from '@/hooks/useFingertips'
 import { useGenerationStatus, useStartStillGeneration } from '@/hooks/useGenerations'
 import { MINA_LOGO_URL } from '@/lib/constants'
+import { hasEnded } from '@/lib/minaBrief'
 import { studioSession } from '@/lib/sessionStorage/studioSession'
 import { FINGERTIPS_MATCHAS, NEED_MATCHA_LINE, STILL_LANES, STUDIO_RATIOS, studioRatio, withScene } from '@/lib/studio'
 import { useAuth } from '@/providers/AuthProvider'
@@ -87,17 +88,24 @@ export function StudioPage() {
   //the generationId is returned as part of the response from the startEdit.mutate function, which is called when the user initiates an edit on a picture.
   const editId = startEdit.data?.generationId
   const editProgress = useGenerationStatus(editId, session?.user.id)
+  // Vectorize All: We get the status of all the generations that are currently being processed by the server. This is done using the useFingertipsStatuses hook,
+  // which takes in an array of generationIds and the userId as parameters and returns an array of statuses for each generation.
+  const allIds = startEdit.data?.generationIds ?? []
+  const allStatuses = useFingertipsStatuses(allIds, session?.user.id)
+  const allDone = allStatuses.filter((status) => status?.status === 'done')
+  const allWorking = allStatuses.findIndex((status) => !hasEnded(status?.status))
 
-  // An edit tool (Tweak, SVG) on the picture on show in the right panel.
+  // An edit tool (Tweak, SVG) on the picture on show in the right panel, or Vectorize All on every picture (`imageUrls`).
   // Returns whether it started, so the edit bar only clears the note it was sent.
-  const startFingertips = (tool: EditTool, imageUrl: string, brief = '') => {
+  const startFingertips = (tool: EditTool, imageUrl: string, brief = '', imageUrls?: string[]) => {
     if (!session || minaStatus) return false
 
     const { ratioIndex = 0, isLandscape = false, lane = 'niche' } = studioSession.read()
 
     const balance = credits?.mg_credits ?? 0
     // The tool's own price (SVG), or for Tweak the lane picked in the block, as a Create.
-    const price = FINGERTIPS_MATCHAS[tool] ?? STILL_LANES.find((entry) => entry.lane === lane)!.matchas
+    const price =
+      (FINGERTIPS_MATCHAS[tool] ?? STILL_LANES.find((entry) => entry.lane === lane)!.matchas) * (imageUrls?.length ?? 1)
     // Only once the balance has loaded: before that, the API checks it anyway.
     const isShort = hasCredits && balance < price
     if (isShort) {
@@ -110,6 +118,7 @@ export function StudioPage() {
       token: session.access_token,
       tool,
       imageUrl,
+      imageUrls,
       brief,
       lane,
       aspectRatio: studioRatio(ratioIndex, isLandscape),
@@ -130,6 +139,18 @@ export function StudioPage() {
   if (generationId) {
     // A Create has an id: Mina talks about the Create.
     running = createProgress
+  } else if (allIds.length) {
+    // Vectorize All: Mina talks about one of its generations at a time.
+    if (allWorking !== -1) {
+      // At least one is still working: the first of them, so Mina follows its step.
+      running = allStatuses[allWorking]
+    } else if (allDone.length) {
+      // All have ended and at least one made its SVG: a done one, so Mina says it's done.
+      running = allDone[0]
+    } else {
+      // All have ended and none made its SVG: a failed one, so Mina says it failed.
+      running = allStatuses[0]
+    }
   } else {
     // No Create running: the edit's progress, or undefined when no edit is running either.
     running = editProgress
@@ -138,7 +159,14 @@ export function StudioPage() {
   let shownGenerations: string[]
   if (running?.status === 'done') {
     // The run has finished: its new picture first, so the carousel opens on it, then the pictures already made.
-    shownGenerations = [running.outputUrl, ...generations]
+    if (allIds.length) {
+      //This is for adding the pictures of Vectorize All, which are not in the `generations` list yet. The new pictures are first, so the carousel opens on them.
+      const svgUrls = allDone.map((status) => status!.outputUrl)
+      shownGenerations = [...svgUrls, ...generations]
+    } else {
+      // This is for adding the pictures of create and Tweak and one SVG, which are not in the `generations` list yet. The new picture is first, so the carousel opens on it.
+      shownGenerations = [running.outputUrl, ...generations]
+    }
   } else {
     // Nothing running, still working, or failed: no new picture.
     shownGenerations = generations
@@ -157,7 +185,8 @@ export function StudioPage() {
   // `progressing` covers the request itself, before there is a status to read.
   // A Create or a Tweak was clicked (the request is on its way) or is running (it has an id to poll).
   const isCreating = startGeneration.isPending || Boolean(generationId)
-  const isEditing = startEdit.isPending || Boolean(editId)
+  //All the variables are reset once the generation has ended and EndMina is called.
+  const isEditing = startEdit.isPending || Boolean(editId) || allIds.length > 0
 
   let minaStatus: MmaStatus | undefined
   if (isCreating || isEditing) {
