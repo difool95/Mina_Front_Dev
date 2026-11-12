@@ -9,8 +9,10 @@ export type ArchiveLayout = 'editorial' | 'library'
 
 /** The `mg_mma_vars` of an edit tool's generation (`mg_mma_mode` "fingertips"): its input picture. Same as the API's. */
 export interface FingertipsMmaVars {
+  mode: 'fingertips'
   assets: { product_image_url: string }
   inputs: { image: string; preserve_alpha: boolean; mask_image?: string }
+  meta: { billing: { matchas: number } }
   modelKey: string
 }
 
