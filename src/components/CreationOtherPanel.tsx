@@ -100,7 +100,8 @@ export function CreationOtherPanel({ generation, isOpen, onToggle }: CreationOth
     ['Ratio', details.ratio],
     ['Matcha', `${details.matchas} Matcha`],
     ['Created', formatDateTime(generation.mg_created_at)],
-  ]
+    // We only show the lines that have values, so the panel is not cluttered with empty rows.
+  ].filter(([, value]) => value)
 
   return (
     <Table className="mina-other">
