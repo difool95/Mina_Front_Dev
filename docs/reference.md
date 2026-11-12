@@ -18,6 +18,15 @@ Use this page to answer "where does this data come from?" or "who calls this?". 
 | `useCopyMedia` | `copyMediaToClipboard` | the picture's CDN URL, then the clipboard | `ProfilePage`, `RightStudioPanel` |
 | `useCopyLink` | `copyLink` | the clipboard only | `ProfilePage`, `RightStudioPanel`, `CreationOtherPanel` |
 
+## Edit tools ([hooks/useFingertips.ts](../src/hooks/useFingertips.ts) → [services/fingertips.service.ts](../src/services/fingertips.service.ts))
+
+| Hook | Service function | Hits | Used by |
+|---|---|---|---|
+| `useStartFingertips` | `startFingertips` | API `POST /api/fingertips/<tool>`, or `<tool>-all` with several pictures | `StudioPage` |
+| `useFingertipsStatuses` | `getGenerationStatus`, once per id | Supabase `generation:<id>` rows, every 5 s until each ends | `StudioPage` (the "all" buttons) |
+
+See [features/fingertips.md](features/fingertips.md).
+
 ## Brand memory ([hooks/useBrandMemories.ts](../src/hooks/useBrandMemories.ts) → [services/brandMemory.service.ts](../src/services/brandMemory.service.ts))
 
 | Hook | Service function | Hits | Used by |

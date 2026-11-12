@@ -19,7 +19,7 @@ flowchart LR
 ```
 
 - **Supabase directly** for reading data (credits, archive, brand memories, libraries) and small writes the database rules allow (likes, soft delete).
-- **The backend API** (`Mina_Back_Dev`) for anything that needs a secret: starting a generation, uploading pictures to R2, Stripe checkout, prompt files.
+- **The backend API** (`Mina_Back_Dev`) for anything that needs a secret: starting a generation, the edit tools, uploading pictures to R2, Stripe checkout, prompt files. The backend in turn calls the AI providers: Anthropic, OpenAI and Gemini for Creates, and Bria and Replicate for the edit tools. The frontend never calls them itself.
 
 ## Run it
 
@@ -53,6 +53,7 @@ Other scripts: `npm run build` (type-check, then build), `npm run lint` (oxlint)
 | **Brief** | What the user types. A **locked** passage is a part of it the user pinned. |
 | **Mina brief** | The line Mina "types" in place of the brief: while a picture is being made, or to warn about something (pink) or confirm something (green). |
 | **Brand memory** | A saved brand asset (logo, illustration, model, product) with up to 5 pictures, reused across generations. Stored as `product` rows. |
+| **Fingertips** | Two things share the word. The **carousel fingertips** are the small zones over a picture (like, download, edit, delete...). The **edit tools** (Erase, Expand, No Background, No Subject, SVG, Prompt/Tweak) are in the studio's edit menu; each edit makes a new picture with `mg_mma_mode: "fingertips"`. See [features/fingertips.md](features/fingertips.md). |
 | **MMA** | The backend pipeline that turns a brief and pictures into a generation, in 4 steps. See the backend docs. |
 | **Archive** | The list of the user's finished generations on the profile page. |
 
@@ -66,6 +67,7 @@ Other scripts: `npm run build` (type-check, then build), `npm run lint` (oxlint)
    - [pages/auth-callback.md](pages/auth-callback.md): the magic link landing page
 3. The features, each followed from the click to the database:
    - [features/create-a-generation.md](features/create-a-generation.md)
+   - [features/fingertips.md](features/fingertips.md): the edit tools
    - [features/uploads.md](features/uploads.md)
    - [features/brand-memory.md](features/brand-memory.md)
    - [features/matcha-and-billing.md](features/matcha-and-billing.md)
