@@ -65,5 +65,4 @@ export interface MegaGeneration {
   mg_platform: string | null
   mg_title: string | null
   mg_type: string | null
-  mg_cost_data: unknown
 }

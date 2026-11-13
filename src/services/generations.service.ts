@@ -54,7 +54,7 @@ export async function getGenerationStatus(generationId: string): Promise<Generat
 
 /** The columns the archive renders. `mega_generations` holds far more. */
 const COLUMNS =
-  'mg_id, mg_record_type, mg_pass_id, mg_generation_id, mg_mma_mode, mg_mma_status, mg_status, mg_mma_vars, mg_prompt, mg_output_url, mg_meta, mg_created_at, mg_updated_at, mg_session_id, mg_platform, mg_title, mg_type, mg_cost_data'
+  'mg_id, mg_record_type, mg_pass_id, mg_generation_id, mg_mma_mode, mg_mma_status, mg_status, mg_mma_vars, mg_prompt, mg_output_url, mg_meta, mg_created_at, mg_updated_at, mg_session_id, mg_platform, mg_title, mg_type'
 
 /** A finished creation's status: `done` from this API, `succeeded` on rows the old system wrote. */
 const FINISHED_STATUSES = ['done', 'succeeded']
