@@ -3,7 +3,7 @@ import { useAuth } from '@/providers/AuthProvider'
 
 import './RoleTagCard.css'
 
-const ROLE_LABELS = { business: 'Business', admin: 'Admin' } as const
+const ROLE_LABELS = { business: 'Business 4.0', admin: 'Admin' } as const
 
 /** The role tag beside the header logo, shown to business and admin accounts. */
 export function RoleTagCard() {
