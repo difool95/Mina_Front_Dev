@@ -11,7 +11,10 @@ import {
 
 import {
   ANIMATE_DURATIONS,
+  ANIMATE_MEDIA,
   ANIMATE_RESOLUTIONS,
+  ANIMATE_UPLOAD_ACCEPT,
+  ANIMATE_UPLOAD_LIMITS,
   ANIMATE_UPLOAD_TITLE,
   BRIEF_PLACEHOLDERS,
   DESCRIBE_MORE_LABEL,
@@ -37,10 +40,17 @@ import { useBrandMemoryPicks } from '@/hooks/useBrandMemoryPicks'
 import { useImportPromptFile } from '@/hooks/usePromptFiles'
 import { useDeleteStudioImage, useUploadStudioImage } from '@/hooks/useStudioUploads'
 import { pickCreatePictures } from '@/lib/brandMemory'
-import { prepareStudioImage } from '@/lib/media'
+import {
+  prepareStudioImage,
+  prepareStudioAudio,
+  prepareStudioVideo,
+} from '@/lib/media'
 import { studioSession } from '@/lib/sessionStorage/studioSession'
 import { useAuth } from '@/providers/AuthProvider'
 import type {
+  AnimatePicked,
+  AnimateUpload,
+  AnimateMediaType,
   BrandMemory,
   PickedBrandMemoryPictures,
   MinaBlockHandle,
@@ -84,6 +94,9 @@ export function MinaBlock({
   onCreate,
   uploads,
   onUploads,
+  onAnimate,
+  animateUploads,
+  onAnimateUploads,
   minaStatus,
   minaFlow,
   onMinaEnd,
@@ -92,10 +105,16 @@ export function MinaBlock({
   mode: StudioMode
   credits: number | undefined
   onNeedMatcha: () => void
-  /** Create mode's call to action, with the uploads and brand memory pictures that fit; Animate's is not wired yet. */
+  /** Create mode's call to action, with the uploads and brand memory pictures that fit. */
   onCreate: (picked: { uploads: StudioUpload[]; brandMemories: PickedBrandMemoryPictures[] }) => void
   uploads: StudioUpload[]
   onUploads: Dispatch<SetStateAction<StudioUpload[]>>
+  //////////////////////Animate (Mode)//////////////////////////////
+  /** Animate mode's call to action, with its pills and its uploaded files;*/
+  onAnimate: (picked: AnimatePicked) => void
+  animateUploads: AnimateUpload[]
+  onAnimateUploads: Dispatch<SetStateAction<AnimateUpload[]>>
+  //////////////////////Animate (Mode)//////////////////////////////
   /** The running Create's step, while Mina types in the brief's place; undefined the rest of the time. */
   minaStatus: MmaStatus | undefined
   /** Whether that run is a Create or an edit tool's Tweak, which picks Mina's lines. */
@@ -146,7 +165,7 @@ export function MinaBlock({
   // What Mina says over the brief (a picture refused, a prompt file loaded), until the user goes back to the brief.
   const [minaNote, setMinaNote] = useState<MinaNote | null>(null)
   const sayWarning = (line: string) => setMinaNote({ line, tone: 'warning' })
- //if the brand memory is on we get all the brand memory of the dropdown (ticked by user + guessed by Mina)
+  //if the brand memory is on we get all the brand memory of the dropdown (ticked by user + guessed by Mina)
   const memoriesInUse = isBrandMemoryOn ? brandMemory.ticked : []
   // True only for the memory Mina guessed from the brief; guessedId is null when there is no guess.
   function isGuessed(memory: BrandMemory) {
@@ -170,16 +189,50 @@ export function MinaBlock({
   }, [createPictures.isOverLimit])
 
 
-  // The list as it stands now, for an upload that lands after the render that started it.
+  // The lists as they stand now, for an upload that lands after the render that started it.
   const latestUploads = useRef(uploads)
+  //////////////////////Animate (Mode)//////////////////////////////
+  const latestAnimateUploads = useRef(animateUploads)
+  //////////////////////Animate (Mode)//////////////////////////////
   useEffect(() => {
     latestUploads.current = uploads
+    //////////////////////Animate (Mode)//////////////////////////////
+    latestAnimateUploads.current = animateUploads
+    //////////////////////Animate (Mode)//////////////////////////////
   })
 
-// This method is called when the user uses the file picker to upload a file to the server, it takes the kind of upload and the file to be uploaded as parameters
-  const uploadFile = async (kind: UploadKind, file: File) => {
+  //This method is responsible for sending the upload to the server, it takes the setList method that will update the list of uploads in the parent component
+  //(StudioPage) through the onUploads prop (or onAnimateUploads in Animate mode)
+  const sendUpload = async <T extends { url: string; isUploading?: boolean }>(
+    setList: Dispatch<SetStateAction<T[]>>,
+    latestList: () => T[],
+    entry: (url: string) => T,
+    blob: Blob,
+    name: string,
+  ) => {
     if (!session) return
 
+    const preview = URL.createObjectURL(blob)
+    setList((list) => [...list, entry(preview)])
+
+    try {
+      const { url } = await uploadImage.mutateAsync({ token: session.access_token, image: blob })
+
+      if (!latestList().some((listed) => listed.url === preview)) {
+        deleteImage.mutate({ token: session.access_token, url })
+        return
+      }
+      setList((list) => list.map((listed) => (listed.url === preview ? { ...listed, url, isUploading: false } : listed)))
+    } catch {
+      setList((list) => list.filter((listed) => listed.url !== preview))
+      sayWarning(UPLOAD_ERRORS.failed(name))
+    } finally {
+      URL.revokeObjectURL(preview)
+    }
+  }
+
+  // Create mode: the picture is prepared, then uploaded under its pill.
+  const uploadFile = async (kind: UploadKind, file: File) => {
     let image: Blob
     try {
       image = await prepareStudioImage(file)
@@ -187,45 +240,124 @@ export function MinaBlock({
       sayWarning((error as Error).message)
       return
     }
+    await sendUpload<StudioUpload>(
+      onUploads,
+      () => latestUploads.current,
+      (url) => ({ kind, url, origin: 'upload', isUploading: true }),
+      image,
+      file.name,
+    )
+  }
 
-    const preview = URL.createObjectURL(image)
-    //this line adds the new upload to the list of uploads in the parent component (StudioPage) through the onUploads prop,
-    //it sets the kind, url, origin and isUploading properties of the new upload
-    onUploads((list) => [...list, { kind, url: preview, origin: 'upload', isUploading: true }])
-
-    try {
-      //This line uploads the image to the server using the useUploadStudioImage hook, it passes the access token and the image to be uploaded as parameters
-      const { url } = await uploadImage.mutateAsync({ token: session.access_token, image })
-
-      //this line checks if the upload that just finished is still in the list of uploads, if it is not,
-      //it means that the user has removed it before it finished uploading, so it deletes the image from the server
-      if (!latestUploads.current.some((entry) => entry.url === preview)) {
-        deleteImage.mutate({ token: session.access_token, url })
-        return
-      }
-      //this line updates the list of uploads in the parent component (StudioPage) through the onUploads prop, it sets the kind, url and origin 
-      //properties of the upload that just finished uploading
-      onUploads((list) => list.map((entry) => (entry.url === preview ? { kind, url, origin: 'upload' } : entry)))
-    } catch {
-      //this line removes the upload that failed from the list of uploads in the parent component (StudioPage) through the onUploads prop
-      onUploads((list) => list.filter((entry) => entry.url !== preview))
-      sayWarning(UPLOAD_ERRORS.failed(file.name))
-    } finally {
-      URL.revokeObjectURL(preview)
-    }
+  // A file that is on R2 for nothing but the studio leaves R2 with it; one still uploading is deleted when it lands.
+  const deleteUnsent = ({ url, isUploading, isSent }: { url: string; isUploading?: boolean; isSent?: boolean }) => {
+    if (session && !isUploading && !isSent) deleteImage.mutate({ token: session.access_token, url })
   }
 
   // the remove function is used to remove an upload from the MinaBlockUploadAndLibraries component.
   const remove = (url: string) => {
     const entry = uploads.find((upload) => upload.url === url)
     onUploads((list) => list.filter((upload) => upload.url !== url))
+    // A scene from the library is not the user's file, so it stays on R2.
+    if (entry?.origin === 'upload') deleteUnsent(entry)
+  }
 
-    //This line checks if the upload that is being removed is an upload that was uploaded by the user, and if it is not still uploading and has not been sent to the server yet,
-    //if all these conditions are met, it calls the deleteImage.mutate function to delete the image from the server
-    if (session && entry?.origin === 'upload' && !entry.isUploading && !entry.isSent) {
-      deleteImage.mutate({ token: session.access_token, url })
+  //////////////////////Animate (Mode)//////////////////////////////
+  //this method removes the animate uploads by the media url
+  const removeAnimate = (url: string) => {
+    const entry = animateUploads.find((upload) => upload.url === url)
+    onAnimateUploads((list) => list.filter((upload) => upload.url !== url))
+    if (entry) deleteUnsent(entry)
+  }
+
+  // Animate mode: true while picked videos and sounds are being converted, before they upload.
+  const [isPreparing, setIsPreparing] = useState(false)
+
+  function animateUploadsOf(mediaType: AnimateMediaType) {
+    const matching: AnimateUpload[] = []
+
+    for (const entry of animateUploads) {
+      if (entry.mediaType === mediaType) matching.push(entry)
+    }
+
+    return matching
+  }
+
+  let canAddAnimate = false
+
+  // Nothing can be added while a video or sound is still being converted.
+  if (!isPreparing) {
+    const mediaTypes: AnimateMediaType[] = ['image', 'video', 'audio'] // the keys of ANIMATE_UPLOAD_LIMITS
+
+    for (const mediaType of mediaTypes) {
+      const count = animateUploadsOf(mediaType).length // e.g. 3 videos
+      const limit = ANIMATE_UPLOAD_LIMITS[mediaType]   // e.g. 10
+
+      // One media type with room left is enough for the "+" to show.
+      if (count < limit) {
+        canAddAnimate = true
+        break
+      }
     }
   }
+
+  /**
+   * Files for Animate's row, from the file picker, a paste or a drop. Each
+   * media type takes only what fits its limit, and Mina says so when some did not.
+   * Videos and sounds are prepared one after another, each against the time
+   * its media type has left, and Mina says when one was trimmed or lengthened.
+   */
+  const addMedia = async (files: File[]) => {
+    // A second batch would count its room before the first one's files are listed.
+    if (isPreparing) return
+    setMinaNote(null)
+    setIsPreparing(true)
+
+    try {
+      for (const mediaType of Object.keys(ANIMATE_UPLOAD_LIMITS) as AnimateMediaType[]) {
+        const listed = latestAnimateUploads.current.filter((entry) => entry.mediaType === mediaType)
+        const picked = files.filter((file) => file.type.startsWith(`${mediaType}/`))
+        const room = ANIMATE_UPLOAD_LIMITS[mediaType] - listed.length
+        if (picked.length > room) sayWarning(UPLOAD_ERRORS.full(ANIMATE_UPLOAD_LIMITS[mediaType]))
+
+        let secondsLeft = ANIMATE_MEDIA.maxTotalSeconds - listed.reduce((sum, entry) => sum + (entry.seconds ?? 0), 0)
+
+        for (const file of picked.slice(0, Math.max(0, room))) {
+          let blob: Blob
+          let seconds: number | undefined
+          try {
+            if (mediaType === 'image') {
+              blob = await prepareStudioImage(file)
+            } else {
+              if (secondsLeft < ANIMATE_MEDIA.minSeconds) {
+                sayWarning(UPLOAD_ERRORS.noTimeLeft(mediaType))
+                break
+              }
+              const prepared = await (mediaType === 'video' ? prepareStudioVideo : prepareStudioAudio)(file, secondsLeft)
+              blob = prepared.blob
+              seconds = prepared.seconds
+              secondsLeft -= seconds
+              if (prepared.change) sayWarning(UPLOAD_ERRORS[prepared.change](mediaType, file.name))
+            }
+          } catch (error) {
+            sayWarning((error as Error).message)
+            continue
+          }
+
+          void sendUpload(
+            onAnimateUploads,
+            () => latestAnimateUploads.current,
+            (url) => ({ mediaType, url, seconds, isUploading: true }),
+            blob,
+            file.name,
+          )
+        }
+      }
+    } finally {
+      setIsPreparing(false)
+    }
+  }
+  //////////////////////Animate (Mode)//////////////////////////////
 
   /**
    * Pictures for the lit pill, from the file picker, a paste or a drop. A new
@@ -264,7 +396,7 @@ export function MinaBlock({
       setMinaNote({ line: PROMPT_FILE_LINES.unreadable, tone: 'info' })
       return
     }
-  // When we import a correct mina prompt file we start removing any old url uploaded by the user
+    // When we import a correct mina prompt file we start removing any old url uploaded by the user
     for (const entry of latestUploads.current) remove(entry.url)
 
     // Each piece saves itself to the session, as it does when the user changes it.
@@ -280,30 +412,77 @@ export function MinaBlock({
   // The latest ones, for the page-wide paste and drop listeners below.
   const latestAddPictures = useRef(addPictures)
   const latestOpenPromptFile = useRef(openPromptFile)
+  //////////////////////Animate (Mode)//////////////////////////////
+  const latestAddMedia = useRef(addMedia)
+  //////////////////////Animate (Mode)//////////////////////////////
   useEffect(() => {
     latestAddPictures.current = addPictures
     latestOpenPromptFile.current = openPromptFile
+    //////////////////////Animate (Mode)//////////////////////////////
+    latestAddMedia.current = addMedia
+    //////////////////////Animate (Mode)//////////////////////////////
   })
 
-// the move function is used to reorder the uploads in the list, it is passed down to the MinaBlockUploadAndLibraries component, 
-// it takes the url of the upload to move and the url of the target upload to move it before, it updates the list of uploads in 
-// the parent component (StudioPage) through the onUploads prop
-  const move = (url: string, target: string) =>
-    onUploads((list) => {
-      const next = [...list]
-      next.splice(
-        list.findIndex((entry) => entry.url === target),
-        0,
-        ...next.splice(list.findIndex((entry) => entry.url === url), 1),
-      )
-      return next
-    })
+  // the move function is used to reorder the uploads in the list, it is passed down to the MinaBlockUploadAndLibraries component,
+  // it takes the url of the upload to move and the url of the target upload to move it before, it updates the list of uploads in
+  // the parent component (StudioPage) through the onUploads prop (or onAnimateUploads in Animate mode)
+  const moveIn =
+    <T extends { url: string }>(setList: Dispatch<SetStateAction<T[]>>) =>
+      (url: string, target: string) =>
+        setList((list) => {
+          const next = [...list]
+          next.splice(
+            list.findIndex((entry) => entry.url === target),
+            0,
+            ...next.splice(list.findIndex((entry) => entry.url === url), 1),
+          )
+          return next
+        })
 
-
+  //////////////////////Animate (Mode)//////////////////////////////
   const [resolutionIndex, setResolutionIndex] = useState(0)
   const [durationIndex, setDurationIndex] = useState(0)
   const resolution = ANIMATE_RESOLUTIONS[resolutionIndex]!
   const duration = ANIMATE_DURATIONS[durationIndex]!
+  const [isSoundOn, setIsSoundOn] = useState(true)
+  // Only files already on R2 go, in the row's order: the first picture is the start frame.
+  const animatePicked = (): AnimatePicked => {
+    const sent: AnimateUpload[] = []
+
+    for (const entry of animateUploads) {
+      // Still on its way to R2: skip it.
+      if (entry.isUploading) continue
+
+      sent.push(entry)
+    }
+    function timed(mediaType: AnimateMediaType) {
+      const result: { url: string; seconds: number }[] = []
+
+      for (const entry of sent) {
+        // Keep only this media type: just the videos, or just the sounds.
+        if (entry.mediaType !== mediaType) continue
+
+        result.push({
+          url: entry.url,
+          seconds: entry.seconds ?? 0, // safety net, in case seconds is missing
+        })
+      }
+
+      return result
+    }
+
+    return {
+      isSoundOn,
+      resolution,
+      durationSeconds: parseInt(duration),
+      images: sent.filter((entry) => entry.mediaType === 'image').map((entry) => entry.url),
+      videos: timed('video'),
+      audios: timed('audio'),
+    }
+  }
+  const startAnimate = () => onAnimate(animatePicked())
+  //////////////////////Animate (Mode)//////////////////////////////
+
   // Kept in sessionStorage, where the Create request reads it.
   const [laneIndex, setLaneIndex] = useState(() =>
     Math.max(0, STILL_LANES.findIndex((entry) => entry.lane === studioSession.read().lane)),
@@ -323,13 +502,17 @@ export function MinaBlock({
     />
   )
   //If the image is in the process of being uploaded, the create button is disabled / changes the text to uploading... to prevent the user from starting a generation with incomplete or missing uploads.
-  const isUploading = mode === 'create' && uploads.some((entry) => entry.isUploading)
+  const isCreateUploading = uploads.some((entry) => entry.isUploading)
+  //////////////////////Animate (Mode)//////////////////////////////
+  const isAnimateUploading = isPreparing || animateUploads.some((entry) => entry.isUploading)
+  //////////////////////Animate (Mode)//////////////////////////////
+  const isUploading = mode === 'create' ? isCreateUploading : isAnimateUploading
   const canAfford = credits === undefined || canAffordGeneration(credits, mode, lane, resolution, duration)
   const [uploadSwitch, setUploadSwitch] = useState<'up' | 'down' | null>(null)
   const [leavingUpload, setLeavingUpload] = useState<UploadKind | null>(null)
 
-//the animation is simple if the block is already open, or if we refresh the page and the brief is already filled, otherwise it is long,
-//  this is used to determine which animation to play when the block opens
+  //the animation is simple if the block is already open, or if we refresh the page and the brief is already filled, otherwise it is long,
+  //  this is used to determine which animation to play when the block opens
   const [animation, setAnimation] = useState<'long' | 'simple' | null>(() => {
     const { brief, locked } = studioSession.read()
     return brief || locked || uploads.length ? 'simple' : null
@@ -338,16 +521,24 @@ export function MinaBlock({
   const [openLibrary, setOpenLibrary] = useState<'scene' | 'content' | null>(null)
   const isOpen = animation !== null
 
-  // Once the block is open in Create mode, a picture pasted or dropped anywhere on
-  // the page goes to the lit pill, as the "+" would take it. Anything else pasted
-  // (text into the brief) is left alone.
+  // Once the block is open, a file pasted or dropped anywhere on the page goes
+  // where the "+" would take it: a picture to Create's lit pill, a picture, video
+  // or sound to Animate's row. Anything else pasted (text into the brief) is left alone.
   useEffect(() => {
-    if (mode !== 'create' || !isOpen) return
+    if (!isOpen) return
 
     const take = (files: FileList | null | undefined) => {
-      const pictures = [...(files ?? [])].filter((file) => file.type.startsWith('image/'))
-      if (pictures.length) latestAddPictures.current(pictures)
-      return pictures.length > 0
+      const list = [...(files ?? [])]
+      if (mode === 'create') {
+        const pictures = list.filter((file) => file.type.startsWith('image/'))
+        if (pictures.length) latestAddPictures.current(pictures)
+        return pictures.length > 0
+      }
+      //////////////////////Animate (Mode)//////////////////////////////
+      const media = list.filter((file) => /^(image|video|audio)\//.test(file.type))
+      if (media.length) void latestAddMedia.current(media)
+      return media.length > 0
+      //////////////////////Animate (Mode)//////////////////////////////
     }
     const paste = (event: ClipboardEvent) => {
       if (take(event.clipboardData?.files)) event.preventDefault()
@@ -361,8 +552,8 @@ export function MinaBlock({
       const promptFile = [...(event.dataTransfer?.files ?? [])].find((file) =>
         file.name.toLowerCase().endsWith(PROMPT_FILE_EXTENSION),
       )
-      // .mina prompt file drag drop upload
-      if (promptFile) return void latestOpenPromptFile.current(promptFile)
+      // .mina prompt file drag drop upload: a Create setup, so Create mode only.
+      if (promptFile && mode === 'create') return void latestOpenPromptFile.current(promptFile)
       // Pictures drag drop upload
       take(event.dataTransfer?.files)
     }
@@ -408,8 +599,8 @@ export function MinaBlock({
     setAnimation('long')
   }
 
-// this method is used to select the upload kind, it is passed down to the pills component, it is called when the user clicks on a pill,
-//  it sets the upload kind and triggers the animation of the upload row
+  // this method is used to select the upload kind, it is passed down to the pills component, it is called when the user clicks on a pill,
+  //  it sets the upload kind and triggers the animation of the upload row
   const selectUploadKind = (next: UploadKind) => {
     if (next === upload) return
 
@@ -446,19 +637,26 @@ export function MinaBlock({
     sayWarning,
   }))
 
-//This shows the upload row depending on the mode and the kind of upload selected, if the mode is animate it shows the animate upload row,
-//if the mode is create it shows the create upload row with the selected kind
+  //This shows the upload row depending on the mode and the kind of upload selected, if the mode is animate it shows the animate upload row,
+  //if the mode is create it shows the create upload row with the selected kind
   const uploadRow = (kind: UploadKind) =>
     mode === 'animate' ? (
+      //////////////////////Animate (Mode)//////////////////////////////
       <MinaBlockUploadAndLibraries
         title={ANIMATE_UPLOAD_TITLE}
-        addLabel="Add start frame (image)"
+        addLabel={animateUploads.length ? 'Add image, video or sound' : 'Add start frame (image)'}
+        images={animateUploads}
+        canAdd={canAddAnimate}
+        onOpenFilePicker={() => fileInput.current?.click()}
+        onRemove={removeAnimate}
+        onMove={moveIn(onAnimateUploads)}
         library={{
           label: 'Open the Content Library - pick a template to load its whole setup',
           previewUrls: CONTENT_LIBRARY_PREVIEW_URLS,
           onBrowse: () => setOpenLibrary('content'),
         }}
       />
+      //////////////////////Animate (Mode)//////////////////////////////
     ) : (
       <MinaBlockUploadAndLibraries
         title={UPLOAD_KINDS.find((entry) => entry.kind === kind)!.title}
@@ -466,14 +664,14 @@ export function MinaBlock({
         canAdd={roomFor(kind) > 0}
         onOpenFilePicker={() => openFilePicker(kind)}
         onRemove={remove}
-        onMove={move}
+        onMove={moveIn(onUploads)}
         library={
           kind === 'scene'
             ? {
-                label: 'Browse scene library',
-                previewUrls: LIBRARY_PREVIEW_URLS,
-                onBrowse: () => setOpenLibrary('scene'),
-              }
+              label: 'Browse scene library',
+              previewUrls: LIBRARY_PREVIEW_URLS,
+              onBrowse: () => setOpenLibrary('scene'),
+            }
             : undefined
         }
       />
@@ -483,13 +681,17 @@ export function MinaBlock({
     <div ref={block} className="mina-block" data-animation={animation ?? undefined}>
       {isOpen &&
         (mode === 'animate' ? (
+          //////////////////////Animate (Mode)//////////////////////////////
           <MinaBlockPillsAnimate
             resolution={resolution}
             duration={duration}
             onNextResolution={() => setResolutionIndex((index) => (index + 1) % ANIMATE_RESOLUTIONS.length)}
             onNextDuration={() => setDurationIndex((index) => (index + 1) % ANIMATE_DURATIONS.length)}
+            isSoundOn={isSoundOn}
+            onToggleSound={() => setIsSoundOn((was) => !was)}
             ratioPill={ratioPill}
           />
+          //////////////////////Animate (Mode)//////////////////////////////
         ) : (
           <MinaBlockPillsCreate
             upload={upload}
@@ -570,7 +772,7 @@ export function MinaBlock({
               <MinaBlockCTA
                 label={isUploading ? UPLOADING_LABEL : STUDIO_CTA_LABELS[mode]}
                 isDisabled={isUploading || Boolean(minaStatus)}
-                onClick={mode === 'create' ? () => onCreate(createPictures) : undefined}
+                onClick={mode === 'create' ? () => onCreate(createPictures) : startAnimate}
               />
             )}
           </div>
@@ -591,11 +793,17 @@ export function MinaBlock({
       <input
         ref={fileInput}
         type="file"
-        accept="image/*"
-        multiple={UPLOAD_LIMITS[upload] > 1}
+        //////////////////////Animate (Mode)//////////////////////////////
+        accept={mode === 'animate' ? ANIMATE_UPLOAD_ACCEPT : 'image/*'}
+        multiple={mode === 'animate' || UPLOAD_LIMITS[upload] > 1}
+        //////////////////////Animate (Mode)//////////////////////////////
         hidden
         onChange={(event) => {
-          addPictures([...(event.target.files ?? [])])
+          const files = [...(event.target.files ?? [])]
+          if (mode === 'create') addPictures(files)
+          //////////////////////Animate (Mode)//////////////////////////////
+          else void addMedia(files)
+          //////////////////////Animate (Mode)//////////////////////////////
           // Cleared so picking the same file again still fires a change.
           event.target.value = ''
         }}

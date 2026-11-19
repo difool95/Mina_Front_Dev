@@ -43,7 +43,8 @@
   cursor: grabbing;
 }
 
-.mina-uploads__image img {
+.mina-uploads__image img,
+.mina-uploads__image video {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -52,7 +53,8 @@
   transition: opacity var(--mina-anim-fade) ease;
 }
 
-.mina-uploads__image:hover img {
+.mina-uploads__image:hover img,
+.mina-uploads__image:hover video {
   opacity: 0.6;
 }
 

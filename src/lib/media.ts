@@ -1,5 +1,23 @@
 //THIS SCRIPT IS RELATED TO ANY HELPERS CONSTANTS RELATED TO THE GENERATIONS MEDIA, LIKE IMAGE OR VIDEO IN PROFILE.
-import { UPLOAD_ERRORS, UPLOAD_PREP } from '@/lib/studio'
+import {
+  ALL_FORMATS,
+  BlobSource,
+  BufferTarget,
+  Conversion,
+  Input,
+  Mp4OutputFormat,
+  Output,
+  Quality,
+  type ConversionVideoOptions,
+  type VideoSample,
+} from 'mediabunny'
+
+import {
+  UPLOAD_ERRORS,
+  UPLOAD_PREP,
+  ANIMATE_MEDIA,
+} from '@/lib/studio'
+import type { PreparedMedia } from '@/types'
 
 /**
  * Cloudflare delivery URLs for the creations on `assets.faltastudio.com`.
@@ -160,13 +178,9 @@ function hasTransparency(context: CanvasRenderingContext2D) {
   return false
 }
 
-/**
- * The picture to upload for a file picked in the studio, by the rules in
- * `UPLOAD_PREP`. Throws a message for the user when the file is refused.
- *
- * Decoded by the browser, so a format it cannot read — HEIC outside Safari —
- * is refused rather than converted.
- */
+//this method is used to prepare an image for upload, it takes a File object as parameter and returns a Promise that resolves to a Blob object.
+//It checks the file size, creates an ImageBitmap, and resizes the image if necessary. It also checks if the image has transparency and sets the
+//appropriate MIME type for the output Blob.
 export async function prepareStudioImage(file: File): Promise<Blob> {
   if (file.size > UPLOAD_PREP.maxBytes) throw new Error(UPLOAD_ERRORS.tooHeavy(file.name))
 
@@ -203,3 +217,150 @@ export async function prepareStudioImage(file: File): Promise<Blob> {
     )
   })
 }
+
+//////////////////////Animate (Mode)//////////////////////////////
+//this method is used to fit the seconds of a media file to the room seconds, it returns an object with the new seconds and a change property that indicates
+//if the media was trimmed or lengthened.
+function fitSeconds(seconds: number, roomSeconds: number): Pick<PreparedMedia, 'seconds' | 'change'> {
+  if (seconds > roomSeconds) return { seconds: roomSeconds, change: 'trimmed' }
+  if (seconds < ANIMATE_MEDIA.minSeconds) return { seconds: ANIMATE_MEDIA.minSeconds, change: 'lengthened' }
+
+  return { seconds }
+}
+
+//This method reduces or increases the seconds of a media file to fit the room seconds and also encodes it to WAV, it returns an object with the new seconds and
+//a change property that indicates if the media was trimmed or lengthened and the new blob.
+export async function prepareStudioAudio(file: File, roomSeconds: number): Promise<PreparedMedia> {
+  const decoded = await new OfflineAudioContext(1, 1, ANIMATE_MEDIA.sampleRate)
+    .decodeAudioData(await file.arrayBuffer())
+    .catch(() => {
+      throw new Error(UPLOAD_ERRORS.unreadableMedia(file.name))
+    })
+  const fit = fitSeconds(decoded.duration, roomSeconds)
+
+  // A new buffer starts silent, so a short sound is padded and a long one cut by the copy alone.
+  const channels = Math.min(decoded.numberOfChannels, ANIMATE_MEDIA.maxChannels)
+  const length = Math.round(fit.seconds * decoded.sampleRate)
+  const samples = Array.from({ length: channels }, (_, channel) => {
+    const data = new Float32Array(length)
+    data.set(decoded.getChannelData(channel).subarray(0, length))
+    return data
+  })
+
+  return { ...fit, blob: encodeWav(samples, decoded.sampleRate) }
+}
+
+//This method encodes to WAV a given array of Float32Array channels and a sample rate, it returns a Blob with the WAV data.
+function encodeWav(channels: Float32Array[], sampleRate: number) {
+  const length = channels[0]!.length
+  const blockAlign = channels.length * 2
+  const view = new DataView(new ArrayBuffer(44 + length * blockAlign))
+  const text = (offset: number, value: string) =>
+    [...value].forEach((char, i) => view.setUint8(offset + i, char.charCodeAt(0)))
+
+  text(0, 'RIFF')
+  view.setUint32(4, 36 + length * blockAlign, true)
+  text(8, 'WAVE')
+  text(12, 'fmt ')
+  view.setUint32(16, 16, true)
+  view.setUint16(20, 1, true)
+  view.setUint16(22, channels.length, true)
+  view.setUint32(24, sampleRate, true)
+  view.setUint32(28, sampleRate * blockAlign, true)
+  view.setUint16(32, blockAlign, true)
+  view.setUint16(34, 16, true)
+  text(36, 'data')
+  view.setUint32(40, length * blockAlign, true)
+
+  let offset = 44
+  for (let i = 0; i < length; i++) {
+    for (const channel of channels) {
+      const sample = Math.max(-1, Math.min(1, channel[i]!))
+      view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7fff, true)
+      offset += 2
+    }
+  }
+
+  return new Blob([view], { type: 'audio/wav' })
+}
+
+//This method is for preparing a video file for Animate mode. It checks the file size, decodes the video, fits it to the room seconds, scales it if necessary,
+//and encodes it to MP4 format. It returns an object containing the new seconds, change type (trimmed or lengthened), and the resulting Blob.
+export async function prepareStudioVideo(file: File, roomSeconds: number): Promise<PreparedMedia> {
+  if (file.size > ANIMATE_MEDIA.maxVideoBytes) throw new Error(UPLOAD_ERRORS.tooHeavyVideo(file.name))
+
+  const unreadable = () => new Error(UPLOAD_ERRORS.unreadableMedia(file.name))
+  const input = new Input({ source: new BlobSource(file), formats: ALL_FORMATS })
+
+  try {
+    const track = await input.getPrimaryVideoTrack().catch(() => null)
+    if (!track) throw unreadable()
+
+    const duration = await input.computeDuration()
+    const fit = fitSeconds(duration, roomSeconds)
+    const end = Math.min(duration, fit.seconds)
+    const scale = Math.min(1, ANIMATE_MEDIA.longSide / Math.max(track.displayWidth, track.displayHeight))
+    const isLight = scale === 1 && file.size < ANIMATE_MEDIA.maxVideoUploadBytes
+    // 10% headroom for the container and the encoder overshooting its target.
+    const budget = (ANIMATE_MEDIA.maxVideoUploadBytes * 8 * 0.9) / fit.seconds - ANIMATE_MEDIA.videoAudioBitrate
+
+    const encoded: ConversionVideoOptions = {
+      codec: 'avc',
+      quality: new Quality(Math.min(ANIMATE_MEDIA.maxVideoBitrate, budget)),
+      // Even sides: the encoder refuses odd ones.
+      width: Math.round((track.displayWidth * scale) / 2) * 2,
+      height: Math.round((track.displayHeight * scale) / 2) * 2,
+      forceTranscode: !isLight || fit.change === 'lengthened',
+      process: fit.change === 'lengthened' ? holdLastFrame(end, fit.seconds) : undefined,
+    }
+
+    const blob = await convertToMp4(input, end, encoded)
+    if (blob) return { ...fit, blob }
+
+    // No encoder: copy what can be copied, which cannot make a clip longer.
+    if (fit.change === 'lengthened') throw new Error(UPLOAD_ERRORS.tooShort(file.name))
+
+    const copied = await convertToMp4(input, end, {})
+    if (!copied) throw unreadable()
+
+    return { ...fit, blob: copied }
+  } finally {
+    input.dispose()
+  }
+}
+
+/** `input` up to `end` seconds as an MP4, or null when the browser cannot make its video track that way. */
+async function convertToMp4(input: Input, end: number, video: ConversionVideoOptions) {
+  const output = new Output({ format: new Mp4OutputFormat({ fastStart: 'in-memory' }), target: new BufferTarget() })
+  const conversion = await Conversion.init({
+    input,
+    output,
+    trim: { start: 0, end },
+    // A copied cut lands on packet boundaries: shrink it, so the 30s are never overrun.
+    copy: { boundaryPolicy: 'shrink' },
+    video,
+    audio: { codec: 'aac', quality: new Quality(ANIMATE_MEDIA.videoAudioBitrate) },
+    showWarnings: false,
+  })
+
+  if (!conversion.isValid || conversion.discardedTracks.some(({ track }) => track.isVideoTrack())) return null
+
+  await conversion.execute()
+
+  return new Blob([output.target.buffer!], { type: 'video/mp4' })
+}
+
+/** A `process` hook that shows the frame ending at `end` until `until` seconds. */
+function holdLastFrame(end: number, until: number) {
+  return (sample: VideoSample) => {
+    const sampleEnd = sample.timestamp + sample.duration
+    if (sampleEnd < end - 0.001) return sample
+
+    const held = sample.clone()
+    held.setTimestamp(sampleEnd)
+    held.setDuration(until - sampleEnd)
+
+    return [sample, held]
+  }
+}
+//////////////////////Animate (Mode)//////////////////////////////

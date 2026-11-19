@@ -1,8 +1,17 @@
 import { useDragMouse } from '@/hooks/useDragMouse'
-import { cfImage, imageWidthFor } from '@/lib/media'
-import type { StudioUpload } from '@/types'
+import {
+  cfImage,
+  imageWidthFor,
+  cfPoster,
+  videoWidthFor,
+} from '@/lib/media'
+import type { AnimateMediaType, StudioUpload } from '@/types'
 
 import './MinaBlockUploadAndLibraries.css'
+
+//////////////////////Animate (Mode)//////////////////////////////
+const AUDIO_ICON_URL = '/assets/gifs/audio-mina-icon.gif'
+//////////////////////Animate (Mode)//////////////////////////////
 
 /**
  * The upload row: what to add, a "+" to add it, and — when there is a library
@@ -26,7 +35,10 @@ export function MinaBlockUploadAndLibraries({
   title: string
   /** The "+" card's tooltip. */
   addLabel?: string
-  images?: Pick<StudioUpload, 'url' | 'isUploading'>[]
+  //////////////////////Animate (Mode)//////////////////////////////
+  /** A video shows its first frame and a sound Mina's audio icon; anything else is a picture. */
+  images?: (Pick<StudioUpload, 'url' | 'isUploading'> & { mediaType?: AnimateMediaType })[]
+  //////////////////////Animate (Mode)//////////////////////////////
   canAdd?: boolean
   onOpenFilePicker?: () => void
   onRemove?: (url: string) => void
@@ -42,7 +54,7 @@ export function MinaBlockUploadAndLibraries({
       <p className="mina-uploads__title paragraph-title">{title}</p>
 
       <div className="mina-uploads__cards">
-        {images.map(({ url, isUploading }) => (
+        {images.map(({ url, isUploading, mediaType }) => (
           <button
             key={url}
             className="mina-uploads__image"
@@ -62,7 +74,15 @@ export function MinaBlockUploadAndLibraries({
             // Still a click for the keyboard; only the release that ends a drag is skipped.
             onClick={() => !drag.wasDragged() && onRemove?.(url)}
           >
-            <img src={cfImage(url, imageWidthFor(72))} alt="" draggable={false} />
+            {/*//////////////////////Animate (Mode)//////////////////////////////*/}
+            {mediaType === 'video' && (
+              <video src={url} poster={cfPoster(url, videoWidthFor(72))} muted playsInline preload="metadata" />
+            )}
+            {mediaType === 'audio' && <img src={AUDIO_ICON_URL} alt="" draggable={false} />}
+            {/*//////////////////////Animate (Mode)//////////////////////////////*/}
+            {mediaType !== 'video' && mediaType !== 'audio' && (
+              <img src={cfImage(url, imageWidthFor(72))} alt="" draggable={false} />
+            )}
           </button>
         ))}
 

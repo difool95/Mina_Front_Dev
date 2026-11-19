@@ -17,6 +17,7 @@ import { studioSession } from '@/lib/sessionStorage/studioSession'
 import { FINGERTIPS_MATCHAS, NEED_MATCHA_LINE, STILL_LANES, STUDIO_RATIOS, studioRatio, withScene } from '@/lib/studio'
 import { useAuth } from '@/providers/AuthProvider'
 import type { EditTool, GenerationProgress, Ratio, PickedBrandMemoryPictures, MinaBlockHandle, MmaStatus, StudioMode, StudioUpload } from '@/types'
+import type { AnimatePicked, AnimateRequest, AnimateUpload } from '@/types'
 
 import './StudioPage.css'
 
@@ -35,6 +36,12 @@ export function StudioPage() {
 //uploading and only saves the completed uploads to the session storage. This ensures that the uploads are persisted across page refreshes
 //and tab closures, while also preventing incomplete uploads from being saved.
   useEffect(() => studioSession.save({ uploads: uploads.filter((entry) => !entry.isUploading) }), [uploads])
+  //////////////////////Animate (Mode)//////////////////////////////
+  // This line saves the animateUploads to the session storage whenever the animateUploads state changes. It filters out any animateUploads that are still uploading and
+  // only saves the completed animateUploads to the session storage. This ensures that the animateUploads are persisted across page refreshes and tab closures.
+  const [animateUploads, setAnimateUploads] = useState<AnimateUpload[]>(() => studioSession.read().animateUploads ?? [])
+  useEffect(() => studioSession.save({ animateUploads: animateUploads.filter((entry) => !entry.isUploading) }),[animateUploads],)
+  //////////////////////Animate (Mode)//////////////////////////////
   // Same single slot as the profile: "Back" in the auto panel returns to the buy panel.
   const [matchaPanel, setMatchaPanel] = useState<'buy' | 'auto' | null>(null)
   const { session } = useAuth()
@@ -81,6 +88,21 @@ export function StudioPage() {
       { onSuccess: () => setUploads((list) => list.map((entry) => ({ ...entry, isSent: true }))) },
     )
   }
+
+  //////////////////////Animate (Mode)//////////////////////////////
+  // For now we just log the animation request body to the console. In the future, this will be sent to the API to start an Animate generation.
+  const animate = (picked: AnimatePicked) => {
+    const { ratioIndex = 0, isLandscape = false, brief = '', locked = '' } = studioSession.read()
+    const request: AnimateRequest = {
+      ...picked,
+      brief: [brief, locked].filter(Boolean).join('\n'),
+      lane: 'director',
+      aspectRatio: studioRatio(ratioIndex, isLandscape),
+      platform: STUDIO_RATIOS[ratioIndex]!.platform,
+    }
+    console.info('Animate request', request)
+  }
+  //////////////////////Animate (Mode)//////////////////////////////
 
   // ─── Edit tools (fingertips) ────────────────────────────────────────────
   // An edit tool's run on a picture of the right panel, followed the same way as a Create.
@@ -263,6 +285,11 @@ export function StudioPage() {
             onCreate={create}
             uploads={uploads}
             onUploads={setUploads}
+            //////////////////////Animate (Mode)//////////////////////////////
+            onAnimate={animate}
+            animateUploads={animateUploads}
+            onAnimateUploads={setAnimateUploads}
+            //////////////////////Animate (Mode)//////////////////////////////
             minaStatus={minaStatus}
             minaFlow={isEditing ? 'fingertips' : 'create'}
             onMinaEnd={endMina}

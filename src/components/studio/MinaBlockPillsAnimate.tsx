@@ -1,24 +1,27 @@
-import { useState, type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 
 import { ANIMATE_DURATIONS, ANIMATE_MATCHA_COST, ANIMATE_RESOLUTIONS } from '@/lib/studio'
 
 import './MinaBlockPills.css'
 
-/** Resolution, duration and the ratio pill are held by `MinaBlock`, whose call to action prices them. */
+/** Every pill's value is held by `MinaBlock`, whose call to action prices them and sends them. */
 export function MinaBlockPillsAnimate({
   resolution,
   duration,
   onNextResolution,
   onNextDuration,
+  isSoundOn,
+  onToggleSound,
   ratioPill,
 }: {
   resolution: (typeof ANIMATE_RESOLUTIONS)[number]
   duration: (typeof ANIMATE_DURATIONS)[number]
   onNextResolution: () => void
   onNextDuration: () => void
+  isSoundOn: boolean
+  onToggleSound: () => void
   ratioPill: ReactNode
 }) {
-  const [isMuted, setIsMuted] = useState(false)
   // Shared by the resolution and duration pills, and follows both.
   const costTooltip = `${ANIMATE_MATCHA_COST[resolution][duration]} matcha (${duration}, Director, ${resolution})`
 
@@ -58,9 +61,9 @@ export function MinaBlockPillsAnimate({
         className="mina-pills__pill mina-pills__pill--text paragraph-title-button pill"
         type="button"
         data-tooltip="Toggle audio"
-        onClick={() => setIsMuted((was) => !was)}
+        onClick={onToggleSound}
       >
-        <span className="comment">{isMuted ? 'Muted' : 'Sound'}</span>
+        <span className="comment">{isSoundOn ? 'Sound' : 'Muted'}</span>
       </button>
 
       <button
@@ -76,3 +79,4 @@ export function MinaBlockPillsAnimate({
     </div>
   )
 }
+//////////////////////Animate (Mode)//////////////////////////////

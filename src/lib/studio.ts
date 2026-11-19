@@ -1,4 +1,5 @@
 import type {
+  AnimateMediaType,
   AspectRatio,
   EditTool,
   ErasePoint,
@@ -23,13 +24,17 @@ export const SCENE_LIBRARY_BRIEF = {
 /** The brief's placeholder, per mode. */
 export const BRIEF_PLACEHOLDERS: Record<StudioMode, string> = {
   create: 'Describe how you want your image',
+  //////////////////////Animate (Mode)//////////////////////////////
   animate: 'Describe the motion, the sound and the scene',
+  //////////////////////Animate (Mode)//////////////////////////////
 }
 
 /** The right panel's button while it has nothing to show, per mode. */
 export const PANEL_UPLOAD_LABELS: Record<StudioMode, string> = {
   create: '+ Upload image to edit',
+  //////////////////////Animate (Mode)//////////////////////////////
   animate: '+ Upload image or video',
+  //////////////////////Animate (Mode)//////////////////////////////
 }
 
 /** The right panel's edit menu, in groups split by a "|". */
@@ -94,9 +99,12 @@ export const ERASE_HINT =
 /** The block's call to action, per mode. */
 export const STUDIO_CTA_LABELS: Record<StudioMode, string> = {
   create: 'Create',
+  //////////////////////Animate (Mode)//////////////////////////////
   animate: 'Animate',
+  //////////////////////Animate (Mode)//////////////////////////////
 }
 
+//////////////////////Animate (Mode)//////////////////////////////
 /** The content library card's three pictures, fixed until the library itself exists. */
 export const CONTENT_LIBRARY_PREVIEW_URLS = [
   'https://assets.faltastudio.com/content-library/poster/1785260127843_0.jpg',
@@ -121,6 +129,34 @@ export const ANIMATE_MATCHA_COST: Record<
   '720p': { '5s': 5, '10s': 9, '15s': 15, '30s': 24 },
   '1080p': { '5s': 10, '10s': 18, '15s': 30, '30s': 54 },
 }
+
+/** How many files of each media type Animate's upload row holds. */
+export const ANIMATE_UPLOAD_LIMITS: Record<AnimateMediaType, number> = { image: 30, video: 10, audio: 10 }
+
+/** What Animate's file picker offers. */
+export const ANIMATE_UPLOAD_ACCEPT = 'image/*,video/*,audio/*'
+
+//This const is used to define the maximum number of seconds for the Animate mode. It is used to validate the total duration of the uploaded media files
+//and ensure that they do not exceed these limit.
+export const ANIMATE_MEDIA = {
+  minSeconds: 2,
+  maxTotalSeconds: 30,
+  /** Past this a picked video is refused, before the browser tries to read it. */
+  maxVideoBytes: 1024 * 1024 * 1024,
+  /**
+   * The most a prepared video weighs: 15 MB, the most the reference scan can
+   * read from a file's URL. Under it, a video that needs no other change is
+   * copied as it is; above it, the bitrate is set so the clip lands under it.
+   */
+  maxVideoUploadBytes: 15 * 1024 * 1024,
+  /** The ceiling for a short clip, which the 15 MB alone would let run far higher than it needs. */
+  maxVideoBitrate: 8_000_000,
+  videoAudioBitrate: 128_000,
+  longSide: 1920,
+  sampleRate: 44100,
+  maxChannels: 2,
+}
+//////////////////////Animate (Mode)//////////////////////////////
 
 /** Create mode's lane pill cycles through these in order, each with what a generation on it costs in matcha. */
 export const STILL_LANES: { lane: StillLane; label: string; matchas: number }[] = [
@@ -149,10 +185,15 @@ export function canAffordGeneration(
   credits: number,
   mode: StudioMode,
   lane: (typeof STILL_LANES)[number],
+  //////////////////////Animate (Mode)//////////////////////////////
   resolution: (typeof ANIMATE_RESOLUTIONS)[number],
   duration: (typeof ANIMATE_DURATIONS)[number],
+  //////////////////////Animate (Mode)//////////////////////////////
 ) {
-  const cost = mode === 'create' ? lane.matchas : ANIMATE_MATCHA_COST[resolution][duration]
+  if (mode === 'create') return credits >= lane.matchas
+  //////////////////////Animate (Mode)//////////////////////////////
+  const cost = ANIMATE_MATCHA_COST[resolution][duration]
+  //////////////////////Animate (Mode)//////////////////////////////
   return credits >= cost
 }
 
@@ -193,7 +234,14 @@ export function studioSetup({
   uploads,
 }: StudioSetup): Omit<
   StudioSession,
-  'studioSessionId' | 'generations' | 'brandMemoryPicked' | 'brandMemoryDismissed' | 'isBrandMemoryGuessQuiet'
+  | 'studioSessionId'
+  | 'generations'
+  | 'brandMemoryPicked'
+  | 'brandMemoryDismissed'
+  | 'isBrandMemoryGuessQuiet'
+  //////////////////////Animate (Mode)//////////////////////////////
+  | 'animateUploads'
+  //////////////////////Animate (Mode)//////////////////////////////
 > {
   const flipped = aspectRatio.split(':').reverse().join(':')
   const ratioIndex = Math.max(
@@ -270,7 +318,25 @@ export const UPLOAD_ERRORS = {
   failed: (name: string) => `${name} could not be uploaded — try again.`,
   full: (limit: number) => `This panel is full (${limit} files). remove one to add another.`,
   overLimit: `That's more than ${CREATE_MAX_PICTURES} pictures, a lot for me to take in at once. I'll work with the ${CREATE_MAX_PICTURES} that matter most and set the rest aside.`,
+  //////////////////////Animate (Mode)//////////////////////////////
+  unreadableMedia: (name: string) => `${name} can't be read — try another file.`,
+  tooHeavyVideo: (name: string) => `${name} is over 1 GB — pick a lighter video.`,
+  trimmed: (mediaType: TimedMediaType, name: string) =>
+    `Your ${MEDIA_WORDS[mediaType]} add up to more than ${ANIMATE_MEDIA.maxTotalSeconds}s, so I trimmed ${name} to fit.`,
+  lengthened: (mediaType: TimedMediaType, name: string) =>
+    `${name} is under ${ANIMATE_MEDIA.minSeconds}s, so I ${mediaType === 'audio' ? 'added silence' : 'held its last frame'} to reach ${ANIMATE_MEDIA.minSeconds}s.`,
+  noTimeLeft: (mediaType: TimedMediaType) =>
+    `Your ${MEDIA_WORDS[mediaType]} already fill the ${ANIMATE_MEDIA.maxTotalSeconds}s. Remove one to add another.`,
+  tooShort: (name: string) => `${name} is under ${ANIMATE_MEDIA.minSeconds}s — add a clip of ${ANIMATE_MEDIA.minSeconds}s or more.`,
+  //////////////////////Animate (Mode)//////////////////////////////
 }
+
+//////////////////////Animate (Mode)//////////////////////////////
+/** The kinds that are measured in seconds. */
+type TimedMediaType = Exclude<AnimateMediaType, 'image'>
+
+const MEDIA_WORDS: Record<TimedMediaType, string> = { video: 'videos', audio: 'sounds' }
+//////////////////////Animate (Mode)//////////////////////////////
 
 /** The Create call to action while pictures are still uploading. */
 export const UPLOADING_LABEL = 'Uploading...'

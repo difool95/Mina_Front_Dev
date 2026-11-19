@@ -1,5 +1,6 @@
 import { isMotion } from '@/lib/generations'
 import type {
+  AnimateRequest,
   AspectRatio,
   PickedBrandMemoryPictures,
   GenerationProgress,
@@ -32,6 +33,13 @@ export function startStillGeneration(
 ) {
   return apiPost<StillGenerationResult>('/api/mma/still', token, body)
 }
+
+//////////////////////Animate (Mode)//////////////////////////////
+//This method starts an Animate generation.
+export function startAnimateGeneration(token: string, body: AnimateRequest & { studioSessionId: string }) {
+  return apiPost<StillGenerationResult>('/api/mma/animate', token, body)
+}
+//////////////////////Animate (Mode)//////////////////////////////
 
 //this method returns the status of a generation, the output url, including the unused brand memories that were not used in the generation
 export async function getGenerationStatus(generationId: string): Promise<GenerationProgress> {

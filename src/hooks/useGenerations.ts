@@ -13,6 +13,7 @@ import {
   getLikedGenerationIds,
   likeGeneration,
   startStillGeneration,
+  startAnimateGeneration,
   unlikeGeneration,
 } from '@/services/generations.service'
 import type { MegaGeneration } from '@/types/generation.types'
@@ -38,6 +39,21 @@ export function useStartStillGeneration(userId: string | undefined) {
     },
   })
 }
+
+//////////////////////Animate (Mode)//////////////////////////////
+export function useStartAnimateGeneration(userId: string | undefined) {
+  const client = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ token, ...body }: Parameters<typeof startAnimateGeneration>[1] & { token: string }) =>
+      startAnimateGeneration(token, body),
+    onSuccess: () => {
+      void client.invalidateQueries({ queryKey: queryKeys.customer(userId ?? '') })
+      void client.invalidateQueries({ queryKey: queryKeys.generations(userId ?? '') })
+    },
+  })
+}
+//////////////////////Animate (Mode)//////////////////////////////
 
 /**
  * The step a generation is on and its picture once done, asked again every

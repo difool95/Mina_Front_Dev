@@ -14,6 +14,13 @@ export type { CreditLot, CustomerRole, MegaCustomer, MmaPreferences } from './cu
 export type { SignupBonusResult } from './credit.types'
 export type { CreateCheckoutSessionResult } from './checkout.types'
 export type {
+  //////////////////////Animate (Mode)//////////////////////////////
+  AnimatePicked,
+  AnimateRequest,
+  AnimateUpload,
+  AnimateMediaType,
+  PreparedMedia,
+  //////////////////////Animate (Mode)//////////////////////////////
   AspectRatio,
   CarouselFingertips,
   EditTool,

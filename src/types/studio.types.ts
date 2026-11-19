@@ -69,11 +69,56 @@ export interface StudioUpload {
   isSent?: boolean
 }
 
+//////////////////////Animate (Mode)//////////////////////////////
+/** What Animate mode's single upload row takes. */
+export type AnimateMediaType = 'image' | 'video' | 'audio'
+
+/** One file added in Animate mode, in the order it was added. */
+export interface AnimateUpload {
+  mediaType: AnimateMediaType
+  /** Its R2 URL — or, while `isUploading`, the browser's local preview of the prepared file. */
+  url: string
+  /** How long a video or a sound lasts once prepared, so the 30s totals can be kept. */
+  seconds?: number
+  isUploading?: boolean
+  /** Sent in an Animate: removing it leaves it on R2, where that generation still reads it. */
+  isSent?: boolean
+}
+
+/** A video or a sound ready to upload, and what was changed to fit the limits. */
+export interface PreparedMedia {
+  blob: Blob
+  seconds: number
+  change?: 'trimmed' | 'lengthened'
+}
+
+/** What an Animate sends (`POST /api/mma/animate`). */
+export interface AnimateRequest {
+  brief: string
+  lane: 'director'
+  isSoundOn: boolean
+  resolution: '720p' | '1080p'
+  durationSeconds: number
+  aspectRatio: AspectRatio
+  platform: MmaPlatform
+  /** In the row's order: the first is the start frame. */
+  images: string[]
+  videos: { url: string; seconds: number }[]
+  audios: { url: string; seconds: number }[]
+}
+
+/** The part of an Animate the prompt block holds: its pills and its files. */
+export type AnimatePicked = Pick<AnimateRequest, 'isSoundOn' | 'resolution' | 'durationSeconds' | 'images' | 'videos' | 'audios'>
+//////////////////////Animate (Mode)//////////////////////////////
+
 /** Create mode's settings, kept in sessionStorage so a refresh does not lose them. */
 export interface StudioSession {
   brief: string
   locked: string
   uploads: StudioUpload[]
+  //////////////////////Animate (Mode)//////////////////////////////
+  animateUploads: AnimateUpload[]
+  //////////////////////Animate (Mode)//////////////////////////////
   lane: StillLane
   ratioIndex: number
   isLandscape: boolean
