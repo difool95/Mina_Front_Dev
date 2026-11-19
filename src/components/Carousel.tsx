@@ -8,12 +8,14 @@ import {
   COPY_HOLD_MS,
   imageWidthFor,
   isLightImage,
+  isOnVideoControls,
   videoWidthFor,
 } from '@/lib/media'
 import { fingertipAt } from '@/lib/studio'
 import type { CarouselFingertips, Fingertip, OnboardContent } from '@/types'
 
 import { GlassDisc } from './GlassDisc'
+import { VideoPlayer } from './VideoPlayer'
 
 import './Carousel.css'
 
@@ -133,6 +135,9 @@ export function Carousel({
   }
 
   const track = (event: React.PointerEvent<HTMLDivElement>) => {
+    // Over the player's controls there is no disc: they are real buttons.
+    if (isOnVideoControls(event.target)) return setCursor(null)
+
     const { left, top } = event.currentTarget.getBoundingClientRect()
     setCursor({ x: event.clientX - left, y: event.clientY - top, fingertip: fingertipUnder(event) })
   }
@@ -156,6 +161,9 @@ export function Carousel({
   }
 
   const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
+    // A press on play, the timeline or mute is the player's, never a page or a zoom.
+    if (isOnVideoControls(event.target)) return
+
     const start = dragStartX.current
     dragStartX.current = null
 
@@ -194,6 +202,11 @@ export function Carousel({
   // Nothing to request until there is both a URL and a measured box.
   const url = boxWidth ? current?.media_url : null
   const videoWidth = videoWidthFor(boxWidth)
+  const poster = !url
+    ? undefined
+    : current?.thumbnail
+      ? cfImageCarousel(current.thumbnail, imageWidthFor(boxWidth))
+      : cfPoster(url, videoWidth)
   // A transform can fail where the original does not; fall back to it once.
   const fallBack = (event: React.SyntheticEvent<HTMLImageElement | HTMLVideoElement>) => {
     if (url && event.currentTarget.src !== url) event.currentTarget.src = url
@@ -204,6 +217,7 @@ export function Carousel({
       ref={root}
       className={`mina-carousel${paged || fingertips ? ' mina-carousel--disc' : ''}${isOverLight ? ' mina-carousel--light' : ''}${fingertips?.isFitted ? ' mina-carousel--fitted' : ''}`}
       onPointerDown={(event) => {
+        if (isOnVideoControls(event.target)) return
         dragStartX.current = event.clientX
         // A touch tap fires no `pointermove` before it, so read the fingertip where it landed.
         track(event)
@@ -219,17 +233,24 @@ export function Carousel({
       // With fingertips the right button is the copy gesture, so the browser's own menu would land on top of it.
       onContextMenu={fingertips ? (event) => event.preventDefault() : undefined}
     >
-      {current?.media_type === 'video' ? (
+      {current?.media_type === 'video' && fingertips ? (
+        // With fingertips (the studio) a clip is there to be watched: the shared player, with its controls.
+        // Keyed by the clip, so paging to another starts it afresh.
+        url && (
+          <VideoPlayer
+            key={url}
+            className="mina-carousel__media"
+            src={cfVideo(url, videoWidth)}
+            poster={poster}
+            onError={fallBack}
+          />
+        )
+      ) : current?.media_type === 'video' ? (
+        // On its own (Home) a clip is a silent, looping background.
         <video
           className="mina-carousel__media"
           src={url ? cfVideo(url, videoWidth) : undefined}
-          poster={
-            !url
-              ? undefined
-              : current.thumbnail
-                ? cfImageCarousel(current.thumbnail, imageWidthFor(boxWidth))
-                : cfPoster(url, videoWidth)
-          }
+          poster={poster}
           onError={fallBack}
           aria-label={current.alt_text ?? undefined}
           autoPlay

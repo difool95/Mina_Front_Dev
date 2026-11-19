@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 
 import { isMotion, promptOf, ratioOf } from '@/lib/generations'
-import { cfImage, COPY_FLASH_MS, COPY_HOLD_MS, FULLSCREEN_WIDTH } from '@/lib/media'
+import { cfImage, COPY_FLASH_MS, COPY_HOLD_MS, FULLSCREEN_WIDTH, isOnVideoControls } from '@/lib/media'
 import type { MegaGeneration } from '@/types/generation.types'
 
 import { GlassDisc } from './GlassDisc'
@@ -128,8 +128,7 @@ export function CreationFullScreen({
   const shown = discMode()
 
   /** The player draws its own controls, and they keep the real pointer. */
-  const onControls = (event: { target: EventTarget | null }) =>
-    (event.target as HTMLElement).closest('.mina-video__controls') !== null
+  const onControls = (event: { target: EventTarget | null }) => isOnVideoControls(event.target)
 
   const track = (event: React.PointerEvent<HTMLDivElement>) => {
     if (onControls(event)) {

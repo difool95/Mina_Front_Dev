@@ -14,7 +14,19 @@ const HIDE_DELAY = 3000
  * Starts muted because browsers refuse to autoplay a video with sound — the
  * mute button is how the viewer turns it on.
  */
-export function VideoPlayer({ src }: { src: string }) {
+export function VideoPlayer({
+  src,
+  poster,
+  className,
+  onError,
+}: {
+  src: string
+  /** Shown until the first frame has loaded. */
+  poster?: string
+  /** Added to the player's own class, for a parent that sizes it. */
+  className?: string
+  onError?: (event: React.SyntheticEvent<HTMLVideoElement>) => void
+}) {
   const video = useRef<HTMLVideoElement>(null)
   const hideTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
   const [playing, setPlaying] = useState(false)
@@ -38,7 +50,7 @@ export function VideoPlayer({ src }: { src: string }) {
 
   return (
     <div
-      className={`mina-video${showControls ? '' : ' mina-video--idle'}`}
+      className={`mina-video${showControls ? '' : ' mina-video--idle'}${className ? ` ${className}` : ''}`}
       onPointerEnter={() => {
         clearTimeout(hideTimer.current)
         setShowControls(true)
@@ -49,6 +61,8 @@ export function VideoPlayer({ src }: { src: string }) {
         className="mina-video__media"
         ref={video}
         src={src}
+        poster={poster}
+        onError={onError}
         autoPlay
         muted
         playsInline

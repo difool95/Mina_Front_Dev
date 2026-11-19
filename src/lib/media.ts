@@ -77,6 +77,11 @@ export const FULLSCREEN_WIDTH = 1920
 /** How long the right button has to be held over a creation before it offers the link instead of the picture. */
 export const COPY_HOLD_MS = 1000
 
+/** Whether a pointer event landed on the video player's own controls, which a view's gestures must leave alone. */
+export function isOnVideoControls(target: EventTarget | null) {
+  return (target as HTMLElement).closest('.mina-video__controls') !== null
+}
+
 /** How long the glass disc stays green after a copy. */
 export const COPY_FLASH_MS = 900
 

@@ -33,6 +33,15 @@
   object-fit: contain;
 }
 
+/* The player's own video follows the same fill and fit as a picture. */
+.mina-carousel .mina-video__media {
+  object-fit: cover;
+}
+
+.mina-carousel--fitted .mina-video__media {
+  object-fit: contain;
+}
+
 /* The icon inside the glass disc. The svg files draw in `currentColor`, which
    an <img> cannot pick up, so each is a mask filled with the disc's own colour
    — white on glass, ink over a light picture. */
