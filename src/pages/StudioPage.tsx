@@ -10,14 +10,14 @@ import { RoleTagCard } from '@/components/RoleTagCard'
 import { useAccountSetup } from '@/hooks/useAccounts'
 import { useCustomerCredits } from '@/hooks/useCustomerCredits'
 import { useFingertipsStatuses, useStartFingertips } from '@/hooks/useFingertips'
-import { useGenerationStatus, useStartStillGeneration } from '@/hooks/useGenerations'
+import { useGenerationStatus, useStartAnimateGeneration, useStartStillGeneration } from '@/hooks/useGenerations'
 import { MINA_LOGO_URL } from '@/lib/constants'
 import { hasEnded } from '@/lib/minaBrief'
 import { studioSession } from '@/lib/sessionStorage/studioSession'
 import { FINGERTIPS_MATCHAS, NEED_MATCHA_LINE, STILL_LANES, STUDIO_RATIOS, studioRatio, withScene } from '@/lib/studio'
 import { useAuth } from '@/providers/AuthProvider'
 import type { EditTool, GenerationProgress, Ratio, PickedBrandMemoryPictures, MinaBlockHandle, MmaStatus, StudioMode, StudioUpload } from '@/types'
-import type { AnimatePicked, AnimateRequest, AnimateUpload } from '@/types'
+import type { AnimatePicked, AnimateUpload } from '@/types'
 
 import './StudioPage.css'
 
@@ -90,23 +90,33 @@ export function StudioPage() {
   }
 
   //////////////////////Animate (Mode)//////////////////////////////
-  // For now we just log the animation request body to the console. In the future, this will be sent to the API to start an Animate generation.
+  // Starts an Animate: the API opens its sessions and generation, and charges the matcha it works out from these settings.
+  const startAnimate = useStartAnimateGeneration(session?.user.id)
   const animate = (picked: AnimatePicked) => {
-    const { ratioIndex = 0, isLandscape = false, brief = '', locked = '' } = studioSession.read()
-    const request: AnimateRequest = {
-      ...picked,
-      brief: [brief, locked].filter(Boolean).join('\n'),
-      lane: 'director',
-      aspectRatio: studioRatio(ratioIndex, isLandscape),
-      platform: STUDIO_RATIOS[ratioIndex]!.platform,
-    }
-    // const { images, videos, audios, ...settings } = request
-    // console.log('Animate media', {
-    //   images,
-    //   videos: videos.map(({ url }) => url),
-    //   audios: audios.map(({ url }) => url),
-    // })
-    // console.log('Animate settings', settings)
+    if (!session || minaStatus || startAnimate.isPending || animateUploads.some((entry) => entry.isUploading)) return
+
+    // The same studio session as Create's: one "Mina Studio session" row per tab, whichever mode starts it.
+    const {
+      studioSessionId = crypto.randomUUID(),
+      ratioIndex = 0,
+      isLandscape = false,
+      brief = '',
+      locked = '',
+    } = studioSession.read()
+    studioSession.save({ studioSessionId })
+    startAnimate.mutate(
+      {
+        token: session.access_token,
+        studioSessionId,
+        ...picked,
+        brief: [brief, locked].filter(Boolean).join('\n'),
+        lane: 'director',
+        aspectRatio: studioRatio(ratioIndex, isLandscape),
+        platform: STUDIO_RATIOS[ratioIndex]!.platform,
+      },
+      // Sent: removing them from the row no longer deletes them from R2, as for Create's uploads.
+      { onSuccess: () => setAnimateUploads((list) => list.map((entry) => ({ ...entry, isSent: true }))) },
+    )
   }
   //////////////////////Animate (Mode)//////////////////////////////
 
