@@ -12,6 +12,7 @@ export function MinaBlockPillsAnimate({
   onNextDuration,
   isSoundOn,
   onToggleSound,
+  onOpenFilePicker,
   ratioPill,
 }: {
   resolution: (typeof ANIMATE_RESOLUTIONS)[number]
@@ -20,6 +21,8 @@ export function MinaBlockPillsAnimate({
   onNextDuration: () => void
   isSoundOn: boolean
   onToggleSound: () => void
+  /** Opens the file picker, as the upload row's "+" does. */
+  onOpenFilePicker: () => void
   ratioPill: ReactNode
 }) {
   // Shared by the resolution and duration pills, and follows both.
@@ -33,6 +36,7 @@ export function MinaBlockPillsAnimate({
         type="button"
         aria-pressed="true"
         data-tooltip="Add frames & elements - start frame first, then images / video / audio as references"
+        onClick={onOpenFilePicker}
       >
         <span className="mina-pills__icon comment" aria-hidden="true">
           +

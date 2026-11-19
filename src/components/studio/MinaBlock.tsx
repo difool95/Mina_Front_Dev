@@ -302,6 +302,9 @@ export function MinaBlock({
     }
   }
 
+  // Shared by the row's "+" and the "Frames & elements" pill.
+  const openAnimatePicker = () => canAddAnimate && fileInput.current?.click()
+
   /**
    * Files for Animate's row, from the file picker, a paste or a drop. Each
    * media type takes only what fits its limit, and Mina says so when some did not.
@@ -653,7 +656,7 @@ export function MinaBlock({
         addLabel={animateUploads.length ? 'Add image, video or sound' : 'Add start frame (image)'}
         images={animateUploads}
         canAdd={canAddAnimate}
-        onOpenFilePicker={() => fileInput.current?.click()}
+        onOpenFilePicker={openAnimatePicker}
         onRemove={removeAnimate}
         onMove={moveIn(onAnimateUploads)}
         library={{
@@ -695,6 +698,7 @@ export function MinaBlock({
             onNextDuration={() => setDurationIndex((index) => (index + 1) % ANIMATE_DURATIONS.length)}
             isSoundOn={isSoundOn}
             onToggleSound={() => setIsSoundOn((was) => !was)}
+            onOpenFilePicker={openAnimatePicker}
             ratioPill={ratioPill}
           />
           //////////////////////Animate (Mode)//////////////////////////////
