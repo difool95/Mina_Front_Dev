@@ -157,8 +157,8 @@ export interface CarouselFingertips {
   onZoom: () => void
   onLike: () => void
   onDownload: () => void
-  /** The copy fingertip and a quick right-click: the picture itself. */
-  onCopy: () => void
+  /** The copy fingertip and a quick right-click: the picture itself, or with `video`, the frame that video is on. */
+  onCopy: (video?: HTMLVideoElement) => void
   /** The right button held past a second: the picture's share link. */
   onCopyLink: () => void
   onEdit: () => void

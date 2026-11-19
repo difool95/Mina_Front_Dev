@@ -164,7 +164,10 @@ export function RightStudioPanel({
                   onZoom: () => setIsFitted(!isFitted),
                   onLike: toggleLike,
                   onDownload: saveFile,
-                  onCopy: () => currentUrl && copyMedia.mutate(currentUrl),
+                  onCopy: (video) => {
+                    const source = video ?? currentUrl
+                    if (source) copyMedia.mutate(source)
+                  },
                   onCopyLink: () => currentUrl && copyLink.mutate(viewerLinkFor({ mg_output_url: currentUrl })),
                   onEdit: edit,
                   onDelete: () => currentUrl && onRemove(currentUrl),

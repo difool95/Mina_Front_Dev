@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useImperativeHandle, useRef, useState, type CSSProperties, type Ref } from 'react'
 
 import { formatDuration } from '@/lib/format'
 
@@ -19,8 +19,11 @@ export function VideoPlayer({
   poster,
   className,
   onError,
+  ref,
 }: {
   src: string
+  /** The video element itself, for a parent that copies the frame on show. */
+  ref?: Ref<HTMLVideoElement | null>
   /** Shown until the first frame has loaded. */
   poster?: string
   /** Added to the player's own class, for a parent that sizes it. */
@@ -34,6 +37,8 @@ export function VideoPlayer({
   const [time, setTime] = useState(0)
   const [duration, setDuration] = useState(0)
   const [showControls, setShowControls] = useState(true)
+  // Read once mounted, when the element is always there.
+  useImperativeHandle(ref, () => video.current!, [])
 
   const scheduleHide = () => {
     clearTimeout(hideTimer.current)
@@ -62,6 +67,9 @@ export function VideoPlayer({
         ref={video}
         src={src}
         poster={poster}
+        // Fetched with CORS so the frame on show can be painted onto a canvas and copied;
+        // without it the canvas is tainted. The assets answer with `Access-Control-Allow-Origin: *`.
+        crossOrigin="anonymous"
         onError={onError}
         autoPlay
         muted

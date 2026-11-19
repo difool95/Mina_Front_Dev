@@ -100,6 +100,8 @@ export function Carousel({
   /** The copy that just happened, held briefly so the disc can confirm it. */
   const [copied, setCopied] = useState<'copy' | 'link' | null>(null)
   const hold = useRef<number | undefined>(undefined)
+  // The studio's video player, while a video is on show.
+  const player = useRef<HTMLVideoElement>(null)
 
   useEffect(() => () => window.clearTimeout(hold.current), [])
 
@@ -149,7 +151,8 @@ export function Carousel({
 
   const copy = () => {
     flash('copy')
-    fingertips?.onCopy()
+    // A video on show gives its element, so the frame it has reached is copied.
+    fingertips?.onCopy(player.current ?? undefined)
   }
 
   // Paging and copying are the carousel's own; the rest is the page's to decide.
@@ -239,6 +242,7 @@ export function Carousel({
         url && (
           <VideoPlayer
             key={url}
+            ref={player}
             className="mina-carousel__media"
             src={cfVideo(url, videoWidth)}
             poster={poster}

@@ -17,7 +17,8 @@ interface CreationFullScreenProps {
   onClose: () => void
   onDownload: () => void
   onCopyLink: () => void
-  onCopyMedia: () => void
+  /** The picture itself, or for a clip, `video`: the frame it has reached is copied. */
+  onCopyMedia: (video?: HTMLVideoElement) => void
   /** Walks the archive by `delta`. Left out when there is nothing to page to. */
   onNavigate?: (delta: number) => void
 }
@@ -67,6 +68,8 @@ export function CreationFullScreen({
 }: CreationFullScreenProps) {
   const ref = useRef<HTMLDialogElement>(null)
   const hold = useRef<number | null>(null)
+  // The video player, while a clip is on show, so a copy takes the frame it has reached.
+  const player = useRef<HTMLVideoElement>(null)
   /** Where a drag started, so `release` can measure it against `SWIPE_THRESHOLD`. */
   const dragStartX = useRef<number | null>(null)
   /** Set when a drag just paged, so the click that follows it is a no-op. */
@@ -220,7 +223,7 @@ export function CreationFullScreen({
     window.setTimeout(() => setCopied(null), COPY_FLASH_MS)
 
     if (action === 'link') onCopyLink()
-    else onCopyMedia()
+    else onCopyMedia(player.current ?? undefined)
   }
 
   const leave = () => {
@@ -279,7 +282,7 @@ export function CreationFullScreen({
           }}
         >
           {/* Keyed by the clip, like the image below, so the last one never shows while the next loads. */}
-          <VideoPlayer key={url} src={url} />
+          <VideoPlayer key={url} ref={player} src={url} />
         </div>
       ) : (
         <div

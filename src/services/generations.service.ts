@@ -165,9 +165,9 @@ export async function copyLink(link: string) {
   await navigator.clipboard.writeText(link)
 }
 
-/** Repaints a blob as a PNG, the one image type clipboards reliably accept. */
-async function toPng(blob: Blob) {
-  const bitmap = await createImageBitmap(blob)
+/** Repaints a blob, or the frame a video is on, as a PNG, the one image type clipboards reliably accept. */
+async function toPng(source: Blob | HTMLVideoElement) {
+  const bitmap = await createImageBitmap(source)
   const canvas = document.createElement('canvas')
 
   canvas.width = bitmap.width
@@ -186,11 +186,18 @@ async function toPng(blob: Blob) {
  * Puts the creation itself on the clipboard, ready to paste into anything that
  * takes an image.
  *
- * Images only: no browser will hold a video on the clipboard, so a motion
- * creation throws here and the link is the thing to share instead.
+ * No browser will hold a video on the clipboard, so a video on show is given as
+ * its element instead, and the frame it has reached is copied as a picture.
+ * A video URL on its own throws.
  */
-export async function copyMediaToClipboard(url: string) {
-  const response = await fetch(url)
+export async function copyMediaToClipboard(source: string | HTMLVideoElement) {
+  if (typeof source !== 'string') {
+    // Handed over as a promise, so Safari still counts the write as part of the click.
+    await navigator.clipboard.write([new ClipboardItem({ 'image/png': toPng(source) })])
+    return
+  }
+
+  const response = await fetch(source)
 
   if (!response.ok) throw new Error(`Could not read the file (${response.status})`)
 

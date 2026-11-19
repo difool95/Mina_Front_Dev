@@ -412,7 +412,7 @@ export function ProfilePage() {
           onClose={() => setOpened(null)}
           onDownload={() => saveMedia(opened)}
           onCopyLink={() => copyLink.mutate(viewerLinkFor(opened))}
-          onCopyMedia={() => copyMedia.mutate(opened.mg_output_url ?? '')}
+          onCopyMedia={(video) => copyMedia.mutate(video ?? opened.mg_output_url ?? '')}
           onNavigate={visible.length > 1 ? step : undefined}
         />
       )}
