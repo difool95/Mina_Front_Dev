@@ -14,6 +14,7 @@ import {
   ANIMATE_MEDIA,
   ANIMATE_RESOLUTIONS,
   ANIMATE_UPLOAD_ACCEPT,
+  isAnimateMedia,
   ANIMATE_UPLOAD_LIMITS,
   ANIMATE_UPLOAD_TITLE,
   BRIEF_PLACEHOLDERS,
@@ -313,6 +314,9 @@ export function MinaBlock({
     setMinaNote(null)
     setIsPreparing(true)
 
+    // A file the browser gave no media type (often a .heic on Windows) is said, rather than silently left out.
+    for (const file of files.filter((file) => !isAnimateMedia(file))) sayWarning(UPLOAD_ERRORS.unreadableMedia(file.name))
+
     try {
       for (const mediaType of Object.keys(ANIMATE_UPLOAD_LIMITS) as AnimateMediaType[]) {
         const listed = latestAnimateUploads.current.filter((entry) => entry.mediaType === mediaType)
@@ -530,12 +534,14 @@ export function MinaBlock({
     const take = (files: FileList | null | undefined) => {
       const list = [...(files ?? [])]
       if (mode === 'create') {
-        const pictures = list.filter((file) => file.type.startsWith('image/'))
+        // A file with no type may still be a picture (a .heic on Windows): the preparation says if it can't be read.
+        const pictures = list.filter((file) => !file.type || file.type.startsWith('image/'))
         if (pictures.length) latestAddPictures.current(pictures)
         return pictures.length > 0
       }
       //////////////////////Animate (Mode)//////////////////////////////
-      const media = list.filter((file) => /^(image|video|audio)\//.test(file.type))
+      // Files with no type go too, so `addMedia` can say they can't be read.
+      const media = list.filter((file) => !file.type || isAnimateMedia(file))
       if (media.length) void latestAddMedia.current(media)
       return media.length > 0
       //////////////////////Animate (Mode)//////////////////////////////

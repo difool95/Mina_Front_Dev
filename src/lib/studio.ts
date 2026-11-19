@@ -136,6 +136,9 @@ export const ANIMATE_UPLOAD_LIMITS: Record<AnimateMediaType, number> = { image: 
 /** What Animate's file picker offers. */
 export const ANIMATE_UPLOAD_ACCEPT = 'image/*,video/*,audio/*'
 
+/** Whether the browser typed `file` as a picture, video or sound, the three things Animate takes. */
+export const isAnimateMedia = (file: File) => /^(image|video|audio)\//.test(file.type)
+
 //This const is used to define the maximum number of seconds for the Animate mode. It is used to validate the total duration of the uploaded media files
 //and ensure that they do not exceed these limit.
 export const ANIMATE_MEDIA = {
