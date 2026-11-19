@@ -23,7 +23,7 @@ import {
   UPLOAD_PREP,
   ANIMATE_MEDIA,
 } from '@/lib/studio'
-import type { PreparedMedia } from '@/types'
+import type { AnimateUpload, PreparedMedia } from '@/types'
 
 /**
  * Cloudflare delivery URLs for the creations on `assets.faltastudio.com`.
@@ -225,6 +225,19 @@ export async function prepareStudioImage(file: File): Promise<Blob> {
 }
 
 //////////////////////Animate (Mode)//////////////////////////////
+const AUDIO_ICON_URL = '/assets/gifs/audio-mina-icon.gif'
+
+/**
+ * A still standing for an Animate upload `cssWidth` wide: the picture itself, a video's first
+ * frame, or Mina's audio icon for a sound. Undefined for a video not on R2 yet, which has no frame to lift.
+ */
+export function animateThumbnail({ mediaType, url }: Pick<AnimateUpload, 'mediaType' | 'url'>, cssWidth: number) {
+  if (mediaType === 'audio') return AUDIO_ICON_URL
+  if (mediaType === 'video') return cfPoster(url, videoWidthFor(cssWidth))
+
+  return cfImage(url, imageWidthFor(cssWidth))
+}
+
 //this method is used to fit the seconds of a media file to the room seconds, it returns an object with the new seconds and a change property that indicates
 //if the media was trimmed or lengthened.
 function fitSeconds(seconds: number, roomSeconds: number): Pick<PreparedMedia, 'seconds' | 'change'> {

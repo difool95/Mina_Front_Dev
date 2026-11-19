@@ -692,6 +692,7 @@ export function MinaBlock({
         (mode === 'animate' ? (
           //////////////////////Animate (Mode)//////////////////////////////
           <MinaBlockPillsAnimate
+            animateUploads={animateUploads}
             resolution={resolution}
             duration={duration}
             onNextResolution={() => setResolutionIndex((index) => (index + 1) % ANIMATE_RESOLUTIONS.length)}

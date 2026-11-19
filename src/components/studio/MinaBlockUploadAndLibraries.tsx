@@ -1,5 +1,6 @@
 import { useDragMouse } from '@/hooks/useDragMouse'
 import {
+  animateThumbnail,
   cfImage,
   imageWidthFor,
   cfPoster,
@@ -8,10 +9,6 @@ import {
 import type { AnimateMediaType, StudioUpload } from '@/types'
 
 import './MinaBlockUploadAndLibraries.css'
-
-//////////////////////Animate (Mode)//////////////////////////////
-const AUDIO_ICON_URL = '/assets/gifs/audio-mina-icon.gif'
-//////////////////////Animate (Mode)//////////////////////////////
 
 /**
  * The upload row: what to add, a "+" to add it, and — when there is a library
@@ -78,10 +75,10 @@ export function MinaBlockUploadAndLibraries({
             {mediaType === 'video' && (
               <video src={url} poster={cfPoster(url, videoWidthFor(72))} muted playsInline preload="metadata" />
             )}
-            {mediaType === 'audio' && <img src={AUDIO_ICON_URL} alt="" draggable={false} />}
             {/*//////////////////////Animate (Mode)//////////////////////////////*/}
-            {mediaType !== 'video' && mediaType !== 'audio' && (
-              <img src={cfImage(url, imageWidthFor(72))} alt="" draggable={false} />
+            {/* A sound or a picture: Create's uploads have no media type, so they are pictures. */}
+            {mediaType !== 'video' && (
+              <img src={animateThumbnail({ mediaType: mediaType ?? 'image', url }, 72)} alt="" draggable={false} />
             )}
           </button>
         ))}

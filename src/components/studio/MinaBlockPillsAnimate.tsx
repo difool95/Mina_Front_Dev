@@ -1,11 +1,14 @@
 import type { ReactNode } from 'react'
 
+import { animateThumbnail } from '@/lib/media'
 import { ANIMATE_DURATIONS, ANIMATE_MATCHA_COST, ANIMATE_RESOLUTIONS } from '@/lib/studio'
+import type { AnimateUpload } from '@/types'
 
 import './MinaBlockPills.css'
 
 /** Every pill's value is held by `MinaBlock`, whose call to action prices them and sends them. */
 export function MinaBlockPillsAnimate({
+  animateUploads,
   resolution,
   duration,
   onNextResolution,
@@ -15,6 +18,7 @@ export function MinaBlockPillsAnimate({
   onOpenFilePicker,
   ratioPill,
 }: {
+  animateUploads: AnimateUpload[]
   resolution: (typeof ANIMATE_RESOLUTIONS)[number]
   duration: (typeof ANIMATE_DURATIONS)[number]
   onNextResolution: () => void
@@ -27,6 +31,9 @@ export function MinaBlockPillsAnimate({
 }) {
   // Shared by the resolution and duration pills, and follows both.
   const costTooltip = `${ANIMATE_MATCHA_COST[resolution][duration]} matcha (${duration}, Director, ${resolution})`
+  // The first upload stands in for the "+" once there is one.
+  const first = animateUploads[0]
+  const thumbnail = first && animateThumbnail(first, 22)
 
   return (
     <div className="mina-pills">
@@ -39,7 +46,7 @@ export function MinaBlockPillsAnimate({
         onClick={onOpenFilePicker}
       >
         <span className="mina-pills__icon comment" aria-hidden="true">
-          +
+          {thumbnail ? <img src={thumbnail} alt="" draggable={false} /> : '+'}
         </span>
         <span className="comment">Frames &amp; elements</span>
       </button>
