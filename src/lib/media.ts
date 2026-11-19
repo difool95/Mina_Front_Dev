@@ -418,17 +418,25 @@ async function convertToMp4(input: Input, end: number, video: ConversionVideoOpt
   return new Blob([output.target.buffer!], { type: 'video/mp4' })
 }
 
-/** A `process` hook that shows the frame ending at `end` until `until` seconds. */
+/** A `process` hook that repeats the frame ending at `end` until `until` seconds. */
 function holdLastFrame(end: number, until: number) {
   return (sample: VideoSample) => {
     const sampleEnd = sample.timestamp + sample.duration
     if (sampleEnd < end - 0.001) return sample
 
-    const held = sample.clone()
-    held.setTimestamp(sampleEnd)
-    held.setDuration(until - sampleEnd)
+    // Repeated at the clip's own pace: a single long frame stalls players, and some tools count it as a shorter clip.
+    // Identical frames cost the encoder almost nothing.
+    const step = sample.duration || 1 / 30
+    const held = [sample]
 
-    return [sample, held]
+    for (let at = sampleEnd; at < until - 0.001; at += step) {
+      const copy = sample.clone()
+      copy.setTimestamp(at)
+      copy.setDuration(Math.min(step, until - at))
+      held.push(copy)
+    }
+
+    return held
   }
 }
 //////////////////////Animate (Mode)//////////////////////////////
