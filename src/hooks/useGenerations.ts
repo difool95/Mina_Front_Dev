@@ -8,6 +8,7 @@ import {
   copyMediaToClipboard,
   deleteGeneration,
   downloadMedia,
+  downloadVideoFrame,
   getGenerationStatus,
   getGenerations,
   getLikedGenerationIds,
@@ -96,6 +97,16 @@ export function useDownloadMedia() {
     // Otherwise a blocked fetch fails with nothing on screen and nothing logged.
     onError: (error: unknown) => {
       console.error('Could not download the creation', error)
+    },
+  })
+}
+
+export function useDownloadFrame() {
+  return useMutation({
+    mutationFn: ({ video, filename }: { video: HTMLVideoElement; filename: string }) =>
+      downloadVideoFrame(video, filename),
+    onError: (error: unknown) => {
+      console.error('Could not download the frame', error)
     },
   })
 }

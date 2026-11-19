@@ -457,8 +457,13 @@ const FINGERTIPS: { until: number; fingertip: Fingertip | null }[] = [
   { until: 1, fingertip: 'like' },
 ]
 
+/** Over a video, how far down the panel the pin starts, as a fraction of its height: from there to the player's controls. */
+const PIN_ZONE = 0.75
+
 //This method returns the fingertip that is being hovered over based on the x and y coordinates of the mouse.
-export function fingertipAt(x: number, y: number): Fingertip | null {
+//Over a video, the strip just above its timeline is the pin, which downloads the frame on show.
+export function fingertipAt(x: number, y: number, isVideo = false): Fingertip | null {
+  if (isVideo && y > PIN_ZONE) return 'pin'
   if (y > FINGERTIP_BAND) return x < PAGE_ZONE ? 'prev' : x > 1 - PAGE_ZONE ? 'next' : null
 
   return FINGERTIPS.find((entry) => x <= entry.until)?.fingertip ?? null

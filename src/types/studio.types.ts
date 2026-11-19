@@ -142,7 +142,7 @@ export interface StudioSession {
  * What a fingertip over the carousel does: along the top, left to right, then
  * paging on the two sides below.
  */
-export type Fingertip = 'delete' | 'edit' | 'copy' | 'download' | 'like' | 'prev' | 'next'
+export type Fingertip = 'delete' | 'edit' | 'copy' | 'download' | 'like' | 'prev' | 'next' | 'pin'
 
 /**
  * The fingertips a page switches on in its carousel, with what each does. The
@@ -159,6 +159,8 @@ export interface CarouselFingertips {
   onDownload: () => void
   /** The copy fingertip and a quick right-click: the picture itself, or with `video`, the frame that video is on. */
   onCopy: (video?: HTMLVideoElement) => void
+  /** The pin, just above a video's timeline: downloads the frame `video` has reached. */
+  onDownloadFrame: (video: HTMLVideoElement) => void
   /** The right button held past a second: the picture's share link. */
   onCopyLink: () => void
   onEdit: () => void

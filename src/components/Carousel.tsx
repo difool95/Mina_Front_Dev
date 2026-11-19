@@ -129,7 +129,7 @@ export function Carousel({
 
     if (!fingertips) return paged ? (x < 0.5 ? 'prev' : 'next') : null
 
-    const fingertip = fingertipAt(x, (event.clientY - top) / height)
+    const fingertip = fingertipAt(x, (event.clientY - top) / height, media[index]?.media_type === 'video')
     if (fingertip === 'like' && !fingertips.canLike) return null
     if ((fingertip === 'prev' || fingertip === 'next') && !paged) return null
 
@@ -160,7 +160,10 @@ export function Carousel({
     if (fingertip === 'prev') go(-1)
     else if (fingertip === 'next') go(1)
     else if (fingertip === 'copy') copy()
-    else fingertips?.[PAGE_ACTIONS[fingertip]]()
+    // The frame the studio's player has reached, downloaded as a picture.
+    else if (fingertip === 'pin') {
+      if (player.current) fingertips?.onDownloadFrame(player.current)
+    } else fingertips?.[PAGE_ACTIONS[fingertip]]()
   }
 
   const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {

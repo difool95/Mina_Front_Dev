@@ -225,6 +225,11 @@ export async function downloadMedia(url: string, filename: string) {
   saveBlob(await response.blob(), filename)
 }
 
+/** Saves the frame `video` has reached to disk as a PNG named `filename`. */
+export async function downloadVideoFrame(video: HTMLVideoElement, filename: string) {
+  saveBlob(await toPng(video), filename)
+}
+
 /** Saves a blob to disk under `filename`, as a download. */
 export function saveBlob(blob: Blob, filename: string) {
   const objectUrl = URL.createObjectURL(blob)

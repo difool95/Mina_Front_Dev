@@ -3,6 +3,7 @@ import { useState, type CSSProperties } from 'react'
 import {
   useCopyLink,
   useCopyMedia,
+  useDownloadFrame,
   useDownloadMedia,
   useGenerations,
   useLikedGenerations,
@@ -87,6 +88,7 @@ export function RightStudioPanel({
   const generationId = generation?.mg_generation_id ?? ''
   const isLiked = liked?.has(generationId) ?? false
   const copyMedia = useCopyMedia()
+  const downloadFrame = useDownloadFrame()
   const copyLink = useCopyLink()
   // Filling the panel by default; the zoom fingertip shows it whole in its own ratio instead.
   const [isFitted, setIsFitted] = useState(false)
@@ -168,6 +170,13 @@ export function RightStudioPanel({
                     const source = video ?? currentUrl
                     if (source) copyMedia.mutate(source)
                   },
+                  // Named after the video and the second it is on, e.g. `clip-3.4s.png`.
+                  onDownloadFrame: (video) =>
+                    currentUrl &&
+                    downloadFrame.mutate({
+                      video,
+                      filename: `${filenameFromUrl(currentUrl).replace(/\.\w+$/, '')}-${video.currentTime.toFixed(1)}s.png`,
+                    }),
                   onCopyLink: () => currentUrl && copyLink.mutate(viewerLinkFor({ mg_output_url: currentUrl })),
                   onEdit: edit,
                   onDelete: () => currentUrl && onRemove(currentUrl),

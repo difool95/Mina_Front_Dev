@@ -94,6 +94,10 @@
   --icon: url('/assets/icons/fingerprint-fingertips-edit-toolkit-opener.svg');
 }
 
+.mina-carousel__icon--pin {
+  --icon: url('/assets/icons/pin.svg');
+}
+
 .mina-carousel__icon--delete {
   --icon: url('/assets/icons/delete.svg');
 }
