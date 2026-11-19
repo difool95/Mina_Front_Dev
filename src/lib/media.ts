@@ -5,10 +5,16 @@ import {
   BufferTarget,
   Conversion,
   Input,
+  MP3,
+  Mp3OutputFormat,
   Mp4OutputFormat,
   Output,
   Quality,
+  WAVE,
+  WavOutputFormat,
   type ConversionVideoOptions,
+  type InputFormat,
+  type OutputFormat,
   type VideoSample,
 } from 'mediabunny'
 
@@ -228,9 +234,65 @@ function fitSeconds(seconds: number, roomSeconds: number): Pick<PreparedMedia, '
   return { seconds }
 }
 
-//This method reduces or increases the seconds of a media file to fit the room seconds and also encodes it to WAV, it returns an object with the new seconds and
-//a change property that indicates if the media was trimmed or lengthened and the new blob.
+/** The formats a sound can be sent in as it is, each with the type it is uploaded as and how a cut of it is written. */
+const KEPT_AUDIO = new Map<InputFormat, { type: string; output: () => OutputFormat }>([
+  [MP3, { type: 'audio/mpeg', output: () => new Mp3OutputFormat() }],
+  [WAVE, { type: 'audio/wav', output: () => new WavOutputFormat() }],
+])
+
+//This method prepares a sound for Animate mode. An MP3 or WAV is kept as it is, or cut without re-encoding when it is too long, so its bitrate never rises.
+//Anything else (another format, a sound under 2s, a WAV still too heavy once cut) is rewritten as WAV.
 export async function prepareStudioAudio(file: File, roomSeconds: number): Promise<PreparedMedia> {
+  const input = new Input({ source: new BlobSource(file), formats: ALL_FORMATS })
+
+  try {
+    const format = await input.getFormat().catch(() => undefined)
+    const kept = format && KEPT_AUDIO.get(format)
+
+    if (kept) {
+      const duration = await input.computeDuration()
+      const fit = fitSeconds(duration, roomSeconds)
+      // Its size once cut: a WAV recorded at high settings can still be over the limit.
+      const isLight = (file.size * Math.min(duration, fit.seconds)) / duration < ANIMATE_MEDIA.maxAudioUploadBytes
+
+      if (fit.change !== 'lengthened' && isLight) {
+        const blob =
+          fit.change === 'trimmed'
+            ? await cutAudio(input, fit.seconds, kept.output())
+            : new Blob([file], { type: kept.type })
+        if (blob) return { ...fit, blob }
+      }
+    }
+  } finally {
+    input.dispose()
+  }
+
+  return rewriteAsWav(file, roomSeconds)
+}
+
+/** `input` up to `end` seconds, its packets copied as they are, or null when they cannot be. */
+async function cutAudio(input: Input, end: number, format: OutputFormat) {
+  const output = new Output({ format, target: new BufferTarget() })
+  const conversion = await Conversion.init({
+    input,
+    output,
+    trim: { start: 0, end },
+    copy: { boundaryPolicy: 'shrink' },
+    // Cover art and other tags only add weight.
+    tags: {},
+    showWarnings: false,
+  })
+
+  if (!conversion.isValid) return null
+
+  await conversion.execute()
+
+  return new Blob([output.target.buffer!], { type: format.mimeType })
+}
+
+//This method reduces or increases the seconds of a sound to fit the room seconds and writes it as a 44.1 kHz 16-bit WAV, it returns an object with the new seconds and
+//a change property that indicates if the sound was trimmed or lengthened and the new blob.
+async function rewriteAsWav(file: File, roomSeconds: number): Promise<PreparedMedia> {
   const decoded = await new OfflineAudioContext(1, 1, ANIMATE_MEDIA.sampleRate)
     .decodeAudioData(await file.arrayBuffer())
     .catch(() => {
@@ -303,13 +365,19 @@ export async function prepareStudioVideo(file: File, roomSeconds: number): Promi
     const isLight = scale === 1 && file.size < ANIMATE_MEDIA.maxVideoUploadBytes
     // 10% headroom for the container and the encoder overshooting its target.
     const budget = (ANIMATE_MEDIA.maxVideoUploadBytes * 8 * 0.9) / fit.seconds - ANIMATE_MEDIA.videoAudioBitrate
+    // Never above the original's own bitrate: re-encoding cannot add quality, only weight.
+    const original = (file.size * 8) / duration
+    const bitrate = Math.round(Math.min(ANIMATE_MEDIA.maxVideoBitrate, budget, original))
 
     const encoded: ConversionVideoOptions = {
       codec: 'avc',
-      quality: new Quality(Math.min(ANIMATE_MEDIA.maxVideoBitrate, budget)),
+      // An object: a bare number would be read as a 0–1 quality level, not bits per second.
+      quality: new Quality({ bitrate }),
       // Even sides: the encoder refuses odd ones.
       width: Math.round((track.displayWidth * scale) / 2) * 2,
       height: Math.round((track.displayHeight * scale) / 2) * 2,
+      // Both sides already keep the video's shape, so filling them only absorbs the even rounding.
+      fit: 'fill',
       forceTranscode: !isLight || fit.change === 'lengthened',
       process: fit.change === 'lengthened' ? holdLastFrame(end, fit.seconds) : undefined,
     }
@@ -339,7 +407,7 @@ async function convertToMp4(input: Input, end: number, video: ConversionVideoOpt
     // A copied cut lands on packet boundaries: shrink it, so the 30s are never overrun.
     copy: { boundaryPolicy: 'shrink' },
     video,
-    audio: { codec: 'aac', quality: new Quality(ANIMATE_MEDIA.videoAudioBitrate) },
+    audio: { codec: 'aac', quality: new Quality({ bitrate: ANIMATE_MEDIA.videoAudioBitrate }) },
     showWarnings: false,
   })
 

@@ -153,6 +153,8 @@ export const ANIMATE_MEDIA = {
   maxVideoBitrate: 8_000_000,
   videoAudioBitrate: 128_000,
   longSide: 1920,
+  /** An MP3 or WAV under this once cut is sent as it is; a heavier WAV is rewritten at the settings below. */
+  maxAudioUploadBytes: 15 * 1024 * 1024,
   sampleRate: 44100,
   maxChannels: 2,
 }
