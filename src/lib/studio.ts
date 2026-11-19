@@ -1,4 +1,5 @@
 import type {
+  AnimateLane,
   AnimateMediaType,
   AspectRatio,
   EditTool,
@@ -118,7 +119,7 @@ export const ANIMATE_UPLOAD_TITLE = 'Add model, product, elements, video, sound 
 /** The resolution pill toggles between these two. */
 export const ANIMATE_RESOLUTIONS = ['720p', '1080p'] as const
 
-/** A tap on the duration pill cycles through these in order; they are also the price tiers. */
+/** A tap on the duration pill cycles through these in order. */
 export const ANIMATE_DURATIONS = ['5s', '10s', '15s', '30s'] as const
 
 /** What a duration typed into the held pill is kept within, in seconds. */
@@ -138,19 +139,24 @@ export function nextAnimateDuration(seconds: number) {
   return presets.find((preset) => preset > seconds) ?? presets[0]!
 }
 
-/** The matcha an animation of `seconds` costs: priced as the next tier up, so 7s costs the 10s price. */
-export function animateCost(resolution: (typeof ANIMATE_RESOLUTIONS)[number], seconds: number) {
-  const tier = ANIMATE_DURATIONS.find((preset) => parseInt(preset) >= seconds) ?? ANIMATE_DURATIONS.at(-1)!
-  return ANIMATE_MATCHA_COST[resolution][tier]
+/**
+ * What each animation lane costs, by resolution: matcha per second, and the discount
+ * (a fraction off) on the durations that have one. Any other duration is full price.
+ */
+const ANIMATE_LANE_PRICES: Record<
+  AnimateLane,
+  Record<(typeof ANIMATE_RESOLUTIONS)[number], { perSecond: number; discounts: Record<number, number> }>
+> = {
+  director: {
+    '720p': { perSecond: 1, discounts: { 10: 0.1, 30: 0.2 } },
+    '1080p': { perSecond: 2, discounts: { 10: 0.1, 30: 0.1 } },
+  },
 }
 
-/** What a Director animation costs in matcha, by resolution and duration. */
-export const ANIMATE_MATCHA_COST: Record<
-  (typeof ANIMATE_RESOLUTIONS)[number],
-  Record<(typeof ANIMATE_DURATIONS)[number], number>
-> = {
-  '720p': { '5s': 5, '10s': 9, '15s': 15, '30s': 24 },
-  '1080p': { '5s': 10, '10s': 18, '15s': 30, '30s': 54 },
+/** The matcha an animation costs: `seconds` at the lane's rate for `resolution`, less that duration's discount. */
+export function animateCost(lane: AnimateLane, resolution: (typeof ANIMATE_RESOLUTIONS)[number], seconds: number) {
+  const { perSecond, discounts } = ANIMATE_LANE_PRICES[lane][resolution]
+  return seconds * perSecond * (1 - (discounts[seconds] ?? 0))
 }
 
 /** How many files of each media type Animate's upload row holds. */
@@ -225,7 +231,7 @@ export function canAffordGeneration(
 ) {
   if (mode === 'create') return credits >= lane.matchas
   //////////////////////Animate (Mode)//////////////////////////////
-  const cost = animateCost(resolution, durationSeconds)
+  const cost = animateCost('director', resolution, durationSeconds)
   //////////////////////Animate (Mode)//////////////////////////////
   return credits >= cost
 }

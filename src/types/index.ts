@@ -18,6 +18,7 @@ export type {
   AnimatePicked,
   AnimateRequest,
   AnimateUpload,
+  AnimateLane,
   AnimateMediaType,
   PreparedMedia,
   //////////////////////Animate (Mode)//////////////////////////////

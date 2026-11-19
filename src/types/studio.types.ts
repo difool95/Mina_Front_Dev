@@ -96,10 +96,13 @@ export interface PreparedMedia {
   change?: 'trimmed' | 'lengthened'
 }
 
+/** An animation style, each with its own price. Director is the only one for now. */
+export type AnimateLane = 'director'
+
 /** What an Animate sends (`POST /api/mma/animate`). */
 export interface AnimateRequest {
   brief: string
-  lane: 'director'
+  lane: AnimateLane
   isSoundOn: boolean
   resolution: '720p' | '1080p'
   durationSeconds: number

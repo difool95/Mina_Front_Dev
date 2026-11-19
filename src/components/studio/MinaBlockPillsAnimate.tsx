@@ -41,7 +41,7 @@ export function MinaBlockPillsAnimate({
   ratioPill: ReactNode
 }) {
   // Shared by the resolution and duration pills, and follows both.
-  const costTooltip = `${animateCost(resolution, duration)} matcha (${duration}s, Director, ${resolution})`
+  const costTooltip = `${animateCost('director', resolution, duration)} matcha (${duration}s, Director, ${resolution})`
   const hold = useLongPress(ANIMATE_DURATION_HOLD_MS)
   // What is typed in the held duration pill; null while it only shows the duration.
   const [draft, setDraft] = useState<string | null>(null)
