@@ -37,6 +37,26 @@
   padding: var(--mina-filter-pill-pad);
 }
 
+/* No pill gap between the number and its "s": they read as one word, "30s". */
+.mina-pills__pill--duration {
+  gap: 0;
+}
+
+/* The duration pill's field, in the pill's own type before the "s": it reads as text until the pill is held. */
+.mina-pills__duration {
+  padding: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: inherit;
+  /* Every digit one `ch` wide, so the field sized in `ch` ends right at the last digit. */
+  font-variant-numeric: tabular-nums;
+}
+
+.mina-pills__duration:read-only {
+  cursor: pointer;
+}
+
 .mina-pills__pill[aria-pressed='true'] {
   background: var(--mina-ink-5);
 }

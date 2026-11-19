@@ -100,7 +100,13 @@ export function StudioPage() {
       aspectRatio: studioRatio(ratioIndex, isLandscape),
       platform: STUDIO_RATIOS[ratioIndex]!.platform,
     }
-    console.info('Animate request', request)
+    // const { images, videos, audios, ...settings } = request
+    // console.log('Animate media', {
+    //   images,
+    //   videos: videos.map(({ url }) => url),
+    //   audios: audios.map(({ url }) => url),
+    // })
+    // console.log('Animate settings', settings)
   }
   //////////////////////Animate (Mode)//////////////////////////////
 

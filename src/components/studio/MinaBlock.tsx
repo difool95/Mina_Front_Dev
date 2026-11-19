@@ -15,6 +15,7 @@ import {
   ANIMATE_RESOLUTIONS,
   ANIMATE_UPLOAD_ACCEPT,
   ADD_FRAME_LABEL,
+  nextAnimateDuration,
   isAnimateMedia,
   ANIMATE_UPLOAD_LIMITS,
   ANIMATE_UPLOAD_TITLE,
@@ -449,9 +450,9 @@ export function MinaBlock({
 
   //////////////////////Animate (Mode)//////////////////////////////
   const [resolutionIndex, setResolutionIndex] = useState(0)
-  const [durationIndex, setDurationIndex] = useState(0)
+  // In seconds: a tap picks the next preset, a hold lets the user type any whole number in range.
+  const [duration, setDuration] = useState(parseInt(ANIMATE_DURATIONS[0]))
   const resolution = ANIMATE_RESOLUTIONS[resolutionIndex]!
-  const duration = ANIMATE_DURATIONS[durationIndex]!
   const [isSoundOn, setIsSoundOn] = useState(true)
   // Only files already on R2 go, in the row's order: the first picture is the start frame.
   const animatePicked = (): AnimatePicked => {
@@ -482,7 +483,7 @@ export function MinaBlock({
     return {
       isSoundOn,
       resolution,
-      durationSeconds: parseInt(duration),
+      durationSeconds: duration,
       images: sent.filter((entry) => entry.mediaType === 'image').map((entry) => entry.url),
       videos: timed('video'),
       audios: timed('audio'),
@@ -703,7 +704,8 @@ export function MinaBlock({
             resolution={resolution}
             duration={duration}
             onNextResolution={() => setResolutionIndex((index) => (index + 1) % ANIMATE_RESOLUTIONS.length)}
-            onNextDuration={() => setDurationIndex((index) => (index + 1) % ANIMATE_DURATIONS.length)}
+            onNextDuration={() => setDuration(nextAnimateDuration)}
+            onSetDuration={setDuration}
             isSoundOn={isSoundOn}
             onToggleSound={() => setIsSoundOn((was) => !was)}
             onOpenFilePicker={openAnimatePicker}

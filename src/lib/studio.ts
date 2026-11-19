@@ -118,8 +118,31 @@ export const ANIMATE_UPLOAD_TITLE = 'Add model, product, elements, video, sound 
 /** The resolution pill toggles between these two. */
 export const ANIMATE_RESOLUTIONS = ['720p', '1080p'] as const
 
-/** The duration pill cycles through these in order. */
+/** A tap on the duration pill cycles through these in order; they are also the price tiers. */
 export const ANIMATE_DURATIONS = ['5s', '10s', '15s', '30s'] as const
+
+/** What a duration typed into the held pill is kept within, in seconds. */
+export const ANIMATE_DURATION_RANGE = { min: 4, max: 30 }
+
+/** How long the duration pill is held before it turns into a field. */
+export const ANIMATE_DURATION_HOLD_MS = 500
+
+/** `seconds` kept within `ANIMATE_DURATION_RANGE`, as a whole number. */
+export function clampAnimateDuration(seconds: number) {
+  return Math.min(ANIMATE_DURATION_RANGE.max, Math.max(ANIMATE_DURATION_RANGE.min, Math.round(seconds)))
+}
+
+/** The preset a tap moves to from `seconds`: the next one up, back to the first after the last. */
+export function nextAnimateDuration(seconds: number) {
+  const presets = ANIMATE_DURATIONS.map((preset) => parseInt(preset))
+  return presets.find((preset) => preset > seconds) ?? presets[0]!
+}
+
+/** The matcha an animation of `seconds` costs: priced as the next tier up, so 7s costs the 10s price. */
+export function animateCost(resolution: (typeof ANIMATE_RESOLUTIONS)[number], seconds: number) {
+  const tier = ANIMATE_DURATIONS.find((preset) => parseInt(preset) >= seconds) ?? ANIMATE_DURATIONS.at(-1)!
+  return ANIMATE_MATCHA_COST[resolution][tier]
+}
 
 /** What a Director animation costs in matcha, by resolution and duration. */
 export const ANIMATE_MATCHA_COST: Record<
@@ -197,12 +220,12 @@ export function canAffordGeneration(
   lane: (typeof STILL_LANES)[number],
   //////////////////////Animate (Mode)//////////////////////////////
   resolution: (typeof ANIMATE_RESOLUTIONS)[number],
-  duration: (typeof ANIMATE_DURATIONS)[number],
+  durationSeconds: number,
   //////////////////////Animate (Mode)//////////////////////////////
 ) {
   if (mode === 'create') return credits >= lane.matchas
   //////////////////////Animate (Mode)//////////////////////////////
-  const cost = ANIMATE_MATCHA_COST[resolution][duration]
+  const cost = animateCost(resolution, durationSeconds)
   //////////////////////Animate (Mode)//////////////////////////////
   return credits >= cost
 }
