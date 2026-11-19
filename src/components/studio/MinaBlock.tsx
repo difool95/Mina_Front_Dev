@@ -14,6 +14,7 @@ import {
   ANIMATE_MEDIA,
   ANIMATE_RESOLUTIONS,
   ANIMATE_UPLOAD_ACCEPT,
+  ADD_FRAME_LABEL,
   isAnimateMedia,
   ANIMATE_UPLOAD_LIMITS,
   ANIMATE_UPLOAD_TITLE,
@@ -147,7 +148,7 @@ export function MinaBlock({
     const { brief = '', locked = '' } = studioSession.read()
     return { brief, locked }
   })
-  // Nothing to send, typed or locked: Create then asks for more instead.
+  // Nothing to send, typed or locked: Create and Animate then ask for more instead.
   const isBriefEmpty = !briefText.brief.trim() && !briefText.locked
 
   // Brand memory: the account's switch, shared with the profile, and the memories the brief uses.
@@ -782,8 +783,13 @@ export function MinaBlock({
                   onNeedMatcha()
                 }}
               />
-            ) : mode === 'create' && isBriefEmpty && !isUploading && !minaStatus ? (
-              // Nothing to send yet: the button takes the user to the brief, as a click on it would.
+            ) : mode === 'animate' && !animateUploads.length && !isUploading && !minaStatus ? (
+              //////////////////////Animate (Mode)//////////////////////////////
+              // Nothing to animate yet: the button opens the file picker, as the "+" would. The frame comes before the brief.
+              <MinaBlockCTA label={ADD_FRAME_LABEL} isStill onClick={openAnimatePicker} />
+              //////////////////////Animate (Mode)//////////////////////////////
+            ) : isBriefEmpty && !isUploading && !minaStatus ? (
+              // Nothing to send yet, in either mode: the button takes the user to the brief, as a click on it would.
               <MinaBlockCTA label={DESCRIBE_MORE_LABEL} isStill onClick={() => userBrief.current?.focus()} />
             ) : (
               <MinaBlockCTA

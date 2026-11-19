@@ -185,6 +185,11 @@ export const NEED_MATCHA_LINE =
 /** Create's call to action while the brief is empty: it takes the user to the brief instead. */
 export const DESCRIBE_MORE_LABEL = 'Describe more'
 
+//////////////////////Animate (Mode)//////////////////////////////
+/** Animate's call to action while nothing is uploaded: it opens the file picker instead. */
+export const ADD_FRAME_LABEL = 'Add frame'
+//////////////////////Animate (Mode)//////////////////////////////
+
 /** Whether `credits` covers the generation the studio is currently set up for. */
 export function canAffordGeneration(
   credits: number,
