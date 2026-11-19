@@ -10,10 +10,10 @@ import {
   useUnlikeGeneration,
 } from '@/hooks/useGenerations'
 import { filenameFromUrl, viewerLinkFor } from '@/lib/generations'
-import { cfImageCarousel, imageWidthFor } from '@/lib/media'
+import { AUDIO_ICON_URL, cfImageCarousel, imageWidthFor, isVideoUrl } from '@/lib/media'
 import { ERASE_HINT, PANEL_UPLOAD_LABELS, STUDIO_RATIOS } from '@/lib/studio'
 import { useAuth } from '@/providers/AuthProvider'
-import type { EditTool, Ratio, StudioMode, StudioUpload } from '@/types'
+import type { AnimateUpload, EditTool, Ratio, StudioMode, StudioUpload } from '@/types'
 
 import { Carousel } from '../Carousel'
 import { RightStudioEditBar } from './RightStudioEditBar'
@@ -28,6 +28,7 @@ import { RightStudioErase } from './RightStudioErase'
 export function RightStudioPanel({
   mode,
   uploads,
+  animateUploads,
   generations,
   isBusy,
   onFingertips,
@@ -37,6 +38,7 @@ export function RightStudioPanel({
 }: {
   mode: StudioMode
   uploads: StudioUpload[]
+  animateUploads: AnimateUpload[]
   /** The R2 URLs of the pictures Create made, newest first: they page before the uploads, so the carousel opens on the newest. */
   generations: string[]
   /** While Mina is busy with a Create or an edit, which the edit tools wait for. */
@@ -57,20 +59,20 @@ export function RightStudioPanel({
   /** The delete fingertip: takes the picture on show out of the studio. */
   onRemove: (url: string) => void
 }) {
-//This line creates a new array of shown uploads and generations based on the current mode. If the mode is 'create', it filters out any uploads that are still uploading
-// and maps the remaining uploads to their URLs, placing them after the generations array. If the mode is not 'create', it returns an empty array.
+  //This line creates a new array of shown uploads and generations based on the current mode. If the mode is 'create', it filters out any uploads that are still uploading
+  // and maps the remaining uploads to their URLs, placing them after the generations array. If the mode is not 'create', it returns an empty array.
   const shown =
     mode === 'create'
       ? // Once: a Mina picture set as the scene is in both lists, and the carousel keys its pictures by URL.
-        [...new Set([...generations, ...uploads.filter((entry) => !entry.isUploading).map(({ url }) => url)])]
-      : []
+      [...new Set([...generations, ...uploads.filter((entry) => !entry.isUploading).map(({ url }) => url)])]
+      : [...new Set([...generations, ...animateUploads.filter((entry) => !entry.isUploading).map(({ url }) => url)])]
   // The picture the carousel is on, which the bar's buttons act on.
   const [current, setCurrent] = useState(0)
   const currentUrl = shown[current]
   const download = useDownloadMedia()
-/////////////////////////////////////////we need to know the generation id from the currentUrl to check if it is liked or not. We get the userId from the session and use it to fetch all
-//generations and liked generations. and from that we know which url's in the carousel are generations and which are not. We also check if the current generation is liked
-//or not and set the button text accordingly.//////////////////////////////////////////////////////////
+  /////////////////////////////////////////we need to know the generation id from the currentUrl to check if it is liked or not. We get the userId from the session and use it to fetch all
+  //generations and liked generations. and from that we know which url's in the carousel are generations and which are not. We also check if the current generation is liked
+  //or not and set the button text accordingly.//////////////////////////////////////////////////////////
   const { session } = useAuth()
   const userId = session?.user.id
   const { data: allGenerations } = useGenerations(userId)
@@ -109,8 +111,8 @@ export function RightStudioPanel({
   const [eraseMask, setEraseMask] = useState<string | null>(null)
   const [ratioWidth, ratioHeight] = expandRatio.split(':').map(Number)
   ///////////////////////////////////we need to know the generation id from the currentUrl to check if it is liked or not. We get the userId from the session and use it to fetch all
-//generations and liked generations. and from that we know which url's in the carousel are generations and which are not. We also check if the current generation is liked
-//or not and set the button text accordingly.///////////////////////////////////////////////////////////////
+  //generations and liked generations. and from that we know which url's in the carousel are generations and which are not. We also check if the current generation is liked
+  //or not and set the button text accordingly.///////////////////////////////////////////////////////////////
 
   return (
     <section className="mina-studio__panel">
@@ -134,33 +136,40 @@ export function RightStudioPanel({
                 onMaskChange={setEraseMask}
               />
             ) : (
-            /* Remounted whenever a picture comes or goes, so the page never points past the end. */
-            <Carousel
-              key={shown.length}
-              // Back from Expand or Erase on the picture they showed.
-              startIndex={current}
-              onIndexChange={setCurrent}
-              media={shown.map((url) => ({
-                id: url,
-                media_url: url,
-                media_type: 'image',
-                thumbnail: null,
-                alt_text: null,
-              }))}
-              // The carousel draws and reads the fingertips; what each does is decided here.
-              fingertips={{
-                canLike: Boolean(generation),
-                isLiked,
-                isFitted,
-                onZoom: () => setIsFitted(!isFitted),
-                onLike: toggleLike,
-                onDownload: saveFile,
-                onCopy: () => currentUrl && copyMedia.mutate(currentUrl),
-                onCopyLink: () => currentUrl && copyLink.mutate(viewerLinkFor({ mg_output_url: currentUrl })),
-                onEdit: edit,
-                onDelete: () => currentUrl && onRemove(currentUrl),
-              }}
-            />
+              /* Remounted whenever a picture comes or goes, so the page never points past the end. */
+              <Carousel
+                key={shown.length}
+                // Back from Expand or Erase on the picture they showed.
+                startIndex={current}
+                onIndexChange={setCurrent}
+                media={shown.map((url) => {
+                  //////////////////////Animate (Mode)//////////////////////////////
+                  // The carousel has nothing to play a sound with, so a sound shows Mina's audio icon.
+                  const isSound = animateUploads.some((entry) => entry.url === url && entry.mediaType === 'audio')
+                  //////////////////////Animate (Mode)//////////////////////////////
+
+                  return {
+                    id: url,
+                    media_url: isSound ? AUDIO_ICON_URL : url,
+                    media_type: isVideoUrl(url) ? 'video' : 'image',
+                    thumbnail: null,
+                    alt_text: null,
+                  }
+                })}
+                // The carousel draws and reads the fingertips; what each does is decided here.
+                fingertips={{
+                  canLike: Boolean(generation),
+                  isLiked,
+                  isFitted,
+                  onZoom: () => setIsFitted(!isFitted),
+                  onLike: toggleLike,
+                  onDownload: saveFile,
+                  onCopy: () => currentUrl && copyMedia.mutate(currentUrl),
+                  onCopyLink: () => currentUrl && copyLink.mutate(viewerLinkFor({ mg_output_url: currentUrl })),
+                  onEdit: edit,
+                  onDelete: () => currentUrl && onRemove(currentUrl),
+                }}
+              />
             )}
             {editing === 'Erase' && <p className="mina-studio__hint comment">{ERASE_HINT}</p>}
           </div>
@@ -180,40 +189,40 @@ export function RightStudioPanel({
               onExpandRatio={setExpandRatio}
             />
           ) : (
-          <div className="mina-studio__actions">
-            <button
-              className="mina-studio__action body-text-button button"
-              type="button"
-              onClick={saveFile}
-            >
-              Download
-            </button>
-            <span className="mina-studio__separator body-text faint" aria-hidden="true">
-              |
-            </span>
-            <button
-              className="mina-studio__action body-text-button button"
-              type="button"
-              // Disabled on anything that is not one of Mina's pictures, and while a like or unlike is saving.
-              disabled={!generation || like.isPending || unlike.isPending}
-              onClick={toggleLike}
-            >
-              {isLiked ? 'Unlike' : 'Like'}
-            </button>
-            <span className="mina-studio__separator body-text faint" aria-hidden="true">
-              |
-            </span>
-            <button
-              className="mina-studio__action body-text-button button"
-              type="button"
-              onClick={() => currentUrl && onSetScene(currentUrl)}
-            >
-              Set Scene
-            </button>
-            <button className="mina-studio__action mina-studio__action--edit body-text-button button" type="button" onClick={edit}>
-              Edit
-            </button>
-          </div>
+            <div className="mina-studio__actions">
+              <button
+                className="mina-studio__action body-text-button button"
+                type="button"
+                onClick={saveFile}
+              >
+                Download
+              </button>
+              <span className="mina-studio__separator body-text faint" aria-hidden="true">
+                |
+              </span>
+              <button
+                className="mina-studio__action body-text-button button"
+                type="button"
+                // Disabled on anything that is not one of Mina's pictures, and while a like or unlike is saving.
+                disabled={!generation || like.isPending || unlike.isPending}
+                onClick={toggleLike}
+              >
+                {isLiked ? 'Unlike' : 'Like'}
+              </button>
+              <span className="mina-studio__separator body-text faint" aria-hidden="true">
+                |
+              </span>
+              <button
+                className="mina-studio__action body-text-button button"
+                type="button"
+                onClick={() => currentUrl && onSetScene(currentUrl)}
+              >
+                Set Scene
+              </button>
+              <button className="mina-studio__action mina-studio__action--edit body-text-button button" type="button" onClick={edit}>
+                Edit
+              </button>
+            </div>
           )}
         </>
       ) : (

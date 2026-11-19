@@ -32,15 +32,15 @@ export function StudioPage() {
   const block = useRef<MinaBlockHandle>(null)
   // Held here rather than in the block: the panel beside it shows them too.
   const [uploads, setUploads] = useState<StudioUpload[]>(() => studioSession.read().uploads ?? [])
-//this line saves the uploads to the session storage whenever the uploads state changes. It filters out any uploads that are still
-//uploading and only saves the completed uploads to the session storage. This ensures that the uploads are persisted across page refreshes
-//and tab closures, while also preventing incomplete uploads from being saved.
+  //this line saves the uploads to the session storage whenever the uploads state changes. It filters out any uploads that are still
+  //uploading and only saves the completed uploads to the session storage. This ensures that the uploads are persisted across page refreshes
+  //and tab closures, while also preventing incomplete uploads from being saved.
   useEffect(() => studioSession.save({ uploads: uploads.filter((entry) => !entry.isUploading) }), [uploads])
   //////////////////////Animate (Mode)//////////////////////////////
   // This line saves the animateUploads to the session storage whenever the animateUploads state changes. It filters out any animateUploads that are still uploading and
   // only saves the completed animateUploads to the session storage. This ensures that the animateUploads are persisted across page refreshes and tab closures.
   const [animateUploads, setAnimateUploads] = useState<AnimateUpload[]>(() => studioSession.read().animateUploads ?? [])
-  useEffect(() => studioSession.save({ animateUploads: animateUploads.filter((entry) => !entry.isUploading) }),[animateUploads],)
+  useEffect(() => studioSession.save({ animateUploads: animateUploads.filter((entry) => !entry.isUploading) }), [animateUploads],)
   //////////////////////Animate (Mode)//////////////////////////////
   // Same single slot as the profile: "Back" in the auto panel returns to the buy panel.
   const [matchaPanel, setMatchaPanel] = useState<'buy' | 'auto' | null>(null)
@@ -206,8 +206,8 @@ export function StudioPage() {
   const endMina = () => {
     // Keeps the new picture for good. Without one, it's the same list, so nothing changes.
     setGenerations(shownGenerations)
-  // When we get the generation, we also get the Id's of the brand memories that were not used in the generation. We then call the untickMemories
-  // method on the MinaBlock component to untick those memories in the UI so that they are not selected for next generation.
+    // When we get the generation, we also get the Id's of the brand memories that were not used in the generation. We then call the untickMemories
+    // method on the MinaBlock component to untick those memories in the UI so that they are not selected for next generation.
     if (createProgress?.unusedMemoryIds.length) block.current?.untickMemories(createProgress.unusedMemoryIds)
     startGeneration.reset()
     startEdit.reset()
@@ -302,6 +302,7 @@ export function StudioPage() {
       <RightStudioPanel
         mode={mode}
         uploads={uploads}
+        animateUploads={animateUploads}
         generations={shownGenerations}
         //This return true if the minaStatus is not undefined, which means that the MinaBlock is currently processing a request. 
         //This disables the edit tools in the RightStudioPanel while Mina is busy.

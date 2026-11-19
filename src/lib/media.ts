@@ -225,7 +225,7 @@ export async function prepareStudioImage(file: File): Promise<Blob> {
 }
 
 //////////////////////Animate (Mode)//////////////////////////////
-const AUDIO_ICON_URL = '/assets/gifs/audio-mina-icon.gif'
+export const AUDIO_ICON_URL = '/assets/gifs/audio-mina-icon.gif'
 
 /**
  * A still standing for an Animate upload `cssWidth` wide: the picture itself, a video's first
