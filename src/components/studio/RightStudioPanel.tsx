@@ -52,7 +52,7 @@ export function RightStudioPanel({
     expandRatio?: Ratio,
     eraseMask?: string,
   ) => boolean
-  /** Create's button: picks the scene, as the "+ Scene" pill does. */
+  /** The upload button: in Create it picks the scene, as the "+ Scene" pill does; in Animate it adds media, as the "+" does. */
   onUpload: () => void
   /** Set Scene: makes the picture on show the scene upload. */
   onSetScene: (url: string) => void
@@ -229,7 +229,7 @@ export function RightStudioPanel({
         <button
           className="mina-studio__upload body-text-button button faint"
           type="button"
-          onClick={mode === 'create' ? onUpload : undefined}
+          onClick={onUpload}
         >
           {PANEL_UPLOAD_LABELS[mode]}
         </button>

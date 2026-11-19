@@ -33,7 +33,7 @@ export const BRIEF_PLACEHOLDERS: Record<StudioMode, string> = {
 export const PANEL_UPLOAD_LABELS: Record<StudioMode, string> = {
   create: '+ Upload image to edit',
   //////////////////////Animate (Mode)//////////////////////////////
-  animate: '+ Upload image or video',
+  animate: '+ Upload media',
   //////////////////////Animate (Mode)//////////////////////////////
 }
 

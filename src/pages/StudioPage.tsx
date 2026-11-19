@@ -308,7 +308,7 @@ export function StudioPage() {
         //This disables the edit tools in the RightStudioPanel while Mina is busy.
         isBusy={Boolean(minaStatus)}
         onFingertips={startFingertips}
-        onUpload={() => block.current?.OpenFilePickerScene()}
+        onUpload={() => (mode === 'create' ? block.current?.OpenFilePickerScene() : block.current?.openAnimatePicker())}
         onSetScene={(url) => {
           //This line updates the uploads state to include the new scene upload. It filters out any existing scene uploads and adds the new scene upload
           //to the end of the list. The new scene upload is marked as sent, indicating that it has been successfully uploaded to R2 cloudflare. This ensures 

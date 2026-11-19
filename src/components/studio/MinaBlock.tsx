@@ -637,6 +637,12 @@ export function MinaBlock({
       selectUploadKind('scene')
       openFilePicker('scene')
     },
+    //////////////////////Animate (Mode)//////////////////////////////
+    openAnimatePicker: () => {
+      openLong()
+      openAnimatePicker()
+    },
+    //////////////////////Animate (Mode)//////////////////////////////
     removeUpload: remove,
     showScene: () => {
       openLong()
