@@ -97,8 +97,8 @@ export function Carousel({
   const [isLight, setIsLight] = useState(false)
   /** Set once the right button has been held long enough to mean "link". */
   const [isArmed, setIsArmed] = useState(false)
-  /** The copy that just happened, held briefly so the disc can confirm it. */
-  const [copied, setCopied] = useState<'copy' | 'link' | null>(null)
+  /** What just happened (a copy, or the pin's frame download), held briefly so the disc can confirm it in green. */
+  const [copied, setCopied] = useState<'copy' | 'link' | 'pin' | null>(null)
   const hold = useRef<number | undefined>(undefined)
   // The studio's video player, while a video is on show.
   const player = useRef<HTMLVideoElement>(null)
@@ -144,7 +144,7 @@ export function Carousel({
     setCursor({ x: event.clientX - left, y: event.clientY - top, fingertip: fingertipUnder(event) })
   }
 
-  const flash = (action: 'copy' | 'link') => {
+  const flash = (action: 'copy' | 'link' | 'pin') => {
     setCopied(action)
     window.setTimeout(() => setCopied(null), COPY_FLASH_MS)
   }
@@ -162,7 +162,9 @@ export function Carousel({
     else if (fingertip === 'copy') copy()
     // The frame the studio's player has reached, downloaded as a picture.
     else if (fingertip === 'pin') {
-      if (player.current) fingertips?.onDownloadFrame(player.current)
+      if (!player.current) return
+      flash('pin')
+      fingertips?.onDownloadFrame(player.current)
     } else fingertips?.[PAGE_ACTIONS[fingertip]]()
   }
 
