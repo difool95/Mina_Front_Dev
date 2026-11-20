@@ -12,7 +12,7 @@ import { useCustomerCredits } from '@/hooks/useCustomerCredits'
 import { useFingertipsStatuses, useStartFingertips } from '@/hooks/useFingertips'
 import { useGenerationStatus, useStartAnimateGeneration, useStartStillGeneration } from '@/hooks/useGenerations'
 import { MINA_LOGO_URL } from '@/lib/constants'
-import { hasEnded } from '@/lib/minaBrief'
+import { hasEnded, minaLine } from '@/lib/minaBrief'
 import { studioSession } from '@/lib/sessionStorage/studioSession'
 import { FINGERTIPS_MATCHAS, NEED_MATCHA_LINE, STILL_LANES, STUDIO_RATIOS, studioRatio, withScene } from '@/lib/studio'
 import { useAuth } from '@/providers/AuthProvider'
@@ -225,6 +225,8 @@ export function StudioPage() {
     // When we get the generation, we also get the Id's of the brand memories that were not used in the generation. We then call the untickMemories
     // method on the MinaBlock component to untick those memories in the UI so that they are not selected for next generation.
     if (createProgress?.unusedMemoryIds.length) block.current?.untickMemories(createProgress.unusedMemoryIds)
+    // A failed run stays said in pink over the brief until the user goes back to it, so it is seen even after looking away.
+    if (running?.status === 'error') block.current?.sayWarning(minaLine('error', 0, []))
     startGeneration.reset()
     startEdit.reset()
   }
