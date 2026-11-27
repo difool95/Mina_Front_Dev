@@ -400,8 +400,10 @@ export async function prepareStudioVideo(file: File, roomSeconds: number): Promi
       process: fit.change === 'lengthened' ? holdLastFrame(end, fit.seconds) : undefined,
     }
 
+    // The shape as displayed: a scaled copy keeps it.
+    const frame = { width: track.displayWidth, height: track.displayHeight }
     const blob = await convertToMp4(input, end, encoded)
-    if (blob) return { ...fit, blob }
+    if (blob) return { ...fit, ...frame, blob }
 
     // No encoder: copy what can be copied, which cannot make a clip longer.
     if (fit.change === 'lengthened') throw new Error(UPLOAD_ERRORS.tooShort(file.name))
@@ -409,7 +411,7 @@ export async function prepareStudioVideo(file: File, roomSeconds: number): Promi
     const copied = await convertToMp4(input, end, {})
     if (!copied) throw unreadable()
 
-    return { ...fit, blob: copied }
+    return { ...fit, ...frame, blob: copied }
   } finally {
     input.dispose()
   }

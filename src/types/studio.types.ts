@@ -84,6 +84,9 @@ export interface AnimateUpload {
   url: string
   /** How long a video or a sound lasts once prepared, so the 30s totals can be kept. */
   seconds?: number
+  /** A video's frame, in pixels, so the API knows the shape the render keeps. */
+  width?: number
+  height?: number
   isUploading?: boolean
   /** Sent in an Animate: removing it leaves it on R2, where that generation still reads it. */
   isSent?: boolean
@@ -94,6 +97,9 @@ export interface PreparedMedia {
   blob: Blob
   seconds: number
   change?: 'trimmed' | 'lengthened'
+  /** A video's frame as displayed, in pixels. */
+  width?: number
+  height?: number
 }
 
 /** An animation style, each with its own price. Director is the only one for now. */
@@ -110,7 +116,8 @@ export interface AnimateRequest {
   platform: MmaPlatform
   /** In the row's order: the first is the start frame. */
   images: string[]
-  videos: { url: string; seconds: number }[]
+  /** `width` and `height` only when the studio measured them. */
+  videos: { url: string; seconds: number; width?: number; height?: number }[]
   audios: { url: string; seconds: number }[]
 }
 

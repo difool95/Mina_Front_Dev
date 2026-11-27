@@ -334,6 +334,7 @@ export function MinaBlock({
         for (const file of picked.slice(0, Math.max(0, room))) {
           let blob: Blob
           let seconds: number | undefined
+          let frame: Pick<AnimateUpload, 'width' | 'height'> = {}
           try {
             if (mediaType === 'image') {
               blob = await prepareStudioImage(file)
@@ -345,6 +346,7 @@ export function MinaBlock({
               const prepared = await (mediaType === 'video' ? prepareStudioVideo : prepareStudioAudio)(file, secondsLeft)
               blob = prepared.blob
               seconds = prepared.seconds
+              frame = { width: prepared.width, height: prepared.height }
               secondsLeft -= seconds
               if (prepared.change) sayWarning(UPLOAD_ERRORS[prepared.change](mediaType, file.name))
             }
@@ -356,7 +358,7 @@ export function MinaBlock({
           void sendUpload(
             onAnimateUploads,
             () => latestAnimateUploads.current,
-            (url) => ({ mediaType, url, seconds, isUploading: true }),
+            (url) => ({ mediaType, url, seconds, ...frame, isUploading: true }),
             blob,
             file.name,
           )
@@ -485,7 +487,11 @@ export function MinaBlock({
       resolution,
       durationSeconds: duration,
       images: sent.filter((entry) => entry.mediaType === 'image').map((entry) => entry.url),
-      videos: timed('video'),
+      // A video also carries its frame when the studio measured it.
+      videos: timed('video').map((video, i) => {
+        const { width, height } = sent.filter((entry) => entry.mediaType === 'video')[i]!
+        return width && height ? { ...video, width, height } : video
+      }),
       audios: timed('audio'),
     }
   }
